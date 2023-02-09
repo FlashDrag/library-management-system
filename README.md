@@ -1,31 +1,46 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Library Management System
 
-Welcome USER_NAME,
+[Live link](#)
 
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **August 17, 2021**
+[SpreadSheet](#)
 
-## Reminders
+This is a python script that uses the gspread library to access a Google Spreadsheet and perform operations on it.
 
-* Your code must be placed in the `run.py` file
-* Your dependencies must be placed in the `requirements.txt` file
-* Do not edit any of the other files or your code may not deploy properly
+## Features
+
+
+## Prerequisites
+To run this script, you need to have the following installed:
+
+- Python 3.x
+- gspread library
+- Google API credentials (in form of a JSON file)
+
+## How to run
+- Clone this repository to your local machine
+- Replace the credentials JSON file with your own Google API credentials;
+
+    [See instruction](instruction.md)
+- Run the script by executing python run.py in the terminal
 
 ## Creating the Heroku app
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+1. When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+    1. `heroku/python`
+    2. `heroku/nodejs`
 
-1. `heroku/python`
-2. `heroku/nodejs`
+2. Config Vars
+- Create a _Config Var_ called `PORT`. Set this to `8000`
+- Create another _Config Var_ called `CREDS` and paste the JSON credentials into the value field.
 
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
+3. Connect your GitHub repository and deploy as normal.
 
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
+## Libraries used
+- gspread: This is a Python library used to access and manage Google Spreadsheets.
 
-Connect your GitHub repository and deploy as normal.
+- Google OAuth2 client: This is used to authenticate the application and grant it access to the Google APIs.
+
 
 ## Constraints
 
 The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
-
------
-Happy coding!

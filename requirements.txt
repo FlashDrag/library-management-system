@@ -1,1 +1,2 @@
-# Your requirements go here
+pycodestyle==2.10.0
+pyfiglet==0.8.post1

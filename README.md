@@ -16,11 +16,13 @@ To run this script, you need to have the following installed:
 - gspread library
 - Google API credentials (in form of a JSON file)
 
+## How to connect to Google Spreadsheet API and get creadentials
+
+[See instruction here](https://github.com/FlashDrag/love-sandwiches/blob/main/docs/instruction.md)
+
 ## How to run
 - Clone this repository to your local machine
 - Replace the credentials JSON file with your own Google API credentials;
-
-    [See instruction](instruction.md)
 - Run the script by executing python run.py in the terminal
 
 ## Creating the Heroku app

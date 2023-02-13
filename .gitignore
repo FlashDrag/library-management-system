@@ -7,4 +7,6 @@ __pycache__/
 node_modules/
 .github/
 creds.json
+mypy.ini
+mypy_cache/
 misc

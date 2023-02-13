@@ -14,6 +14,13 @@ def display_header():
 
 
 def display_main_menu():
+    '''
+    Displays the options available in the Library Main Menu
+    using the tabulate library and allows the user to select an option using code number 1-5.
+    While the user enters an incorrect code or a code that's not an integer,
+    an error message will be displayed and the user will be prompted to try again.
+    If correct code is enetered, appropriated funtion will be called
+    '''
     print('Library Main Menu')
     headers = ['Code', 'Option']
     options = [[1, 'Add Book'],

@@ -4,6 +4,15 @@ from pyfiglet import figlet_format
 from tabulate import tabulate
 
 
+class font:
+    BOLD = '\033[1m'
+    ITALIC = '\033[3m'
+    HEADER = '\033[92m'
+    ERROR = '\033[91m'
+    YELLOW = '\033[93m'
+    ENDC = '\033[0m'
+
+
 def clear_terminal():
     '''Clear terminal screen'''
     os.system('cls' if os.name == 'nt' else "printf '\033c'")
@@ -21,7 +30,7 @@ def display_main_menu():
     an error message will be displayed and the user will be prompted to try again.
     If correct code is enetered, appropriated funtion will be called
     '''
-    print('Library Main Menu')
+    print(font.HEADER + 'Library Main Menu' + font.ENDC)
     headers = ['Code', 'Option']
     options = [[1, 'Add Book'],
                [2, 'Remove Book'],
@@ -34,24 +43,26 @@ def display_main_menu():
     while True:
         print('Select an option using code number(1-5)')
         try:
-            code = int(input('Enter your choice:\n'))
+            code = int(input(font.ITALIC + 'Enter your choice:\n'))
         except ValueError as e:
-            print(f'''Incorrect code: {str(e).split("'")[1]}. Code must be an integer. Try again\n''')
+            print(f'''{font.ERROR}Incorrect code: `{str(e).split("'")[1]}`.{font.ENDC} '''
+                  f'''Code must be an integer. Try again\n''')
         else:
             if code in range(1, 6):
                 func = '_'.join(options[code-1][1].lower().split())
                 try:
-                    clear_terminal()
                     globals()[func]()
                     break
                 except KeyError as e:
-                    print(f'Cannot get access to {e}\n')
+                    print(f'{font.ERROR}Cannot get access to {e}\n{font.ENDC}')
             else:
-                print(f'Incorrect code: {code}. Try again.\n')
+                print(f'{font.ERROR}Incorrect code: `{code}`.{font.ENDC} Try again.\n')
 
 
 def add_book():
-    print('hello world')
+    clear_terminal()
+    print(font.HEADER + 'Adding books' + font.ENDC)
+
 
 
 def main():

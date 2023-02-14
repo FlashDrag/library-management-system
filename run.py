@@ -3,6 +3,8 @@ import os
 from pyfiglet import figlet_format
 from tabulate import tabulate
 
+from app.spreadsheet import Library
+
 
 class font:
     BOLD = '\033[1m'
@@ -20,6 +22,23 @@ def clear_terminal():
 
 def display_header():
     print(figlet_format('Library Management System', 'straight'))
+
+
+def library_init() -> Library:
+    '''
+    Initialize a Library instance and connect to the Google Sheet.
+
+    :return: Library instance
+    '''
+    print('Connecting to the Library Spreadsheet...')
+    library = Library('library-management-system', 'creds.json')
+    isConnected = library.connect()
+    if not isConnected:
+        print(f'{font.ERROR}Cannot connect to the Library Spreadsheet.{font.ENDC} Exiting...')
+        return False  # type: ignore
+    else:
+        print(f'{font.BOLD}Succesfully connected.{font.ENDC}\n')
+        return library
 
 
 def display_main_menu():
@@ -41,33 +60,40 @@ def display_main_menu():
     print(tabulate(options, headers=headers, tablefmt='outline'), '\n')
 
     while True:
-        print('Select an option using code number(1-5)')
+        print(font.BOLD + 'Select an option using code number(1-5)' + font.ENDC)
         try:
-            code = int(input(font.ITALIC + 'Enter your choice:\n'))
+            code = int(input(font.ITALIC + 'Enter your choice:\n' + font.ENDC))
         except ValueError as e:
-            print(f'''{font.ERROR}Incorrect code: `{str(e).split("'")[1]}`.{font.ENDC} '''
+            print(f'''{font.ERROR}Incorrect code:'''
+                  f'''{str(e).split("'")[1]}`.{font.ENDC} '''
                   f'''Code must be an integer. Try again\n''')
         else:
             if code in range(1, 6):
-                func = '_'.join(options[code-1][1].lower().split())
+                func = '_'.join(options[code - 1][1].lower().split())
                 try:
                     globals()[func]()
                     break
                 except KeyError as e:
                     print(f'{font.ERROR}Cannot get access to {e}\n{font.ENDC}')
             else:
-                print(f'{font.ERROR}Incorrect code: `{code}`.{font.ENDC} Try again.\n')
+                print(f'{font.ERROR}Incorrect code: '
+                      f'`{code}`.{font.ENDC} Try again.\n')
 
 
 def add_book():
     clear_terminal()
     print(font.HEADER + 'Adding books' + font.ENDC)
-
+    # new_isbn = input(f'{font.ITALIC}Enter ISBN of the Book:{font.ENDC}\n')
 
 
 def main():
     clear_terminal()
     display_header()
+
+    library = library_init()
+    if not library:
+        exit()
+
     display_main_menu()
 
 

@@ -27,13 +27,11 @@ def library_init() -> Library | bool:
         return library
 
 
-def display_main_menu(library: Library):
+def display_main_menu() -> list[list[object]]:
     '''
     Displays the options available in the Library Main Menu
-    using the tabulate library and allows the user to select an option using code number 1-5.
-    While the user enters an incorrect code or a code that's not an integer,
-    an error message will be displayed and the user will be prompted to try again.
-    If correct code is enetered, appropriated funtion will be called
+    using the tabulate library.
+    :return: list of lists with options
     '''
     print(F.HEADER + 'Library Main Menu' + F.ENDC)
     headers = ['Code', 'Option']
@@ -45,6 +43,19 @@ def display_main_menu(library: Library):
 
     print(tabulate(options, headers=headers, tablefmt='outline'), '\n')
 
+    return options
+
+
+def get_user_selection(options, library: Library):
+    '''
+    Get user selection from the Main Menu and process it.
+    While the user enters an incorrect code or a code that's not an integer,
+    an error message will be displayed and the user will be prompted to try again.
+    If correct code is enetered, appropriated funtion will be called.
+
+    :param options: list of lists with options
+    :param library: Library instance
+    '''
     while True:
         print(F.BOLD + 'Select an option using code number(1-5)' + F.ENDC)
         try:
@@ -56,7 +67,7 @@ def display_main_menu(library: Library):
         else:
             if code in range(1, 6):
                 # convert option to function name
-                func = '_'.join(options[code - 1][1].lower().split())  # type: ignore
+                func = '_'.join(options[code - 1][1].lower().split())
                 try:
                     globals()[func](library)
                     break
@@ -69,8 +80,9 @@ def display_main_menu(library: Library):
 
 def main():
     ''''
-    Clear terminal screen, display text header, initialize Library instance,
-    connect to the Google Sheet and display the Main Menu.
+    Clear terminal screen, display text header;
+    Initialize Library instance, connect to the Google Sheet;
+    Display the Main Menu and process user selection.
     '''
     clear_terminal()
     display_header()
@@ -79,7 +91,8 @@ def main():
     if not library:
         exit()
 
-    display_main_menu(library)  # type: ignore
+    options = display_main_menu()
+    get_user_selection(options, library)  # type: ignore
 
 
 if __name__ == '__main__':

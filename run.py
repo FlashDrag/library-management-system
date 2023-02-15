@@ -4,6 +4,7 @@ from tabulate import tabulate
 from app.services.tools import font as F, clear_terminal
 
 from app.services.spreadsheet import Library
+from app import library_manager
 
 
 def display_header():
@@ -61,21 +62,26 @@ def get_user_selection(options, library: Library):
         try:
             code = int(input(F.ITALIC + 'Enter your choice:\n' + F.ENDC))
         except ValueError as e:
-            print(f'''{F.ERROR}Incorrect code:'''
-                  f'''{str(e).split("'")[1]}`.{F.ENDC} '''
+            print(f'''{F.ERROR}Incorrect code: '''
+                  f'''`{str(e).split("'")[1]}`.{F.ENDC} '''
                   f'''Code must be an integer. Try again\n''')
         else:
             if code in range(1, 6):
                 # convert option to function name
                 func = '_'.join(options[code - 1][1].lower().split())
                 try:
-                    globals()[func](library)
+                    # try to call the function from library_manager by function name from options
+                    getattr(library_manager, func)(library)
                     break
-                except KeyError as e:
-                    print(f'{F.ERROR}Cannot get access to {e}\n{F.ENDC}')
+                # catch exception if function name is not found in library_manager using getattr()
+                except AttributeError as e:
+                    print(
+                        f'''{F.ERROR}Cannot get access to `{str(e).split("'")[-2]}` '''
+                        f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}{F.ENDC} '''
+                        f'''Try again.\n''')
             else:
                 print(f'{F.ERROR}Incorrect code: '
-                      f' `{code}`.{F.ENDC} Try again.\n')
+                      f'`{code}`.{F.ENDC} Try again.\n')
 
 
 def main():

@@ -10,7 +10,7 @@ def display_header():
     print(figlet_format('Library Management System', 'straight'))
 
 
-def library_init() -> Library:
+def library_init() -> Library | bool:
     '''
     Initialize a Library instance and connect to the Google Sheet.
 
@@ -21,13 +21,13 @@ def library_init() -> Library:
     isConnected = library.connect()
     if not isConnected:
         print(f'{F.ERROR}Cannot connect to the Library Spreadsheet.{F.ENDC} Exiting...')
-        return False  # type: ignore
+        return False
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
         return library
 
 
-def display_main_menu():
+def display_main_menu(library: Library):
     '''
     Displays the options available in the Library Main Menu
     using the tabulate library and allows the user to select an option using code number 1-5.
@@ -55,18 +55,19 @@ def display_main_menu():
                   f'''Code must be an integer. Try again\n''')
         else:
             if code in range(1, 6):
-                func = '_'.join(options[code - 1][1].lower().split())
+                # convert option to function name
+                func = '_'.join(options[code - 1][1].lower().split())  # type: ignore
                 try:
-                    globals()[func]()
+                    globals()[func](library)
                     break
                 except KeyError as e:
                     print(f'{F.ERROR}Cannot get access to {e}\n{F.ENDC}')
             else:
                 print(f'{F.ERROR}Incorrect code: '
-                      f'`{code}`.{F.ENDC} Try again.\n')
+                      f' `{code}`.{F.ENDC} Try again.\n')
 
 
-def on_startup() -> Library:
+def on_startup():
     ''''
     Clear terminal screen, display text header, initialize Library instance,
     connect to the Google Sheet and display the Main Menu.
@@ -80,6 +81,4 @@ def on_startup() -> Library:
     if not library:
         exit()
 
-    display_main_menu()
-
-    return library
+    display_main_menu(library)  # type: ignore

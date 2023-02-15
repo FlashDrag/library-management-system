@@ -9,4 +9,5 @@ node_modules/
 creds.json
 mypy.ini
 mypy_cache/
-misc
+example.py
+test.py

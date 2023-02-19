@@ -1,9 +1,10 @@
 from pyfiglet import figlet_format
-from tabulate import tabulate
+from pydantic import ValidationError
 
 from app.services.tools import font as F, clear_terminal
 
 from app.services.spreadsheet import Library
+from app.services.menus import Menu
 from app import library_manager
 
 
@@ -11,7 +12,7 @@ def display_header():
     print(figlet_format('Library Management System', 'straight'))
 
 
-def library_init() -> Library | bool:
+def library_init() -> Library:
     '''
     Initialize a Library instance and connect to the Google Sheet.
 
@@ -19,71 +20,52 @@ def library_init() -> Library | bool:
     '''
     print('Connecting to the Library Spreadsheet...')
     library = Library('library-management-system', 'creds.json')
-    isConnected = library.connect()
-    if not isConnected:
+    library.connect()
+    if not library.isConnected:
         print(f'{F.ERROR}Cannot connect to the Library Spreadsheet.{F.ENDC} Exiting...')
-        return False
+        exit()
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
         return library
 
 
-def display_main_menu() -> list[list[object]]:
+def run_main_menu():
     '''
     Displays the options available in the Library Main Menu
     using the tabulate library.
     :return: list of lists with options
     '''
-    print(F.HEADER + 'Library Main Menu' + F.ENDC)
-    headers = ['Code', 'Option']
-    options = [[1, 'Add Book'],
-               [2, 'Remove Book'],
-               [3, 'Check Out Book'],
-               [4, 'Return Book'],
-               [5, 'View Library Stock']]
+    menu_name = 'Library Main Menu'
+    options = ['Add Book',
+               'Remove Book',
+               'Check Out Book',
+               'Return Book',
+               'View Library Stock']
 
-    print(tabulate(options, headers=headers, tablefmt='outline'), '\n')
-
-    return options
-
-
-def get_user_selection(options, library: Library):
-    '''
-    Get user selection from the Main Menu and process it.
-    While the user enters an incorrect code or a code that's not an integer,
-    an error message will be displayed and the user will be prompted to try again.
-    If correct code is enetered, appropriated funtion will be called.
-
-    :param options: list of lists with options
-    :param library: Library instance
-    '''
-    while True:
-        print(F.BOLD + 'Select an option using code number(1-5)' + F.ENDC)
-        try:
-            code = int(input(F.ITALIC + 'Enter your choice:\n' + F.ENDC))
-        except ValueError as e:
-            print(f'''{F.ERROR}Incorrect code: '''
-                  f'''`{str(e).split("'")[1]}`.{F.ENDC} '''
-                  f'''Code must be an integer. Try again\n''')
-        else:
-            if code in range(1, 6):
-                # convert option to function name
-                func = '_'.join(options[code - 1][1].lower().split())
-                try:
-                    # try to call the function from library_manager by function name from options
-                    getattr(library_manager, func)(library)
-                    break
-                # catch exception if function name is not found in library_manager using getattr()
-                except AttributeError as e:
-                    print(
-                        f'''{F.ERROR}Cannot get access to `{str(e).split("'")[-2]}` '''
-                        f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}{F.ENDC} '''
-                        f'''Try again.\n''')
-            else:
-                print(f'{F.ERROR}Incorrect code: '
-                      f'`{code}`.{F.ENDC} Try again.\n')
+    try:
+        menu = Menu(menu_name, options)
+        menu.run()
+        selected = menu.get_selected()
+    except (ValidationError, ValueError) as e:
+        print(f'{F.ERROR}{e}{F.ENDC}')
+        raise SystemExit
+    else:
+        return selected
 
 
+def execute_function(library: Library, func_name: str):
+    try:
+        # try to execute the function from the library_manager module
+        getattr(library_manager, func_name)(library)
+    # catch exception if the function not found in library_manager using getattr()
+    except AttributeError as e:
+        print(
+            f'''{F.ERROR}Cannot get access to `{str(e).split("'")[-2]}` '''
+            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}.{F.ENDC}''')
+        exit()
+
+
+# TODO Add logging for errors
 def main():
     ''''
     Clear terminal screen, display text header;
@@ -94,11 +76,8 @@ def main():
     display_header()
 
     library = library_init()
-    if not library:
-        exit()
-
-    options = display_main_menu()
-    get_user_selection(options, library)  # type: ignore
+    selected = run_main_menu()
+    execute_function(library, selected)
 
 
 if __name__ == '__main__':

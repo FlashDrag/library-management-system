@@ -40,14 +40,14 @@ class Menu:
         )
         return table
 
-    def _display(self):
+    def display(self):
         '''
         Displays the menu name with table of options.
         '''
         print(F.HEADER + self.name + F.ENDC)
         print(self._render_table())
 
-    def _get_user_selection(self):
+    def get_user_input(self):
         '''
         Gets user input and validates it using `IntInRange` validator.
         If the input is valid, the option code is stored in `self.selected_code`.
@@ -72,12 +72,12 @@ class Menu:
                 continue
             else:
                 self.selected_code = user_selection.num
-                break
+                return self.selected_code
 
     def get_selected(self) -> str:
         '''
-        Convert the parsed selected option to function name
-        :return: converted function name
+        Convert the selected option to lowercase and replace spaces with underscores.
+        :return: option name string
         '''
         if self.selected_code is None:
             raise ValueError(
@@ -91,29 +91,36 @@ class Menu:
                 F.ERROR + 'No option selected in the menu.' + F.ENDC
             )
         # prepare selected option for function name
-        func_name = '_'.join(selected_option.lower().split())
-        return func_name
+        option_name = '_'.join(selected_option.lower().split())
+        return option_name
 
     def run(self):
-        self._display()
-        self._get_user_selection()
+        '''
+        Displays the menu and gets user input.
+        '''
+        self.display()
+        self.get_user_input()
 
 
 # For testing purposes
 # The below code will be executed only if this module is run as a script
 if __name__ == '__main__':
 
+    name = 'Library Main Menu'
     options = ['Add Book',
                'Remove Book',
                'Check Out Book',
                'Return Book',
                'View Library Stock']
+    table_format = Table_Formats.double_grid
 
     try:
-        menu = Menu('Library Main Menu', options)
+        menu = Menu(name, options, table_format)
         menu.run()
-    except (ValidationError, ValueError) as e:
-        print(f'{F.ERROR}{e}{F.ENDC}')
-        raise SystemExit
+    except (ValidationError, ValueError):
+        # TODO add logging: logger.error(e)
+        print(f'{F.ERROR}Error. Refresh the page and try again{F.ENDC}')
+        exit()
     else:
+        print(f'Selected option code: {menu.selected_code}')
         print(f'Selected option: {menu.get_selected()}')

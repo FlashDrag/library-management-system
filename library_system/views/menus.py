@@ -2,7 +2,7 @@ from tabulate import tabulate
 
 from .tools import font as F
 from pydantic import ValidationError
-from .validators import IntInRange, UniqueStringsList, NonEmptyStr
+from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr
 
 
 class Menu:

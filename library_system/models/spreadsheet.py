@@ -2,7 +2,7 @@ import gspread as gs
 from google.oauth2.service_account import Credentials
 from google.auth.exceptions import GoogleAuthError
 
-from app.config import SCOPE, SHEET_NAME, CREDS_PATH
+from library_system.config import SCOPE, SHEET_NAME, CREDS_PATH
 
 
 class Library:

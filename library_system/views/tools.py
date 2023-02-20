@@ -1,6 +1,11 @@
 import os
 
 
+def clear_terminal():
+    '''Clear terminal screen'''
+    os.system('cls' if os.name == 'nt' else "printf '\033c'")
+
+
 class font:
     BOLD = '\033[1m'
     ITALIC = '\033[3m'
@@ -13,8 +18,3 @@ class font:
     CYAN = '\033[96m'
     GREY = '\033[90m'
     ENDC = '\033[0m'
-
-
-def clear_terminal():
-    '''Clear terminal screen'''
-    os.system('cls' if os.name == 'nt' else "printf '\033c'")

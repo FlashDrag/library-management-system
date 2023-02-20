@@ -1,11 +1,11 @@
 from pyfiglet import figlet_format
 from pydantic import ValidationError
 
-from app.services.tools import font as F, clear_terminal
+from library_system.views.tools import font as F, clear_terminal
 
-from app.services.spreadsheet import Library
-from app.services.menus import Menu
-from app import library_manager
+from library_system.models.spreadsheet import Library
+from library_system.views.menus import Menu
+from library_system import library_manager
 
 
 def display_header():
@@ -59,13 +59,13 @@ def execute_function(library: Library, func_name: str):
         getattr(library_manager, func_name)(library)
     # catch exception if the function not found in library_manager using getattr()
     except AttributeError as e:
+        # TODO Add logging for errors
         print(
             f'''{F.ERROR}Cannot get access to `{str(e).split("'")[-2]}` '''
-            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}.{F.ENDC}''')
+            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}.{F.ENDC}. Exiting...''')
         exit()
 
 
-# TODO Add logging for errors
 def main():
     ''''
     Clear terminal screen, display text header;

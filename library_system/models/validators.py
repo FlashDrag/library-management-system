@@ -1,5 +1,6 @@
+from datetime import datetime
 from pydantic import BaseModel, validator, conlist, constr
-from ..views.tools import Table_Formats
+from ..views.tools import InputPrompts
 
 
 class NonEmptyStr(BaseModel):
@@ -58,5 +59,68 @@ class IntInRange(BaseModel):
         return num
 
 
-class TableInput(BaseModel):
-    t_format: Table_Formats
+class UserInput(BaseModel):
+    isbn: str
+    title: str
+    author: str
+    genre: str
+    year: int
+    copies: int
+
+    @validator('isbn')
+    def validate_isbn(cls, isbn):
+        '''
+        Removes dashes and checks if it's lenght 13 digits.
+        '''
+        isbn = isbn.replace('-', '')
+        if len(isbn) != 13:
+            raise ValueError('Incorrect ISBN. Must be 13 digits')
+        return isbn
+
+    @validator('year')
+    def validate_year(cls, year):
+        '''
+        Checks if input year in the range 0 - current year.
+        '''
+        cls.validate_int(year)
+        if year < 0 or year > datetime.now().year:
+            raise ValueError('Incorrect year')
+
+    @validator('copies')
+    def validate_copies(cls, copies):
+        '''
+        Checks if input copies in the range 0 - 100.
+        '''
+        cls.validate_int(copies)
+        if copies < 0 or copies > 100:
+            raise ValueError('Incorrect number of copies')
+        return copies
+
+    @classmethod
+    def validate_int(cls, value):
+        '''
+        Checks if input value is integer.
+        '''
+        try:
+            int(value)
+        except ValueError:
+            raise ValueError('Must be integer')
+
+    @classmethod
+    def validate_empty(cls, value):
+        '''
+        Checks if input value is not empty.
+        '''
+        if not value.strip():
+            raise ValueError('Cannot be empty')
+        return value
+
+    @classmethod
+    def validate_input(cls, promt: InputPrompts, user_input: str):
+        cls.validate_empty(user_input)
+
+        promt_name = promt.name.lower()
+        # execute existed validator method based on prompt name
+        if promt_name in ['isbn', 'year', 'copies']:
+            validator_method = getattr(cls, f'validate_{promt.name.lower()}')
+            validator_method(user_input)

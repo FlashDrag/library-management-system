@@ -61,3 +61,18 @@ class Table_Formats(Enum):
     latex_longtable = 'latex_longtable'
     textile = 'textile'
     tsv = 'tsv'
+
+
+class InputPrompts(Enum):
+    '''
+    Prompts for user input
+    '''
+    isbn = 'ISBN'
+    title = 'Title'
+    author = 'Author'
+    genre = 'Genre'
+    year = 'Year'
+    copies = 'Copies'
+
+    def __str__(self):
+        return f'Enter {self.value} of the Book:'

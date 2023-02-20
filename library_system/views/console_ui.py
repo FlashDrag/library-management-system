@@ -1,8 +1,8 @@
 from tabulate import tabulate
 
-from .tools import font as F, Table_Formats
+from .tools import font as F, Table_Formats, InputPrompts
 from pydantic import ValidationError
-from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, TableInput
+from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, UserInput
 
 
 class Menu:
@@ -22,8 +22,8 @@ class Menu:
         # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
         self.name: str = NonEmptyStr(str_value=name).str_value
         self.options: UniqueStringsList = UniqueStringsList(lst=options)
-        # Validates the table format using `TableInput` validator and gets the value from `Table_Formats` enum.
-        self.table_format: Table_Formats = TableInput(t_format=table_format).t_format
+        # gets the value from `Table_Formats` enum.
+        self.table_format: str = table_format.value
 
         self.selected_code: int | None = None
 
@@ -36,7 +36,7 @@ class Menu:
         numbered_options = self.options.to_dict()
         table = tabulate(
             numbered_options.items(),
-            headers=['Code', 'Option'], tablefmt=self.table_format.value
+            headers=['Code', 'Option'], tablefmt=self.table_format
         )
         return table
 
@@ -100,6 +100,25 @@ class Menu:
         '''
         self.display()
         self.get_user_input()
+
+
+class BookFields():
+
+    @staticmethod
+    def get_input(prompt: InputPrompts):
+        while True:
+            try:
+                user_input = input(f'{F.ITALIC}{str(prompt)}{F.ENDC}\n')
+                UserInput.validate_input(prompt, user_input)
+            except ValueError as e:
+                print(e, 'Try again.\n')
+                continue
+            except AttributeError:
+                # TODO: add logging
+                pass
+            else:
+                break
+        return user_input
 
 
 # For testing purposes

@@ -1,10 +1,10 @@
 from pyfiglet import figlet_format
 from pydantic import ValidationError
 
-from library_system.views.tools import font as F, clear_terminal, Table_Formats
+from library_system.views.tools import font as F, clear_terminal
 
 from library_system.models.spreadsheet import Library
-from library_system.views.menus import Menu
+from library_system.views.console_ui import Menu
 from library_system import library_manager
 
 

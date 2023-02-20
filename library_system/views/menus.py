@@ -1,26 +1,29 @@
 from tabulate import tabulate
 
-from .tools import font as F
+from .tools import font as F, Table_Formats
 from pydantic import ValidationError
-from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr
+from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, TableInput
 
 
 class Menu:
     '''
     Displays menu with numbered options.
     Gets user input and validates it.
+
+    :param name: menu name
+    :param options: list of menu options
+    :param table_format: table output format from Table_Formats enum
     '''
-    def __init__(self, name: str, options: list[str], table_format: str = 'outline'):
-        '''
-        Initialize the Menu instance.
-        Validates the menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
-        :param name: menu name
-        :param options: list of menu options
-        :param table_format: table output format for `tabulate` library
-        '''
+
+    def __init__(self,
+                 name: str,
+                 options: list[str],
+                 table_format: Table_Formats = Table_Formats.outline):
+        # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
         self.name: str = NonEmptyStr(str_value=name).str_value
-        self.options = UniqueStringsList(lst=options)
-        self.table_format = table_format
+        self.options: UniqueStringsList = UniqueStringsList(lst=options)
+        # Validates the table format using `TableInput` validator and gets the value from `Table_Formats` enum.
+        self.table_format: Table_Formats = TableInput(t_format=table_format).t_format
 
         self.selected_code: int | None = None
 
@@ -33,7 +36,7 @@ class Menu:
         numbered_options = self.options.to_dict()
         table = tabulate(
             numbered_options.items(),
-            headers=['Code', 'Option'], tablefmt=self.table_format
+            headers=['Code', 'Option'], tablefmt=self.table_format.value
         )
         return table
 
@@ -58,7 +61,9 @@ class Menu:
                     num=int(input(F.ITALIC + 'Enter option code:\n' + F.ENDC))
                 )
             except ValidationError as e:
-                print(f'{F.ERROR}{e.errors()[0].get("msg", "Error")}. Try again{F.ENDC}\n')
+                print(
+                    f'{F.ERROR}{e.errors()[0].get("msg", "Error")}. Try again{F.ENDC}\n'
+                )
                 continue
             except ValueError as e:
                 print(f'''{F.ERROR}Incorrect code: '''
@@ -75,12 +80,16 @@ class Menu:
         :return: converted function name
         '''
         if self.selected_code is None:
-            raise ValueError(F.ERROR + 'No option selected in the menu.' + F.ENDC)
+            raise ValueError(
+                F.ERROR + 'No option selected in the menu.' + F.ENDC
+            )
         # Get selected option from dictionary of `UniqueStringsList` instance
         selected_option = self.options.to_dict().get(self.selected_code, None)
 
         if selected_option is None:
-            raise ValueError(F.ERROR + 'No option selected in the menu.' + F.ENDC)
+            raise ValueError(
+                F.ERROR + 'No option selected in the menu.' + F.ENDC
+            )
         # prepare selected option for function name
         func_name = '_'.join(selected_option.lower().split())
         return func_name

@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator, conlist, constr
+from ..views.tools import Table_Formats
 
 
 class NonEmptyStr(BaseModel):
@@ -55,3 +56,7 @@ class IntInRange(BaseModel):
             raise ValueError(
                 f'Code must be in range 1-{values["num_range"]}')
         return num
+
+
+class TableInput(BaseModel):
+    t_format: Table_Formats

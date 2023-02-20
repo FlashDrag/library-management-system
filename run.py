@@ -1,7 +1,7 @@
 from pyfiglet import figlet_format
 from pydantic import ValidationError
 
-from library_system.views.tools import font as F, clear_terminal
+from library_system.views.tools import font as F, clear_terminal, Table_Formats
 
 from library_system.models.spreadsheet import Library
 from library_system.views.menus import Menu
@@ -54,6 +54,11 @@ def run_main_menu():
 
 
 def execute_function(library: Library, func_name: str):
+    '''
+    Execute the function using the function name based on the user selection.
+    :param library: Library instance
+    :param func_name: function name
+    '''
     try:
         # try to execute the function from the library_manager module
         getattr(library_manager, func_name)(library)

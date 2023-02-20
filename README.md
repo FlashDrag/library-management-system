@@ -1,8 +1,8 @@
 # Library Management System
 
-[Live link](#)
+[App link](https://library-management-system.herokuapp.com/)
 
-[SpreadSheet](#)
+[SpreadSheet](https://docs.google.com/spreadsheets/d/1guVUVRVMsu2nebKllN6_58nDraMnEftIoTaRtlUnRME/edit?usp=sharing)
 
 This is a python script that uses the gspread library to access a Google Spreadsheet and perform operations on it.
 

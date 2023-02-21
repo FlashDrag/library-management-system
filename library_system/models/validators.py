@@ -1,7 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, validator, conlist, constr
-from ..views.tools import BookFields
-
+from re import sub
 
 class NonEmptyStr(BaseModel):
     '''
@@ -64,17 +63,45 @@ class Book(BaseModel):
     title: str
     author: str
     genre: str
-    year: int
-    copies: int
+    year: str | int
+    copies: str | int
+
+    @validator('*', pre=True)
+    def validate_empty(cls, value, field):
+        '''
+        Pre validator for all fields.
+        Checks if input value is not empty.
+        '''
+        tested_value = value.strip() if isinstance(value, str) else value
+        if not tested_value:
+            raise ValueError(f'{field.name.capitalize()} field cannot be empty.')
+        return value
+
+    @validator('year', 'copies')
+    def validate_int(cls, value, field):
+        '''
+        Checks if input value is integer.
+        '''
+        if type(value) == int:
+            return value
+
+        try:
+            int(value)
+        except ValueError:
+            print(value)
+            raise ValueError(f'{field.name.capitalize()} field must be an integer.')
+        return int(value)
 
     @validator('isbn')
     def validate_isbn(cls, isbn):
         '''
-        Removes dashes and checks if it's lenght 13 digits.
+        Removes dashes and underscores from ISBN.
+        Checks if it's lenght 13 digits and contains only digits.
         '''
-        isbn = isbn.replace('-', '')
-        if len(isbn) != 13:
-            raise ValueError('Incorrect ISBN. Must be 13 digits')
+        # re.sub replaces  '-' and '_' with ''
+        isbn = sub(r'[-_]', '', isbn)
+        if len(isbn) != 13 or not isbn.isdigit():
+            raise ValueError('Incorrect ISBN. Must be 13 digits.')
         return isbn
 
     @validator('year')
@@ -82,45 +109,29 @@ class Book(BaseModel):
         '''
         Checks if input year in the range 0 - current year.
         '''
-        cls.validate_int(year)
         if year < 0 or year > datetime.now().year:
             raise ValueError('Incorrect year')
+        return year
 
     @validator('copies')
     def validate_copies(cls, copies):
         '''
-        Checks if input copies in the range 0 - 100.
+        Checks if input copies in the range 0 - 10.
         '''
-        cls.validate_int(copies)
-        if copies < 0 or copies > 100:
-            raise ValueError('Incorrect number of copies')
+        if copies < 0 or copies > 10:
+            raise ValueError('Incorrect number of copies. Must be in range 0-10.')
         return copies
 
-    @classmethod
-    def validate_int(cls, value):
-        '''
-        Checks if input value is integer.
-        '''
-        try:
-            int(value)
-        except ValueError:
-            raise ValueError('Must be integer')
 
-    @classmethod
-    def validate_empty(cls, value):
-        '''
-        Checks if input value is not empty.
-        '''
-        if not value.strip():
-            raise ValueError('Cannot be empty')
-        return value
-
-    @classmethod
-    def validate_input(cls, field: BookFields, user_input: str):
-        cls.validate_empty(user_input)
-
-        field_name = field.name.lower()
-        # execute existed validator method based on field name
-        if field_name in ['isbn', 'year', 'copies']:
-            validator_method = getattr(cls, f'validate_{field.name.lower()}')
-            validator_method(user_input)
+# For testing purposes
+# The below code will be executed only if this module is run as a script
+if __name__ == '__main__':
+    book = Book(
+        isbn='978-034-52-9-60-61',
+        title='The Lord of the Rings',
+        author='J.R.R. Tolkien',
+        genre='Fantasy',
+        year=1954,
+        copies='4'
+    )
+    print(book.dict())

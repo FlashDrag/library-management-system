@@ -18,7 +18,7 @@ class Menu:
     def __init__(self,
                  name: str,
                  options: list[str],
-                 table_format: Table_Formats = Table_Formats.outline):
+                 table_format: Table_Formats = Table_Formats.simple):
         # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
         self.name: str = NonEmptyStr(str_value=name).str_value
         self.options: UniqueStringsList = UniqueStringsList(lst=options)
@@ -74,10 +74,10 @@ class Menu:
                 self.selected_code = user_selection.num
                 return self.selected_code
 
-    def get_selected(self) -> str:
+    def get_selected_option(self) -> str:
         '''
         Convert the selected option to lowercase and replace spaces with underscores.
-        :return: option name string
+        :return: option name string in format: `option_name` (e.g. `add_book`, `by_title`)
         '''
         if self.selected_code is None:
             raise ValueError(
@@ -139,4 +139,4 @@ if __name__ == '__main__':
         exit()
     else:
         print(f'Selected option code: {menu.selected_code}')
-        print(f'Selected option: {menu.get_selected()}')
+        print(f'Selected option: {menu.get_selected_option()}')

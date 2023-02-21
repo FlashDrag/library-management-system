@@ -102,20 +102,27 @@ class Menu:
         self.get_user_input()
 
 
-def get_input(field: BookFields):
+def get_book_input(book: Book, field: BookFields) -> Book:
+    '''
+    Gets user input for specific field,
+    assigns it to the Book instance and validates it with pydantic.
+    :param book: Book instance
+    :param field: BookFields enum
+    :return: Book instance containing validated book field
+    '''
     while True:
         try:
             user_input = input(f'{F.ITALIC}{str(field)}{F.ENDC}\n')
-            Book.validate_input(field, user_input)
-        except ValueError as e:
-            print(e, 'Try again.\n')
-            continue
-        except AttributeError:
+            # pass user input to the Book instance field based on field name
+            setattr(book, field.name, user_input)
+        except ValidationError as e:
+            print(e.errors()[0]['msg'], 'Try again.\n')
+        except ValueError:
             # TODO: add logging
-            pass
+            print('Something went wrong. Restart the program. Exiting...\n')
+            exit()
         else:
-            break
-    return user_input
+            return book
 
 
 '''
@@ -128,6 +135,7 @@ sys.path.append('/absolute_path/to/app')
 The below code will be executed only if this module is run as a script
 '''
 if __name__ == '__main__':
+    # ------------------ Menu ------------------
     name = 'Library Main Menu'
     options = ['Add Book',
                'Remove Book',
@@ -146,3 +154,12 @@ if __name__ == '__main__':
     else:
         print(f'Selected option code: {menu.selected_code}')
         print(f'Selected option: {menu.get_selected_option()}')
+        print()
+
+    # ------------------ get_book_input ------------------
+    book = Book()
+    field = BookFields.title
+    book = get_book_input(book, field)
+    print(book.dict())
+    print(book.dict()[field.name])
+    print(getattr(book, field.name))

@@ -1,8 +1,8 @@
 from tabulate import tabulate
 
-from .tools import font as F, Table_Formats, InputPrompts
+from .tools import font as F, Table_Formats, BookFields
 from pydantic import ValidationError
-from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, UserInput
+from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, Book
 
 
 class Menu:
@@ -102,23 +102,20 @@ class Menu:
         self.get_user_input()
 
 
-class BookFields():
-
-    @staticmethod
-    def get_input(prompt: InputPrompts):
-        while True:
-            try:
-                user_input = input(f'{F.ITALIC}{str(prompt)}{F.ENDC}\n')
-                UserInput.validate_input(prompt, user_input)
-            except ValueError as e:
-                print(e, 'Try again.\n')
-                continue
-            except AttributeError:
-                # TODO: add logging
-                pass
-            else:
-                break
-        return user_input
+def get_input(field: BookFields):
+    while True:
+        try:
+            user_input = input(f'{F.ITALIC}{str(field)}{F.ENDC}\n')
+            Book.validate_input(field, user_input)
+        except ValueError as e:
+            print(e, 'Try again.\n')
+            continue
+        except AttributeError:
+            # TODO: add logging
+            pass
+        else:
+            break
+    return user_input
 
 
 # For testing purposes

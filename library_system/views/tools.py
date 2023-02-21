@@ -63,9 +63,9 @@ class Table_Formats(Enum):
     tsv = 'tsv'
 
 
-class InputPrompts(Enum):
+class BookFields(Enum):
     '''
-    Prompts for user input
+    Book fields for `Book` model
     '''
     isbn = 'ISBN'
     title = 'Title'

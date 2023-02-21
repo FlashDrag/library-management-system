@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, validator, conlist, constr
-from ..views.tools import InputPrompts
+from ..views.tools import BookFields
 
 
 class NonEmptyStr(BaseModel):
@@ -59,7 +59,7 @@ class IntInRange(BaseModel):
         return num
 
 
-class UserInput(BaseModel):
+class Book(BaseModel):
     isbn: str
     title: str
     author: str
@@ -116,11 +116,11 @@ class UserInput(BaseModel):
         return value
 
     @classmethod
-    def validate_input(cls, promt: InputPrompts, user_input: str):
+    def validate_input(cls, field: BookFields, user_input: str):
         cls.validate_empty(user_input)
 
-        promt_name = promt.name.lower()
-        # execute existed validator method based on prompt name
-        if promt_name in ['isbn', 'year', 'copies']:
-            validator_method = getattr(cls, f'validate_{promt.name.lower()}')
+        field_name = field.name.lower()
+        # execute existed validator method based on field name
+        if field_name in ['isbn', 'year', 'copies']:
+            validator_method = getattr(cls, f'validate_{field.name.lower()}')
             validator_method(user_input)

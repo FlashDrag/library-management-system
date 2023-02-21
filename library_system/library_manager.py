@@ -1,5 +1,5 @@
-from library_system.views.tools import font as F, clear_terminal, InputPrompts
-from library_system.views.console_ui import BookFields
+from library_system.views.tools import font as F, clear_terminal, BookFields
+from library_system.views.console_ui import get_input
 from library_system.models.spreadsheet import Library
 
 
@@ -7,7 +7,7 @@ def add_book(library: Library):
     clear_terminal()
     print(f'{F.HEADER}ADDING BOOKS{F.ENDC}\n')
 
-    title = BookFields.get_input(InputPrompts.title)
+    title = get_input(BookFields.title)
     print(title)
 
     # TODO: add book to the library stock

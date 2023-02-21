@@ -1,8 +1,8 @@
 from tabulate import tabulate
 
-from .tools import font as F, Table_Formats, BookFields
+from library_system.views.tools import font as F, Table_Formats, BookFields
 from pydantic import ValidationError
-from ..models.validators import IntInRange, UniqueStringsList, NonEmptyStr, Book
+from library_system.models.validators import IntInRange, UniqueStringsList, NonEmptyStr, Book
 
 
 class Menu:
@@ -118,10 +118,16 @@ def get_input(field: BookFields):
     return user_input
 
 
-# For testing purposes
-# The below code will be executed only if this module is run as a script
-if __name__ == '__main__':
+'''
+For testing purposes
 
+Add the sys import to the top of the file if you want to run this module as a script:
+import sys
+sys.path.append('/absolute_path/to/app')
+
+The below code will be executed only if this module is run as a script
+'''
+if __name__ == '__main__':
     name = 'Library Main Menu'
     options = ['Add Book',
                'Remove Book',

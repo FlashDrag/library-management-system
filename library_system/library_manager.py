@@ -1,14 +1,29 @@
-from library_system.views.tools import font as F, clear_terminal, BookFields
-from library_system.views.console_ui import get_input
+from library_system.views.tools import font as F, clear_terminal, Table_Formats, BookFields
+from library_system.views.console_ui import Menu, get_book_input
 from library_system.models.spreadsheet import Library
+from library_system.models.validators import Book
 
 
 def add_book(library: Library):
     clear_terminal()
     print(f'{F.HEADER}ADDING BOOKS{F.ENDC}\n')
 
-    title = get_input(BookFields.title)
-    print(title)
+    menu = Menu(
+        'How to add a book to the library stock?',
+        ['By ISBN', 'By title', 'By author'],
+        Table_Formats.rounded_outline
+    )
+    menu.run()
+    # get the selected option from the menu and split it to get the user method name (e.g. `by_isbn` -> `isbn`)
+    selected = menu.get_selected_option().split('_')[1]
+
+    book = Book()
+    # get the BookFields attribute based on the user selection
+    book_field = getattr(BookFields, selected)
+    # get the user input based on the selected BookFields attribute and assign it to the new book
+    book = get_book_input(book, book_field)
+    print(getattr(book, book_field.name))
+    print(book.dict().get(book_field.name, None))
 
     # TODO: add book to the library stock
     """

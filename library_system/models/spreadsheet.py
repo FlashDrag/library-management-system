@@ -1,8 +1,12 @@
+import logging
 import gspread as gs
 from google.oauth2.service_account import Credentials
 from google.auth.exceptions import GoogleAuthError
 
 from library_system.config import SCOPE, SHEET_NAME, CREDS_PATH
+
+
+logger = logging.getLogger(__name__)
 
 
 class Library:
@@ -41,14 +45,14 @@ class Library:
             self.stock = self._set_worksheet('stock')
             self.isConnected = True
         except FileNotFoundError:
-            print(f'Credentials file not found at {self._creds_path}.')
+            logger.error(f'Credentials file not found at {self._creds_path}.')
         except GoogleAuthError:
-            print('GoogleAuthError: Check your credentials or try again later.')
+            logger.error('GoogleAuthError: Check your credentials or try again later.')
         except gs.exceptions.SpreadsheetNotFound:
-            print(f'Spreadsheet {self._sheet_name} not found!')
+            logger.error(f'Spreadsheet {self._sheet_name} not found!')
         except Exception as e:
             # catch-all Exception block is still included to handle any unexpected errors that may occur
-            print(f"An unexpected error occurred: {e}")
+            logger.error(f"An unexpected error occurred: {e}")
 
     def _set_worksheet(self, worksheet_title: str, rows: int = 100, cols: int = 20) -> gs.Worksheet:
         '''
@@ -62,8 +66,8 @@ class Library:
         :return: worksheet
 
         '''
-        assert isinstance(self._SHEET, gs.Spreadsheet)
-        # assert self._SHEET is not None, 'Spreadsheet is not connected.'
+        if self._SHEET is None:
+            raise Exception('Spreadsheet is not connected.')
         titles = list(map(lambda sheet: sheet.title, self._SHEET.worksheets()))
         if worksheet_title not in titles:
             worksheet = self._SHEET.add_worksheet(

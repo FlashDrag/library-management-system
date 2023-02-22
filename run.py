@@ -1,3 +1,6 @@
+import logging
+from library_system.config import LOGTAIL_TOKEN
+
 from pyfiglet import figlet_format
 from pydantic import ValidationError
 
@@ -6,6 +9,20 @@ from library_system.views.tools import font as F, clear_terminal, Table_Formats
 from library_system.models.spreadsheet import Library
 from library_system.views.console_ui import Menu
 from library_system import library_manager
+
+from logtail import LogtailHandler
+
+handler = LogtailHandler(source_token=LOGTAIL_TOKEN)
+
+# set up logging with basicConfig
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - [%(filename)s -> %(funcName)s() -> %(lineno)s]: %(message)s",
+    datefmt="%d-%b-%y %H:%M",
+    handlers=[handler]
+)
+logger = logging.getLogger(__name__)
+logger.info('Starting the App...')
 
 
 def display_header():
@@ -22,7 +39,8 @@ def library_init() -> Library:
     library = Library('library-management-system', 'creds.json')
     library.connect()
     if not library.isConnected:
-        print(f'{F.ERROR}Cannot connect to the Library Spreadsheet.{F.ENDC} Exiting...')
+        print(f'{F.ERROR}Cannot connect to the Library Spreadsheet. Restart the App or try again later.{F.ENDC}\n'
+              f'Exiting...')
         exit()
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
@@ -47,9 +65,9 @@ def run_main_menu():
         menu = Menu(menu_name, options, table_format)
         menu.run()
         selected = menu.get_selected_option()
-    except (ValidationError, ValueError):
-        # TODO add logging for handling errors
-        print(f'{F.ERROR}Something went wrong. Refresh the page and try again{F.ENDC}')
+    except (ValidationError, ValueError) as e:
+        logging.error(e)
+        print(f'{F.ERROR}Something went wrong. Restart the App or try again later.{F.ENDC}\nExiting...')
         exit()
     else:
         return selected
@@ -66,10 +84,11 @@ def execute_function(library: Library, func_name: str):
         getattr(library_manager, func_name)(library)
     # catch exception if the function not found in library_manager using getattr()
     except AttributeError as e:
-        # TODO Add logging for errors
-        print(
-            f'''{F.ERROR}Cannot get access to `{str(e).split("'")[-2]}` '''
-            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}.{F.ENDC} Exiting...''')
+        logger.error(
+            f'''Cannot get access to `{str(e).split("'")[-2]}` '''
+            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}'''
+        )
+        print(f'{F.ERROR}Something went wrong. Restart the App or try again later.{F.ENDC}\nExiting...')
         exit()
 
 

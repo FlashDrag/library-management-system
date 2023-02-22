@@ -7,7 +7,9 @@ google-auth==2.16.0
 google-auth-oauthlib==1.0.0
 gspread==5.7.2
 idna==3.4
+logtail-python==0.1.4
 mccabe==0.7.0
+msgpack==1.0.4
 mypy==1.0.0
 mypy-extensions==1.0.0
 oauthlib==3.2.2

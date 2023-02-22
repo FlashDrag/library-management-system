@@ -1,3 +1,4 @@
+import logging
 from tabulate import tabulate
 
 from library_system.views.tools import font as F, Table_Formats, BookFields
@@ -5,7 +6,11 @@ from pydantic import ValidationError
 from library_system.models.validators import IntInRange, UniqueStringsList, NonEmptyStr, Book
 
 
+logger = logging.getLogger(__name__)
+
+
 class Menu:
+
     '''
     Displays menu with numbered options.
     Gets user input and validates it.
@@ -117,9 +122,9 @@ def get_book_input(book: Book, field: BookFields) -> Book:
             setattr(book, field.name, user_input)
         except ValidationError as e:
             print(e.errors()[0]['msg'], 'Try again.\n')
-        except ValueError:
-            # TODO: add logging
-            print('Something went wrong. Restart the program. Exiting...\n')
+        except ValueError as e:
+            logging.error(e)
+            print('Something went wrong. Restart the App. Exiting...\n')
             exit()
         else:
             return book
@@ -147,8 +152,8 @@ if __name__ == '__main__':
     try:
         menu = Menu(name, options, table_format)
         menu.run()
-    except (ValidationError, ValueError):
-        # TODO add logging: logger.error(e)
+    except (ValidationError, ValueError) as e:
+        logger.error(e)
         print(f'{F.ERROR}Error. Refresh the page and try again{F.ENDC}')
         exit()
     else:

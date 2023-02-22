@@ -11,3 +11,4 @@ mypy.ini
 mypy_cache/
 example.py
 test.py
+.env

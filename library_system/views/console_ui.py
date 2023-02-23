@@ -1,12 +1,56 @@
 import logging
+from enum import Enum
 from tabulate import tabulate
 
-from library_system.views.tools import font as F, Table_Formats, BookFields
 from pydantic import ValidationError
-from library_system.models.validators import IntInRange, UniqueStringsList, NonEmptyStr, Book
+from library_system.models.book import Book, BookFields
+from library_system.models.validators import IntInRange, UniqueStringsList, NonEmptyStr
 
+from library_system.views.formatters import font as F
 
 logger = logging.getLogger(__name__)
+
+
+class Table_Formats(Enum):
+    '''
+    Supported table formats for `tabulate` library
+    '''
+    plain = "plain"
+    simple = "simple"
+    gihub = "github"
+    grid = 'grid'
+    simple_grid = 'simple_grid'
+    rounded_grid = 'rounded_grid'
+    heavy_grid = 'heavy_grid'
+    mixed_grid = 'mixed_grid'
+    double_grid = 'double_grid'
+    fancy_grid = 'fancy_grid'
+    outline = 'outline'
+    simple_outline = 'simple_outline'
+    rounded_outline = 'rounded_outline'
+    heavy_outline = 'heavy_outline'
+    mixed_outline = 'mixed_outline'
+    double_outline = 'double_outline'
+    fancy_outline = 'fancy_outline'
+    pipe = 'pipe'
+    orgtbl = 'orgtbl'
+    asciidoc = 'asciidoc'
+    jira = 'jira'
+    presto = 'presto'
+    pretty = 'pretty'
+    psql = 'psql'
+    rst = 'rst'
+    mediawiki = 'mediawiki'
+    moinmoin = 'moinmoin'
+    youtrack = 'youtrack'
+    html = 'html'
+    unsafehtml = 'unsafehtml'
+    latex = 'latex'
+    latex_raw = 'latex_raw'
+    latex_booktabs = 'latex_booktabs'
+    latex_longtable = 'latex_longtable'
+    textile = 'textile'
+    tsv = 'tsv'
 
 
 class Menu:

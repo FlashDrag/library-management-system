@@ -1,7 +1,7 @@
-from library_system.views.tools import font as F, clear_terminal, Table_Formats, BookFields
-from library_system.views.console_ui import Menu, get_book_input
+from library_system.views.formatters import font as F, clear_terminal
+from library_system.views.console_ui import Menu, Table_Formats, get_book_input
 from library_system.models.spreadsheet import Library
-from library_system.models.validators import Book
+from library_system.models.book import Book, BookFields
 
 
 def add_book(library: Library):
@@ -22,8 +22,10 @@ def add_book(library: Library):
     book_field = getattr(BookFields, selected)
     # get the user input based on the selected BookFields attribute and assign it to the new book
     book = get_book_input(book, book_field)
+    print(book_field.name)
     print(getattr(book, book_field.name))
-    print(book.dict().get(book_field.name, None))
+
+    library.search_book(book, book_field, 'stock')
 
     # TODO: add book to the library stock
     """

@@ -1,12 +1,12 @@
 import logging
+
 import gspread as gs
 from google.oauth2.service_account import Credentials
 from google.auth.exceptions import GoogleAuthError
 
 from library_system.config import SCOPE, SHEET_NAME, CREDS_PATH, WORKSHEETS
 
-from library_system.views.tools import BookFields
-
+from library_system.models.book import Book, BookFields
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class Library:
         - dict key: title of the worksheet
         - values:
             * `headers`: list of headers for the worksheet
-            * `wsheet`: None | Worksheet instance
+            * `wsheet_obj`: None | Worksheet instance
         Creates 'Worksheet' instances for each Google Worksheet and adds them to the `worksheets` list:
         -
         '''
@@ -86,8 +86,30 @@ class Library:
             # add code that updates headers
             # update the first row with the headers
             worksheet.update('A1', [headers])
-            self.worksheets[worksheet_title]['wsheet'] = worksheet
+            self.worksheets[worksheet_title]['wsheet_obj'] = worksheet
 
+    def search_book(self, book: Book, book_field: BookFields, worksheet_title: str) -> list[dict]:
+        '''
+        Search for a book in the `stock` worksheet by the specified `book_field`
+        and `value`.
+
+        :param `book_field`: The field to search by.
+        :param `value`: The value to search for.
+        :return: A list of dictionaries containing the book details.
+        '''
+        worksheet = self.worksheets[worksheet_title]['wsheet_obj']
+        if worksheet is None:
+            raise gs.exceptions.WorksheetNotFound(
+                'Worksheet "stock" not found.'
+            )
+    # TODO: search algorithm
+    """
+    1. Get column of specific header
+    2. Get indexes of each finded value
+    3. Ask user to show all finded rows
+    if yes:
+    4. Get all full rows by them indexes
+    """
 
 if __name__ == '__main__':
     library = Library(SHEET_NAME, WORKSHEETS, CREDS_PATH)
@@ -98,6 +120,6 @@ if __name__ == '__main__':
         print('Succesfully connected.')
     for worksheet in library.worksheets:
         print(worksheet)
-        wsheet: gs.Worksheet = library.worksheets[worksheet]['wsheet']
-        print(wsheet.get_values())
+        wsheet_obj: gs.Worksheet = library.worksheets[worksheet]['wsheet_obj']
+        print(wsheet_obj.get_values())
         print()

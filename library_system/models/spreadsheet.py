@@ -4,8 +4,7 @@ import gspread as gs
 from google.oauth2.service_account import Credentials
 from google.auth.exceptions import GoogleAuthError
 
-from library_system.config import SCOPE, SHEET_NAME, CREDS_PATH, WORKSHEETS
-
+from library_system.config import SCOPE, WorksheetSet
 from library_system.models.book import Book, BookFields
 
 logger = logging.getLogger(__name__)
@@ -23,7 +22,7 @@ class Library:
     :param `isConnected`: indicates if the Library is connected to the Google Sheet.
     '''
 
-    def __init__(self, sheet_name: str, worksheets: dict[str, dict], creds_path: str) -> None:
+    def __init__(self, sheet_name: str, worksheets: list[WorksheetSet], creds_path: str) -> None:
         self._sheet_name = sheet_name
         self.worksheets = worksheets
         self._creds_path = creds_path
@@ -53,42 +52,45 @@ class Library:
                 'GoogleAuthError: Check your credentials or try again later.')
         except gs.exceptions.SpreadsheetNotFound:
             logger.error(f'Spreadsheet {self._sheet_name} not found!')
+        except gs.exceptions.GSpreadException as e:
+            logger.error(e)
         except Exception as e:
             # catch-all Exception block is still included to handle any unexpected errors that may occur
             logger.error(f"An unexpected error occurred: {e}")
 
     def _set_worksheets(self):
         '''
-        Sets the worksheets for the Library instance.
-        Add new worksheets to the Google Spreadsheet if they don't exist based on parameters from `worksheet` dicts:
-        - dict key: title of the worksheet
-        - values:
-            * `headers`: list of headers for the worksheet
-            * `wsheet_obj`: None | Worksheet instance
-        Creates 'Worksheet' instances for each Google Worksheet and adds them to the `worksheets` list:
-        -
+        Sets worksheets for the `Library` instance.
+        Add new worksheets to the `Google Spreadsheet` if they don't exist based on `WorksheetSet` parameters.
+
+        Creates `gspread.Worksheet` instances for each `Google Worksheet`
+        and adds them to the `self.worksheets` list as `w_sheet` value of appropriated `WorksheetSet` dict
         '''
         if self._SHEET is None:
-            raise Exception('Spreadsheet is not connected.')
+            raise gs.exceptions.GSpreadException(
+                'Spreadsheet is not connected.')
 
         # get the list of worksheets titles from the google spreadsheet
         google_sheet_titles = list(
             map(lambda sheet: sheet.title, self._SHEET.worksheets()))
 
-        for worksheet_title in self.worksheets:
-            headers = self.worksheets[worksheet_title]['headers']
-            if worksheet_title not in google_sheet_titles:
-                worksheet = self._SHEET.add_worksheet(
-                    worksheet_title, rows=100, cols=len(headers))
-            else:
-                worksheet = self._SHEET.worksheet(worksheet_title)
+        for w_set in self.worksheets:
+            title = w_set['title']
+            headers = w_set['headers']
 
-            # add code that updates headers
+            if title not in google_sheet_titles:
+                worksheet = self._SHEET.add_worksheet(
+                    title, rows=100, cols=len(headers)
+                )
+            else:
+                worksheet = self._SHEET.worksheet(title)
+
             # update the first row with the headers
             worksheet.update('A1', [headers])
-            self.worksheets[worksheet_title]['wsheet_obj'] = worksheet
+            # set gspread Google worksheet instance to `WorksheetSet` dict to `w_sheet`
+            w_set['w_sheet'] = worksheet
 
-    def search_book(self, book: Book, book_field: BookFields, worksheet_title: str) -> list[dict]:
+    def search_book(self, book: Book, book_field: BookFields, worksheet_title: str):
         '''
         Search for a book in the `stock` worksheet by the specified `book_field`
         and `value`.
@@ -97,29 +99,43 @@ class Library:
         :param `value`: The value to search for.
         :return: A list of dictionaries containing the book details.
         '''
-        worksheet = self.worksheets[worksheet_title]['wsheet_obj']
-        if worksheet is None:
+        # get `WorksheetSet` that matches the titles
+        w_sets = [
+            w_set for w_set in WORKSHEETS if w_set['title'] == worksheet_title
+        ]
+
+        if not w_sets:
+            raise NameError(
+                f'"WorksheetSet" with <{worksheet_title}> title not found'
+            )
+        if w_sets[0]['w_sheet'] is None:
             raise gs.exceptions.WorksheetNotFound(
                 'Worksheet "stock" not found.'
             )
-    # TODO: search algorithm
-    """
-    1. Get column of specific header
-    2. Get indexes of each finded value
-    3. Ask user to show all finded rows
-    if yes:
-    4. Get all full rows by them indexes
-    """
+
+        worksheet = w_sets[0]['w_sheet']
+        # TODO: search algorithm
+        """
+        1. Get column of specific header
+        2. Get indexes of each finded value
+        3. Ask user to show all finded rows
+        if yes:
+        4. Get all full rows by them indexes
+        """
+
 
 if __name__ == '__main__':
+    from library_system.config import SHEET_NAME, CREDS_PATH, WORKSHEETS
+
     library = Library(SHEET_NAME, WORKSHEETS, CREDS_PATH)
     library.connect()
     if not library.isConnected:
         print('Cannot connect to the Library Spreadsheet. Exiting...')
     else:
         print('Succesfully connected.')
-    for worksheet in library.worksheets:
-        print(worksheet)
-        wsheet_obj: gs.Worksheet = library.worksheets[worksheet]['wsheet_obj']
-        print(wsheet_obj.get_values())
+    for w_set in library.worksheets:
+        print(w_set)
+        if w_set['w_sheet'] is None:
+            raise gs.exceptions.SpreadsheetNotFound
+        print(w_set['w_sheet'].get_all_values)
         print()

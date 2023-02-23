@@ -1,5 +1,5 @@
 import logging
-from library_system.config import LOGTAIL_TOKEN
+from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH, WORKSHEETS
 
 from pyfiglet import figlet_format
 from pydantic import ValidationError
@@ -36,7 +36,7 @@ def library_init() -> Library:
     :return: Library instance
     '''
     print('Connecting to the Library Spreadsheet...')
-    library = Library('library-management-system', 'creds.json')
+    library = Library(SHEET_NAME, WORKSHEETS, CREDS_PATH)
     library.connect()
     if not library.isConnected:
         print(f'{F.ERROR}Cannot connect to the Library Spreadsheet. Restart the App or try again later.{F.ENDC}\n'

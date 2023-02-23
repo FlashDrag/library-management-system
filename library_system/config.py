@@ -14,13 +14,13 @@ SCOPE = [
 
 SHEET_NAME: str = 'library-management-system'
 CREDS_PATH: str = 'creds.json'
-WORKSHEETS = [
-    {
-        'title': 'stock',
-        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies']
+WORKSHEETS = {
+    'stock': {
+        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies'],
+        'wsheet': None
     },
-    {
-        'title': 'borrowed',
-        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies', 'Borrower', 'Borrowed Date', 'Due Date']
-    },
-]
+    'borrowed': {
+        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies', 'Borrower', 'Borrowed Date', 'Due Date'],
+        'wsheet': None
+    }
+}

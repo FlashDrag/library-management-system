@@ -16,7 +16,6 @@ class Library:
 
     Class attributes:
     :param `SCOPE`: Google API scope.
-    :param `w_sets`: `WorksheetSets` Enum instance.
 
     Instance attributes:
     :param `sheet_name`: Name of the Google Sheet.
@@ -31,7 +30,6 @@ class Library:
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive",
     ]
-    w_sets = WorksheetSets
 
     def __init__(self, sheet_name: str, creds_path: str) -> None:
         self._sheet_name = sheet_name
@@ -40,20 +38,18 @@ class Library:
         self.s_sheet: gs.Spreadsheet | None = None
         self.isConnected: bool = False
 
-    def connect(self):
+    def connect(self) -> None:
         '''
         Connect to the Google Sheet specified in the `sheet_name` parameter,
         using the credentials in the file at `creds_path`.
-        - Create `_SHEET` private attribute with a `Spreadsheet` instance.
-        - Create `stock_sheet` attr as a `Worksheet` instance of the 'stock'
-        worksheet
+        - Create `s_sheet` attr as a `Spreadsheet` instance of the Google Sheet
+        - Set `isConnected` attr to `True` if the connection is successful
         '''
         try:
             scope = Credentials.from_service_account_file(
                 self._creds_path, scopes=self.SCOPE)
             client = gs.authorize(scope)
             self.s_sheet = client.open(self._sheet_name)
-            self._set_worksheets()
             self.isConnected = True
         except FileNotFoundError:
             logger.error(f'Credentials file not found at {self._creds_path}.')
@@ -68,13 +64,16 @@ class Library:
             # catch-all Exception block is still included to handle any unexpected errors that may occur
             logger.error(f"An unexpected error occurred: {e}")
 
-    def _set_worksheets(self):
+    def set_worksheets(self, w_sets: list[WorksheetSets]) -> None:
         '''
         Sets worksheets for the `Library` instance.
-        Add new worksheets to the `Google Spreadsheet` if they don't exist based on `WorksheetSet` parameters.
+        Add new worksheets to the `Google Spreadsheet`
+        if they don't exist based on `WorksheetSet` parameters of `w_sets` list.
 
         Creates `gspread.Worksheet` instances for each `Google Worksheet`
-        and adds them to the `self.worksheets` list as `w_sheet` value of appropriated `WorksheetSet` dict
+        and adds them to the apropriated `WorksheetSet` dicts as `w_sheet` parameter.
+
+        :param w_sets: list of `WorksheetSets` enums containing the `WorksheetSet` dicts
         '''
         if self.s_sheet is None:
             raise gs.exceptions.GSpreadException(
@@ -84,7 +83,7 @@ class Library:
         google_sheet_titles = list(
             map(lambda sheet: sheet.title, self.s_sheet.worksheets()))
 
-        for w_set in self.w_sets:
+        for w_set in w_sets:
             title = w_set.value['title']
             headers = w_set.value['headers']
 
@@ -100,24 +99,49 @@ class Library:
             # set gspread Google worksheet instance to `WorksheetSet` dict to `w_sheet` parameter
             w_set.value['w_sheet'] = worksheet
 
-    def search_book(self, book: Book, book_field: BookFields, worksheet_title: str):
+    def search_books(self, book: Book, book_field: BookFields, w_set: WorksheetSet) -> list[dict] | None:
         '''
-        Search for a book in the `stock` worksheet by the specified `book_field`
-        and `value`.
+        Search a book value with the specified worksheet header - `book_field` and
+        in the specified worksheet - `w_set`.
 
-        :param `book_field`: The field to search by.
-        :param `value`: The value to search for.
+        :param `book`: The book to search for.
+        :param `book_field`: The worksheet header to search by.
+        :param `w_set`: The worksheet to search in.
         :return: A list of dictionaries containing the book details.
         '''
-        pass
-        # TODO: search algorithm
-        """
-        1. Get column of specific header
-        2. Get indexes of each finded value
-        3. Ask user to show all finded rows
-        if yes:
-        4. Get all full rows by them indexes
-        """
+
+        worksheet = w_set['w_sheet']
+        field = book_field.name  # get the name of the enum value, which is the same as the header name
+        value = getattr(book, field)  # get the value of the book by the header name (enum value)
+
+        if worksheet is None:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set['title']}>"
+            )
+
+        # get the column number of the header
+        header: gs.Cell | None = worksheet.find(
+            field, in_row=1, case_sensitive=False
+        )
+        if header is None:
+            raise ValueError(
+                f"Can't to find the header <{field}> in the worksheet <{w_set['title']}>"
+            )
+        col_num = header.col
+        # find all cells with the specified value in the column of the header
+        matched_cells: list[gs.Cell] = worksheet.findall(value, in_column=col_num, case_sensitive=False)
+        if matched_cells is None:
+            return None
+
+        # create a list of dictionaries containing the book details
+        headers = w_set['headers'] + ['cell_row']
+        result_list = []
+        for cell in matched_cells:
+            value_list = worksheet.row_values(cell.row) + [cell.row]
+            value_dict = dict(zip(headers, value_list))
+            result_list.append(value_dict)
+
+        return result_list
 
 
 if __name__ == '__main__':
@@ -130,7 +154,9 @@ if __name__ == '__main__':
     else:
         print('Succesfully connected.')
 
-    stock_worksheet = library.w_sets.stock.value['w_sheet']
-    if stock_worksheet is not None:
-        print(stock_worksheet)
-        print(stock_worksheet.get_all_records())
+    library.set_worksheets(list(WorksheetSets))
+
+    book = Book(title='Python Cookbook')
+    book_field = BookFields.title
+    finded_books = library.search_books(book, book_field, WorksheetSets.stock.value)
+    print(finded_books)

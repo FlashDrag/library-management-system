@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from library_system.views.formatters import font as F, clear_terminal
 
 from library_system.models.spreadsheet import Library
+from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.views.console_ui import Menu, Table_Formats
 from library_system import library_manager
 
@@ -44,6 +45,7 @@ def library_init() -> Library:
         exit()
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
+        library.set_worksheets(list(WorksheetSets))
         return library
 
 

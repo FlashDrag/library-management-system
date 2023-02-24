@@ -1,5 +1,6 @@
 from typing import TypedDict
 from gspread import Worksheet
+from enum import Enum
 
 
 class WorksheetSet(TypedDict):
@@ -13,15 +14,24 @@ class WorksheetSet(TypedDict):
     w_sheet: None | Worksheet
 
 
-WORKSHEETS: list[WorksheetSet] = [
-    {
-        'title': 'stock',
-        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies'],
-        'w_sheet': None
-    },
-    {
-        'title': 'borrowed',
-        'headers': ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies', 'Borrower', 'Borrowed Date', 'Due Date'],
-        'w_sheet': None
-    }
-]
+class WorksheetSets(Enum):
+    '''
+    Enum of `WorksheetSet` instances.
+    Each `WorksheetSet` contains: worksheet `title`, `headers` and `w_sheet`(gspread `Worksheet` instance).
+
+    Example. To get `Worksheet` instance of `stock` google worksheet by title:
+    use `WorksheetSets.stock.value['w_sheet']`:
+        >>> WorksheetSets.stock.value['w_sheet']
+        <Worksheet 'stock' id:0>  # returns Worksheet instance or None
+    '''
+    stock = WorksheetSet(
+        title='stock',
+        headers=['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies'],
+        w_sheet=None
+    )
+    borrowed = WorksheetSet(
+        title='borrowed',
+        headers=['ISBN', 'Title', 'Author', 'Genre', 'Year',
+                 'Copies', 'Borrower', 'Borrowed Date', 'Due Date'],
+        w_sheet=None
+    )

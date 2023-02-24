@@ -1,5 +1,6 @@
 import logging
-from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH, WORKSHEETS
+from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH
+from library_system.models.worksheets_cfg import WORKSHEETS
 
 from pyfiglet import figlet_format
 from pydantic import ValidationError

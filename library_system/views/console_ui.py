@@ -69,12 +69,12 @@ class Menu:
                  options: list[str],
                  table_format: Table_Formats = Table_Formats.simple):
         # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
-        self.name: str = NonEmptyStr(str_value=name).str_value
-        self.options: UniqueStringsList = UniqueStringsList(lst=options)
+        self._name: str = NonEmptyStr(str_value=name).str_value
+        self._options: UniqueStringsList = UniqueStringsList(lst=options)
         # gets the value from `Table_Formats` enum.
-        self.table_format: str = table_format.value
+        self._table_format: str = table_format.value
 
-        self.selected_code: int | None = None
+        self._selected_code: int | None = None
 
     def _render_table(self):
         '''
@@ -82,10 +82,10 @@ class Menu:
         numbered options and render it using `tabulate` library.
         :return: table with numbered options
         '''
-        numbered_options = self.options.to_dict()
+        numbered_options = self._options.to_dict()
         table = tabulate(
             numbered_options.items(),
-            headers=['Code', 'Option'], tablefmt=self.table_format
+            headers=['Code', 'Option'], tablefmt=self._table_format
         )
         return table
 
@@ -93,10 +93,10 @@ class Menu:
         '''
         Displays the menu name with table of options.
         '''
-        print(F.HEADER + self.name + F.ENDC)
+        print(F.HEADER + self._name + F.ENDC)
         print(self._render_table())
 
-    def get_user_input(self):
+    def _get_user_input(self):
         '''
         Gets user input and validates it using `IntInRange` validator.
         If the input is valid, the option code is stored in `self.selected_code`.
@@ -106,7 +106,7 @@ class Menu:
             print(F.BOLD + 'Select an option using code number' + F.ENDC)
             try:
                 user_selection = IntInRange(
-                    num_range=len(self.options.lst),
+                    num_range=len(self._options.lst),
                     num=int(input(F.ITALIC + 'Enter option code:\n' + F.ENDC))
                 )
             except ValidationError as e:
@@ -120,35 +120,37 @@ class Menu:
                       f'''Code must be an integer. Try again\n {F.ENDC}''')
                 continue
             else:
-                self.selected_code = user_selection.num
-                return self.selected_code
+                self._selected_code = user_selection.num
+                break
+
+    def get_selected_code(self) -> int:
+        '''
+        Gets the selected option code.
+        :return int: selected option code
+        '''
+        if self._selected_code is None:
+            raise ValueError('Cannot get selected code from self._selected_code')
+        return self._selected_code
 
     def get_selected_option(self) -> str:
         '''
-        Convert the selected option to lowercase and replace spaces with underscores.
-        :return: option name string in format: `option_name` (e.g. `add_book`, `by_title`)
+        Gets the selected option name converted to lowercase.
+        :return str: selected option name
         '''
-        if self.selected_code is None:
-            raise ValueError(
-                F.ERROR + 'No option selected in the menu.' + F.ENDC
-            )
         # Get selected option from dictionary of `UniqueStringsList` instance
-        selected_option = self.options.to_dict().get(self.selected_code, None)
-
+        if self._selected_code is None:
+            raise ValueError('Cannot get selected code from self._selected_code')
+        selected_option = self._options.to_dict().get(self._selected_code, None)
         if selected_option is None:
-            raise ValueError(
-                F.ERROR + 'No option selected in the menu.' + F.ENDC
-            )
-        # prepare selected option for function name
-        option_name = '_'.join(selected_option.lower().split())
-        return option_name
+            raise ValueError('Cannot get selected option from self._options dict by self._selected_code')
+        return selected_option.lower()
 
     def run(self):
         '''
         Displays the menu and gets user input.
         '''
         self.display()
-        self.get_user_input()
+        self._get_user_input()
 
 
 def get_book_input(book: Book, field: BookFields) -> Book:
@@ -198,10 +200,10 @@ if __name__ == '__main__':
         menu.run()
     except (ValidationError, ValueError) as e:
         logger.error(e)
-        print(f'{F.ERROR}Error. Refresh the page and try again{F.ENDC}')
+        print(f'{F.ERROR}Error. Restart the App and try again{F.ENDC}')
         exit()
     else:
-        print(f'Selected option code: {menu.selected_code}')
+        print(f'Selected option code: {menu.get_selected_code()}')
         print(f'Selected option: {menu.get_selected_option()}')
         print()
 
@@ -210,5 +212,5 @@ if __name__ == '__main__':
     field = BookFields.title
     book = get_book_input(book, field)
     print(book.dict())
-    print(book.dict()[field.name])
-    print(getattr(book, field.name))
+    print(book[field.name])
+    print(book.title)

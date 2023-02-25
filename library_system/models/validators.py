@@ -8,32 +8,28 @@ class NonEmptyStr(BaseModel):
     str_value: constr(min_length=1, strip_whitespace=True)  # type: ignore
 
 
-class UniqueStringsList(BaseModel):
+class MenuOptions(BaseModel):
     '''
-    Validates list and it's values:
-    Check if the list not empty and contains unique non empty strings.
+    Validates list and it's items.
+    Check if the list not empty and contains unique items.
     Does not modify the list.
     '''
     # ckeck if list is not empty and contains unique values
-    lst: conlist(str, min_items=1, unique_items=True)  # type: ignore
+    lst: conlist(str | dict, min_items=1, unique_items=True)  # type: ignore
 
     @validator('lst', each_item=True)
-    def check_each_string(cls, item):
+    def check_each_item(cls, item):
         '''
         Checks each list's item if it non empty.
         :param item: list's item
         :return: item if it's not empty
         '''
-        if not item.strip():
-            raise ValueError('Options list cannot contain empty strings')
+        raise_msg = 'Options list cannot contain empty values.'
+        if isinstance(item, str) and not item.strip():
+            raise ValueError(raise_msg)
+        if isinstance(item, dict) and not item:
+            raise ValueError(raise_msg)
         return item
-
-    def to_dict(self) -> dict[int, str]:
-        '''
-        Converts list to dictionary.
-        :return: dictionary with numbered list's items
-        '''
-        return {i + 1: item for i, item in enumerate(self.lst)}
 
 
 class IntInRange(BaseModel):

@@ -4,7 +4,7 @@ from tabulate import tabulate
 
 from pydantic import ValidationError
 from library_system.models.book import Book, BookFields
-from library_system.models.validators import IntInRange, UniqueStringsList, NonEmptyStr
+from library_system.models.validators import IntInRange, MenuOptions, NonEmptyStr
 
 from library_system.views.formatters import font as F
 
@@ -66,26 +66,44 @@ class Menu:
 
     def __init__(self,
                  title: str,
-                 options: list[str],
-                 table_format: Table_Formats = Table_Formats.simple):
-        # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
+                 options: list[str] | list[dict],
+                 table_format: Table_Formats = Table_Formats.simple,
+                 sort_options: bool = False):
+        # Validates the input menu name and options list using `NonEmptyStr` and `MenuOptions` validators.
         self._name: str = NonEmptyStr(str_value=title).str_value
-        self._options: UniqueStringsList = UniqueStringsList(lst=options)
+        self._options: list = MenuOptions(lst=options).lst
         # gets the value from `Table_Formats` enum.
         self._table_format: str = table_format.value
+        self._sort_options = sort_options
 
+        self._numbered_options: list[dict] = self._numerate_options()
         self._selected_code: int | None = None
+
+    def _numerate_options(self) -> list[dict]:
+        '''
+        Numerate the menu options.
+        '''
+        # TODO sort options self._sort_options if True
+        if isinstance(self._options[0], str):
+            numbered_options = [{'Code': i + 1, 'Option': item} for i, item in enumerate(self._options)]
+
+        if isinstance(self._options[0], dict):
+            # add new key `Code` with unique number to each dictionary and add it to a new list
+            # `{"Code": i + 1} | d` creates new dict and merge `|` it with dict from `self._options`
+            numbered_options = [{"Code": i + 1} | d for i, d in enumerate(self._options)]
+
+        return numbered_options  # type: ignore
 
     def _render_table(self):
         '''
-        Get the dictionary from `UniqueStringsList` instance with
-        numbered options and render it using `tabulate` library.
+        Render the table using `tabulate` library.
+        Set table headers as keys of `self._numbered_options` dicts.
         :return: table with numbered options
         '''
-        numbered_options = self._options.to_dict()
         table = tabulate(
-            numbered_options.items(),
-            headers=['Code', 'Option'], tablefmt=self._table_format
+            self._numbered_options,
+            headers='keys',
+            tablefmt=self._table_format
         )
         return table
 
@@ -106,7 +124,7 @@ class Menu:
             print(F.BOLD + 'Select an option using code number' + F.ENDC)
             try:
                 user_selection = IntInRange(
-                    num_range=len(self._options.lst),
+                    num_range=len(self._options),
                     num=int(input(F.ITALIC + 'Enter option code:\n' + F.ENDC))
                 )
             except ValidationError as e:
@@ -132,18 +150,22 @@ class Menu:
             raise ValueError('Cannot get selected code from self._selected_code')
         return self._selected_code
 
-    def get_selected_option(self) -> str:
+    def get_selected_option(self) -> str | list | dict:
         '''
         Gets the selected option name converted to lowercase.
         :return str: selected option name
         '''
-        # Get selected option from dictionary of `UniqueStringsList` instance
         if self._selected_code is None:
             raise ValueError('Cannot get selected code from self._selected_code')
-        selected_option = self._options.to_dict().get(self._selected_code, None)
-        if selected_option is None:
-            raise ValueError('Cannot get selected option from self._options dict by self._selected_code')
-        return selected_option.lower()
+        if isinstance(self._options[0], str):
+            selected_option = self._numbered_options[self._selected_code - 1].get('Option')
+            if selected_option is None:
+                raise ValueError('Cannot get selected option from self._numbered_options')
+            selected_option = selected_option.lower()
+        if isinstance(self._options[0], dict):
+            selected_option = self._numbered_options[self._selected_code - 1]
+
+        return selected_option  # type: ignore
 
     def run(self):
         '''

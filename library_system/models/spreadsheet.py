@@ -121,7 +121,7 @@ class Library:
         # get the name of the enum value, which is the same as the header name
         field = book_field.name
         # get the validated value of the book by the header field name (enum value)
-        value = getattr(book, field)
+        value = book[field]
 
         if worksheet is None:
             raise ValueError(

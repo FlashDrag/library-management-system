@@ -36,6 +36,9 @@ class Book(BaseModel):
         # strip whitespace from strings
         anystr_strip_whitespace = True
 
+    def __getitem__(self, key):
+        return getattr(self, key)
+
     @validator('*', pre=True)
     def validate_empty(cls, value, field):
         '''

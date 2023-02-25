@@ -93,11 +93,11 @@ class Book(BaseModel):
     @validator('copies')
     def validate_copies(cls, copies):
         '''
-        Checks if input copies in the range 0 - 10.
+        Checks if input copies in the range 1 - 10.
         '''
         if copies is None:
             return copies
-        if copies < 0 or copies > 10:
+        if copies < 1 or copies > 10:
             raise ValueError(
                 'Incorrect number of copies. Must be in range 0-10.')
         return copies

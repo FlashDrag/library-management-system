@@ -150,22 +150,22 @@ class Menu:
             raise ValueError('Cannot get selected code from self._selected_code')
         return self._selected_code
 
-    def get_selected_option(self) -> str | list | dict:
+    def get_selected_option(self) -> str | dict | None:
         '''
         Gets the selected option name converted to lowercase.
         :return str: selected option name
         '''
+        selected_option = None
         if self._selected_code is None:
             raise ValueError('Cannot get selected code from self._selected_code')
         if isinstance(self._options[0], str):
-            selected_option = self._numbered_options[self._selected_code - 1].get('Option')
-            if selected_option is None:
-                raise ValueError('Cannot get selected option from self._numbered_options')
-            selected_option = selected_option.lower()
+            selected_option = self._numbered_options[self._selected_code - 1].get('Option', None)
+            if selected_option is not None:
+                selected_option = selected_option.lower()
         if isinstance(self._options[0], dict):
             selected_option = self._numbered_options[self._selected_code - 1]
 
-        return selected_option  # type: ignore
+        return selected_option
 
     def run(self):
         '''

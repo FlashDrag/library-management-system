@@ -1,11 +1,8 @@
 import logging
-from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH
-
 from pyfiglet import figlet_format
-from pydantic import ValidationError
 
+from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH
 from library_system.views.formatters import font as F, clear_terminal
-
 from library_system.models.spreadsheet import Library
 from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.views.console_ui import Menu
@@ -14,9 +11,9 @@ from library_system import library_manager
 
 from logtail import LogtailHandler
 
+# log to Logtail service
 handler = LogtailHandler(source_token=LOGTAIL_TOKEN)
 
-# set up logging with basicConfig
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - [%(filename)s -> %(funcName)s() -> %(lineno)s]: %(message)s",
@@ -24,10 +21,10 @@ logging.basicConfig(
     handlers=[handler]
 )
 logger = logging.getLogger(__name__)
-logger.info('Starting the App...')
 
 
 def display_header():
+    logger.info('Starting the App...')
     print(figlet_format('Library Management System', 'straight'))
 
 
@@ -43,9 +40,11 @@ def library_init() -> Library:
     if not library.isConnected:
         print(f'{F.ERROR}Cannot connect to the Library Spreadsheet. Restart the App or try again later.{F.ENDC}\n'
               f'Exiting...')
+        logger.error('Failed to connect to the Library Spreadsheet. Exiting...')
         exit()
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
+        logger.info('Connected to the Library Spreadsheet.')
         library.set_worksheets(list(WorksheetSets))
         return library
 
@@ -54,38 +53,26 @@ def run_main_menu():
     '''
     Displays the options available in the Library Main Menu
     using the tabulate library.
-    :return: list of lists with options
+    :return: selected option name
     '''
-    try:
-        menu = Menu(**MenuSets.main_menu.value)
-        menu.run()
-        selected = menu.get_selected_option()
-    except (ValidationError, ValueError) as e:
-        logging.error(e)
-        print(f'{F.ERROR}Something went wrong. Restart the App or try again later.{F.ENDC}\nExiting...')
-        exit()
-    else:
-        return selected
+    menu = Menu(**MenuSets.main_menu.value)
+    menu.run()
+    selected = menu.get_selected_option()
+
+    return selected
 
 
-def execute_function(library: Library, selected_option: str):
+def run_selected_option(library: Library, selected_option):
     '''
     Execute the function using the function name based on the user selection.
     :param library: Library instance
     :param func_name: function name
     '''
+    if not selected_option or not isinstance(selected_option, str):
+        raise ValueError('Invalid selected option. Cannot run the function.')
     func_name = selected_option.replace(' ', '_')
-    try:
-        # try to execute the function from the library_manager module
-        getattr(library_manager, func_name)(library)
-    # catch exception if the function not found in library_manager using getattr()
-    except AttributeError as e:
-        logger.error(
-            f'''Cannot get access to `{str(e).split("'")[-2]}` '''
-            f'''at `{str(e).split("'")[1]}` {str(e).split("'")[0]}'''
-        )
-        print(f'{F.ERROR}Something went wrong. Restart the App or try again later.{F.ENDC}\nExiting...')
-        exit()
+    # TODO add testing for execution each function from library_manager based on the user selection from the Main Menu
+    getattr(library_manager, func_name)(library)
 
 
 def main():
@@ -98,8 +85,8 @@ def main():
     display_header()
 
     library = library_init()
-    selected = run_main_menu()
-    execute_function(library, selected)
+    selected_option = run_main_menu()
+    run_selected_option(library, selected_option)
 
 
 if __name__ == '__main__':

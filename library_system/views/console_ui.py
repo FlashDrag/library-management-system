@@ -170,6 +170,7 @@ class Menu:
         if self._selected_code is None:
             raise ValueError('Cannot get selected code from self._selected_code')
         selected_option = self._numbered_options[self._selected_code - 1]
+        del selected_option['Code']
         return selected_option
 
     def run(self):

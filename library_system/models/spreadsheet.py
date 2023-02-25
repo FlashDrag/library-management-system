@@ -114,7 +114,6 @@ class Library:
         Example return:
         [{'ISBN': '9781449357351', 'Title': 'Python Cookbook', 'Author': 'David Beazley, Brian K. Jones',
          'Genre': 'Computers', 'Year': '2013', 'Copies': '16', 'cell_row': 84},]
-
         '''
 
         worksheet = w_set['w_sheet']
@@ -157,7 +156,42 @@ class Library:
 
         return result_list
 
+    def add_book_copies(self, book_to_add: dict, copies: int) -> dict:
+        '''
+        Add copies to the existing book in the stock worksheet.
 
+        :param book_to_add: A dictionary containing the book details.
+        :param copies: The number of copies to add.
+        :return: Dictionary containing a book with updated number of copies.
+        '''
+        cell_row = book_to_add['cell_row']
+        current_copies = book_to_add['Copies']
+        if not current_copies or not current_copies.isdigit():
+            new_num_copies = copies
+        else:
+            new_num_copies = int(current_copies) + copies
+        field = BookFields.copies.name
+        w_set = WorksheetSets.stock
+        if not w_set.value['w_sheet']:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set.name}>"
+            )
+        header = w_set.value['w_sheet'].find(
+            field, in_row=1, case_sensitive=False
+        )
+        if not header:
+            raise ValueError(
+                f"Can't to find the header <{field}> in the worksheet <{w_set.name}>"
+            )
+        col_num = header.col
+
+        w_set.value['w_sheet'].update_cell(cell_row, col_num, new_num_copies)
+        book_to_add['Copies'] = new_num_copies
+        return book_to_add
+
+
+# for testing purposes
+# The below code will be executed only if this module is run as a script
 if __name__ == '__main__':
     from library_system.config import SHEET_NAME, CREDS_PATH
 
@@ -170,9 +204,16 @@ if __name__ == '__main__':
 
     library.set_worksheets(list(WorksheetSets))
 
+    # search books
     book = Book(title='Python')
     book_field = BookFields.title
     finded_books = library.search_books(
         book[book_field.name], book_field, WorksheetSets.stock.value
     )
     print(finded_books)
+
+    # add book copies
+    book_to_add = finded_books[1]
+    copies = 5
+    updated_book = library.add_book_copies(book_to_add, copies)
+    print(updated_book)

@@ -16,6 +16,7 @@ class WorksheetSet(TypedDict):
 
 class WorksheetSets(Enum):
     '''
+    Headers must match the `Book` model fields.
     Enum of `WorksheetSet` instances.
     Each `WorksheetSet` contains: worksheet `title`, `headers` and `w_sheet`(gspread `Worksheet` instance).
 

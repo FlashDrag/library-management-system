@@ -65,11 +65,11 @@ class Menu:
     '''
 
     def __init__(self,
-                 name: str,
+                 title: str,
                  options: list[str],
                  table_format: Table_Formats = Table_Formats.simple):
         # Validates the input menu name and options list using `NonEmptyStr` and `UniqueStringsList` validators.
-        self._name: str = NonEmptyStr(str_value=name).str_value
+        self._name: str = NonEmptyStr(str_value=title).str_value
         self._options: UniqueStringsList = UniqueStringsList(lst=options)
         # gets the value from `Table_Formats` enum.
         self._table_format: str = table_format.value
@@ -196,18 +196,11 @@ if __name__ == '__main__':
                'Return Book',
                'View Library Stock']
     table_format = Table_Formats.double_grid
-
-    try:
-        menu = Menu(name, options, table_format)
-        menu.run()
-    except (ValidationError, ValueError) as e:
-        logger.error(e)
-        print(f'{F.ERROR}Error. Restart the App and try again{F.ENDC}')
-        exit()
-    else:
-        print(f'Selected option code: {menu.get_selected_code()}')
-        print(f'Selected option: {menu.get_selected_option()}')
-        print()
+    menu = Menu(name, options, table_format)
+    menu.run()
+    print(f'Selected option code: {menu.get_selected_code()}')
+    print(f'Selected option: {menu.get_selected_option()}')
+    print()
 
     # ------------------ get_book_input ------------------
     book = Book()

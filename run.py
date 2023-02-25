@@ -8,7 +8,8 @@ from library_system.views.formatters import font as F, clear_terminal
 
 from library_system.models.spreadsheet import Library
 from library_system.models.worksheets_cfg import WorksheetSets
-from library_system.views.console_ui import Menu, Table_Formats
+from library_system.views.console_ui import Menu
+from library_system.views.menus import MenuSets
 from library_system import library_manager
 
 from logtail import LogtailHandler
@@ -55,16 +56,8 @@ def run_main_menu():
     using the tabulate library.
     :return: list of lists with options
     '''
-    menu_name = 'Library Main Menu'
-    options = ['Add Book',
-               'Remove Book',
-               'Check Out Book',
-               'Return Book',
-               'View Library Stock']
-    table_format = Table_Formats.outline
-
     try:
-        menu = Menu(menu_name, options, table_format)
+        menu = Menu(**MenuSets.main_menu.value)
         menu.run()
         selected = menu.get_selected_option()
     except (ValidationError, ValueError) as e:
@@ -75,12 +68,13 @@ def run_main_menu():
         return selected
 
 
-def execute_function(library: Library, func_name: str):
+def execute_function(library: Library, selected_option: str):
     '''
     Execute the function using the function name based on the user selection.
     :param library: Library instance
     :param func_name: function name
     '''
+    func_name = selected_option.replace(' ', '_')
     try:
         # try to execute the function from the library_manager module
         getattr(library_manager, func_name)(library)

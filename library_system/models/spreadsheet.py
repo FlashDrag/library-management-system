@@ -100,12 +100,12 @@ class Library:
             # set gspread Google worksheet instance to `WorksheetSet` dict to `w_sheet` parameter
             w_set.value['w_sheet'] = worksheet
 
-    def search_books(self, book: Book, book_field: BookFields, w_set: WorksheetSet) -> list[dict]:
+    def search_books(self, book_value: str, book_field: BookFields, w_set: WorksheetSet) -> list[dict]:
         '''
         Search a book value with the specified worksheet header - `book_field` and
         in the specified worksheet - `w_set`.
 
-        :param `book`: The book to search for.
+        :param `book_value`: validated book value search for.
         :param `book_field`: The worksheet header to search by.
         :param `w_set`: The worksheet to search in.
 
@@ -120,8 +120,6 @@ class Library:
         worksheet = w_set['w_sheet']
         # get the name of the enum value, which is the same as the header name
         field = book_field.name
-        # get the validated value of the book by the header field name (enum value)
-        value = book[field]
 
         if worksheet is None:
             raise ValueError(
@@ -141,10 +139,10 @@ class Library:
         # find all cells with the specified value in the column of the header
         if book_field in (BookFields.title, BookFields.author, BookFields.genre):
             # match the value substring
-            regex = re.compile(rf'.*{value}.*', re.IGNORECASE)
+            regex = re.compile(rf'.*{book_value}.*', re.IGNORECASE)
         else:
             # match the exact value
-            regex = re.compile(rf'^{value}$', re.IGNORECASE)
+            regex = re.compile(rf'^{book_value}$', re.IGNORECASE)
         matched_cells: list[gs.Cell] = worksheet.findall(
             regex, in_column=col_num, case_sensitive=False
         )
@@ -175,6 +173,6 @@ if __name__ == '__main__':
     book = Book(title='Python')
     book_field = BookFields.title
     finded_books = library.search_books(
-        book, book_field, WorksheetSets.stock.value
+        book[book_field.name], book_field, WorksheetSets.stock.value
     )
     print(finded_books)

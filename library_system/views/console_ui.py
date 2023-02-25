@@ -153,16 +153,18 @@ class Menu:
         self._get_user_input()
 
 
-def get_book_input(book: Book, field: BookFields) -> Book:
+def get_book_input(book: Book, field: BookFields) -> str:
     '''
     Gets user input for specific field,
     assigns it to the Book instance and validates it with pydantic.
     :param book: Book instance
     :param field: BookFields enum
-    :return: Book instance containing validated book field
+    :return: validated user book input
     '''
     while True:
         try:
+            # prompt user to enter value appropriate for the field
+            # e.g. Enter title of the Book:
             user_input = input(f'{F.ITALIC}{str(field)}{F.ENDC}\n')
             # pass user input to the Book instance field based on field name
             setattr(book, field.name, user_input)
@@ -173,7 +175,7 @@ def get_book_input(book: Book, field: BookFields) -> Book:
             print('Something went wrong. Restart the App. Exiting...\n')
             exit()
         else:
-            return book
+            return book[field.name]
 
 
 '''
@@ -210,7 +212,8 @@ if __name__ == '__main__':
     # ------------------ get_book_input ------------------
     book = Book()
     field = BookFields.title
-    book = get_book_input(book, field)
+    book_value = get_book_input(book, field)
+    print(book_value)
     print(book.dict())
     print(book[field.name])
     print(book.title)

@@ -150,21 +150,26 @@ class Menu:
             raise ValueError('Cannot get selected code from self._selected_code')
         return self._selected_code
 
-    def get_selected_option(self) -> str | dict | None:
+    def get_selected_option_str(self) -> str:
         '''
-        Gets the selected option name converted to lowercase.
-        :return str: selected option name
+        Gets the selected option based on the selected code.
+        :return str: selected option
         '''
-        selected_option = None
         if self._selected_code is None:
             raise ValueError('Cannot get selected code from self._selected_code')
-        if isinstance(self._options[0], str):
-            selected_option = self._numbered_options[self._selected_code - 1].get('Option', None)
-            if selected_option is not None:
-                selected_option = selected_option.lower()
-        if isinstance(self._options[0], dict):
-            selected_option = self._numbered_options[self._selected_code - 1]
+        selected_option = self._numbered_options[self._selected_code - 1].get('Option', None)
+        if selected_option is None:
+            raise ValueError(f'Cannot get option from self._numbered_options[{self._selected_code - 1}]')
+        return selected_option.lower()
 
+    def get_selected_option_dict(self) -> dict:
+        '''
+        Gets the selected option based on the selected code.
+        :return dict: selected option
+        '''
+        if self._selected_code is None:
+            raise ValueError('Cannot get selected code from self._selected_code')
+        selected_option = self._numbered_options[self._selected_code - 1]
         return selected_option
 
     def run(self):
@@ -221,7 +226,8 @@ if __name__ == '__main__':
     menu = Menu(name, options, table_format)
     menu.run()
     print(f'Selected option code: {menu.get_selected_code()}')
-    print(f'Selected option: {menu.get_selected_option()}')
+    print(f'Selected option: {menu.get_selected_option_str()}')
+    print(f'Selected option: {menu.get_selected_option_dict()}')
     print()
 
     # ------------------ get_book_input ------------------

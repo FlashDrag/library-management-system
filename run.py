@@ -57,19 +57,17 @@ def run_main_menu():
     '''
     menu = Menu(**MenuSets.main_menu.value)
     menu.run()
-    selected = menu.get_selected_option()
+    selected = menu.get_selected_option_str()
 
     return selected
 
 
-def run_selected_option(library: Library, selected_option):
+def run_selected_option(library: Library, selected_option: str):
     '''
     Execute the function using the function name based on the user selection.
     :param library: Library instance
-    :param func_name: function name
+    :param selected_option: selected option name
     '''
-    if not selected_option or not isinstance(selected_option, str):
-        raise ValueError('Invalid selected option. Cannot run the function.')
     func_name = selected_option.replace(' ', '_')
     # TODO add testing for execution each function from library_manager based on the user selection from the Main Menu
     getattr(library_manager, func_name)(library)

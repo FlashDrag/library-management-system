@@ -15,7 +15,7 @@ def display_header():
 
 def run_add_book_menu() -> BookFields:
     '''
-    Display the menu with the options how to add a book.
+    Display the menu `how to add a book` with the options.
     Get the selected option from the menu and split it to get the book field (e.g. `by isbn` -> `isbn`).
     Get book field attribute from the BookFields enum.
     :return: BookFields attribute
@@ -31,6 +31,7 @@ def get_book_value(book: Book, book_field: BookFields) -> str:
     '''
     Get the user input based on the selected BookFields attribute and assign it to the Book model.
 
+    :param book: Book instance
     :param selected_field: selected BookFields attribute
     :return: validated user input with the Book model
     '''
@@ -57,6 +58,17 @@ def find_book(library: Library, book_field: BookFields, book_value: str) -> list
 
 
 def run_search_results_menu(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
+    '''
+    Display the menu what to do with the search results.
+    Get the selected option from the menu and run the appropriate function:
+    - show_found_books(): display the search results
+    - add_full_book(): - continue adding the book without displaying the search results
+
+    param library: Library instance
+    param book: Book instance
+    param book_field: selected BookFields attribute
+    param found_books: list of books matching the BookFields attribute and value provided by the user
+    '''
     print(f'{F.YELLOW}Found {len(found_books)} '
           f'books matching the {book_field.value} '
           f'"{book[book_field.name]}"{F.ENDC}\n')
@@ -74,6 +86,16 @@ def run_search_results_menu(library: Library, book: Book, book_field: BookFields
 
 
 def show_found_books(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
+    '''
+    Display search results in a menu:
+    all books matching the BookFields attribute and value provided by the user.
+    Prompt the user to select the book to add and run the func add_copies_to_book().
+
+    param library: Library instance
+    param book: Book instance
+    param book_field: selected BookFields attribute
+    param found_books: list of books matching the BookFields attribute and value provided by the user
+    '''
     clear_terminal()
     print(
         f'{F.YELLOW}Showing all books matching the {book_field.value} '
@@ -85,11 +107,20 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
         Table_Formats.rounded_outline
     )
     show_books_menu.run()
+    # get the selected book to add in the form of a dictionary
     book_to_add = show_books_menu.get_selected_option_dict()
     add_copies_to_book(library, book, book_to_add)
 
 
 def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
+    '''
+    Prompt the user to enter the number of copies to add.
+    Call the library.add_book_copies() method to add copies to the book.
+
+    param library: Library instance
+    param book: Book instance
+    param book_to_add: book to add to the library stock
+    '''
     clear_terminal()
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
     print(tabulate([book_to_add], headers='keys') + '\n')
@@ -103,6 +134,7 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
             book_to_add, int(copies))
     except Exception as e:
         print(e)
+        exit()
     else:
         clear_terminal()
         print(

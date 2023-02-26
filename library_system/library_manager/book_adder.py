@@ -1,4 +1,5 @@
 from tabulate import tabulate
+import time
 
 from library_system.views.formatters import font as F, clear_terminal
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input
@@ -40,7 +41,7 @@ def get_book_value(book: Book, book_field: BookFields) -> str:
     return book_value
 
 
-def find_book(library: Library, book_field: BookFields, book_value: str) -> list[dict]:
+def find_books(library: Library, book_field: BookFields, book_value: str) -> list[dict]:
     '''
     Try to find the books matching the BookFields attribute and value provided by the user.
 
@@ -53,6 +54,7 @@ def find_book(library: Library, book_field: BookFields, book_value: str) -> list
     found_books = library.search_books(
         book_value, book_field, WorksheetSets.stock.value
     )
+    time.sleep(1)
 
     return found_books
 
@@ -82,7 +84,7 @@ def run_search_results_menu(library: Library, book: Book, book_field: BookFields
     if search_menu_selected == 1:
         show_found_books(library, book, book_field, found_books)
     if search_menu_selected == 2:
-        add_full_book()
+        add_full_book(library, book, book_field)
 
 
 def show_found_books(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
@@ -143,8 +145,23 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
         print(tabulate([updated_book_dict], headers='keys'))
 
 
-def add_full_book():
-    pass
+def add_full_book(library: Library, book: Book, book_field: BookFields):
+    clear_terminal()
+    print(f'{F.YELLOW}CONTINUE ADDING A NEW BOOK{F.ENDC}\n')
+    fields = [field for field in BookFields if field != book_field]
+
+    for field in fields:
+        get_book_input(book, field)
+
+    try:
+        added_book = library.append_book(book)
+    except Exception as e:
+        print(e)
+    else:
+        clear_terminal()
+        print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}')
+        print(f'{F.YELLOW}Added book:{F.ENDC}\n')
+        print(tabulate([added_book], headers='keys'))
 
 
 # entry point for the add book functionality
@@ -156,18 +173,13 @@ def add_book(library: Library):
     book_field = run_add_book_menu()
     book_value = get_book_value(book, book_field)
 
-    found_books = find_book(library, book_field, book_value)
+    found_books = find_books(library, book_field, book_value)
 
-    clear_terminal()
     if len(found_books) > 0:
+        clear_terminal()
         run_search_results_menu(library, book, book_field, found_books)
     else:
-        add_full_book()
-
-    # TODO: append book to the library stock
-    """
-    library.append_book(new_isbn, new_title, 'J.R.R. Tolkien', 'Fantasy', 'English', '2001', '1')
-        library.stock.append_row(
-            ['978-3-16-148410-0', 'The Lord of the Rings', 'J.R.R. Tolkien', 'Fantasy', '2001', '1' 'True', '']
-            )
-    """
+        print(f'{F.YELLOW}No books matching the {book_field.value}{F.ENDC}\n')
+        time.sleep(2)
+        clear_terminal()
+        add_full_book(library, book, book_field)

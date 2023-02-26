@@ -101,6 +101,7 @@ class Library:
             w_set.value['w_sheet'] = worksheet
 
     def search_books(self, book_value: str, book_field: BookFields, w_set: WorksheetSet) -> list[dict]:
+        # TODO: exlude worksheet header row from search
         '''
         Search a book value with the specified worksheet header - `book_field` and
         in the specified worksheet - `w_set`.
@@ -189,6 +190,29 @@ class Library:
         book_to_add['Copies'] = new_num_copies
         return book_to_add
 
+    def append_book(self, book: Book):
+        '''
+        Append a book to the stock worksheet based on `Book` model.
+
+        :param book: A `Book` model instance.
+        :return: A dictionary containing the book details.
+        '''
+        headers = [field.name for field in BookFields]
+        book_to_add = book.dict(include={field.name for field in BookFields})
+        w_set = WorksheetSets.stock
+        w_sheet = w_set.value['w_sheet']
+        if not w_sheet:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set.name}>"
+            )
+        if not book_to_add:
+            raise ValueError(
+                f"Can't to add an empty book to the worksheet <{w_set.name}>"
+            )
+        values = [book_to_add.get(header.lower()) for header in headers]
+        w_sheet.append_row(values)
+        return book_to_add
+
 
 # for testing purposes
 # The below code will be executed only if this module is run as a script
@@ -214,6 +238,18 @@ if __name__ == '__main__':
 
     # add book copies
     book_to_add = finded_books[1]
-    copies = 5
+    copies = 3
     updated_book = library.add_book_copies(book_to_add, copies)
     print(updated_book)
+
+    # append book
+    book = Book(
+        isbn='978-3-16-148410-0',
+        title='The Lord of the Rings',
+        author='J.R.R. Tolkien',
+        genre='Fantasy',
+        year='2001',
+        copies='2',
+    )
+    appended_book = library.append_book(book)
+    print(appended_book)

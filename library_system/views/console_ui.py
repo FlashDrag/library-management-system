@@ -181,19 +181,23 @@ class Menu:
         self._get_user_input()
 
 
-def get_book_input(book: Book, field: BookFields) -> str:
+def get_book_input(book: Book, field: BookFields, msg: str | None = None) -> str:
     '''
-    Gets user input for specific field,
-    assigns it to the Book instance and validates it with pydantic.
+    Gets user input for specific field of the Book.
+    Assigns it trought pydantic validation to the Book instance.
     :param book: Book instance
     :param field: BookFields enum
+    :param msg: custom message to prompt user to enter value for the field,
+    if None, default message is used based on `field` e.g: `Enter Title of the Book:`
+
     :return: validated user book input
     '''
+    default_msg = str(field)
+    message = msg if msg else default_msg
     while True:
         try:
-            # prompt user to enter value appropriate for the field
-            # e.g. Enter title of the Book:
-            user_input = input(f'{F.ITALIC}{str(field)}{F.ENDC}\n')
+
+            user_input = input(f'{F.ITALIC}{message}{F.ENDC}\n')
             # pass user input to the Book instance field based on field name
             setattr(book, field.name, user_input)
         except ValidationError as e:
@@ -211,12 +215,12 @@ For testing purposes
 
 Add the sys import to the top of the file if you want to run this module as a script:
 import sys
-sys.path.append('/absolute_path/to/app')
+sys.path.append('/absolute_path/to/app')  # to use dependent app modules
 
 The below code will be executed only if this module is run as a script
 '''
 if __name__ == '__main__':
-    # ------------------ Menu ------------------
+    # Menu
     name = 'Library Main Menu'
     options = ['Add Book',
                'Remove Book',
@@ -227,15 +231,15 @@ if __name__ == '__main__':
     menu = Menu(name, options, table_format)
     menu.run()
     print(f'Selected option code: {menu.get_selected_code()}')
-    print(f'Selected option: {menu.get_selected_option_str()}')
-    print(f'Selected option: {menu.get_selected_option_dict()}')
+    print(f'Selected str option: {menu.get_selected_option_str()}')
+    print(f'Selected dict option: {menu.get_selected_option_dict()}')
     print()
 
-    # ------------------ get_book_input ------------------
+    # get_book_input
     book = Book()
-    field = BookFields.title
+    field = BookFields.copies
     book_value = get_book_input(book, field)
     print(book_value)
     print(book.dict())
     print(book[field.name])
-    print(book.title)
+    print(book.copies)

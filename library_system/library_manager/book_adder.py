@@ -1,5 +1,4 @@
 from tabulate import tabulate
-from pydantic import ValidationError
 
 from library_system.views.formatters import font as F, clear_terminal
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input
@@ -61,20 +60,10 @@ def add_book(library: Library):
             print(tabulate([book_to_add], headers='keys') + '\n')
 
             print('How many copies do you want to add?')
-            while True:
-                try:
-                    user_input = input(f'{F.ITALIC}Enter the number of copies in range 1-10:{F.ENDC}\n')
-                    # validate user input using Book instance
-                    setattr(book, BookFields.copies.name, user_input)
-                except ValidationError as e:
-                    print(f"{F.ERROR}{e.errors()[0]['msg']}Try again.{F.ENDC}\n")
-                else:
-                    copies = int(user_input)
-                    break
-
+            copies = get_book_input(book, BookFields.copies, msg='Enter the number of copies in range 1-10:')
             try:
                 # add the book to the library stock
-                updated_book_dict = library.add_book_copies(book_to_add, copies)
+                updated_book_dict = library.add_book_copies(book_to_add, int(copies))
             except Exception as e:
                 print(e)
             else:

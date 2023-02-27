@@ -1,12 +1,15 @@
 from typing import TypedDict
 from gspread import Worksheet
 from enum import Enum
+from library_system.models.book import BookFields, BorrowerFields
 
 
 class WorksheetSet(TypedDict):
     '''
     :param title: title of worksheet
-    :param headers: list of header titles for the worksheet header row
+    :param headers: list of header titles for the worksheet header row,
+    from `BookFields` enum.
+    e.g. ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies']
     :param w_sheet: gspread Worksheet instance
     '''
     title: str
@@ -16,7 +19,6 @@ class WorksheetSet(TypedDict):
 
 class WorksheetSets(Enum):
     '''
-    Headers must match the `Book` model fields.
     Enum of `WorksheetSet` instances.
     Each `WorksheetSet` contains: worksheet `title`, `headers` and `w_sheet`(gspread `Worksheet` instance).
 
@@ -27,12 +29,11 @@ class WorksheetSets(Enum):
     '''
     stock = WorksheetSet(
         title='stock',
-        headers=['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies'],
+        headers=list(map(lambda field: field.value, BookFields)),
         w_sheet=None
     )
     borrowed = WorksheetSet(
         title='borrowed',
-        headers=['ISBN', 'Title', 'Author', 'Genre', 'Year',
-                 'Copies', 'Borrower', 'Borrowed Date', 'Due Date'],
+        headers=list(map(lambda field: field.value, BorrowerFields)),
         w_sheet=None
     )

@@ -1,10 +1,9 @@
 import logging
 from pyfiglet import figlet_format
 
-from library_system.config import LOGTAIL_TOKEN, SHEET_NAME, CREDS_PATH
-from library_system.views.formatters import font as F, clear_terminal
+from library_system.config import LOGTAIL_TOKEN, library_init
+from library_system.views.formatters import clear_terminal
 from library_system.models.spreadsheet import Library
-from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.views.console_ui import Menu
 from library_system.views.menus import MenuSets
 from library_system import library_manager
@@ -26,27 +25,6 @@ logger = logging.getLogger(__name__)
 def display_header():
     logger.info('Starting the App...')
     print(figlet_format('Library Management System', 'straight'))
-
-
-def library_init() -> Library:
-    '''
-    Initialize a Library instance and connect to the Google Sheet.
-
-    :return: Library instance
-    '''
-    print('Connecting to the Library Spreadsheet...')
-    library = Library(SHEET_NAME, CREDS_PATH)
-    library.connect()
-    if not library.isConnected:
-        print(f'{F.ERROR}Cannot connect to the Library Spreadsheet. Restart the App or try again later.{F.ENDC}\n'
-              f'Exiting...')
-        logger.error('Failed to connect to the Library Spreadsheet. Exiting...')
-        exit()
-    else:
-        print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
-        logger.info('Connected to the Library Spreadsheet.')
-        library.set_worksheets(list(WorksheetSets))
-        return library
 
 
 def run_main_menu():

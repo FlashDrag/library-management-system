@@ -190,16 +190,18 @@ class Library:
         book_to_add['Copies'] = new_num_copies
         return book_to_add
 
-    def append_book(self, book: Book):
+    def append_book(self, book: Book, w_set: WorksheetSets):
         '''
-        Append a book to the stock worksheet based on `Book` model.
+        Append a book to the worksheet.
+        Will be added only the fields specified in the `WorksheetSet`.
 
         :param book: A `Book` model instance.
+        :param w_set: The `WorksheetSet` enum to append the book to.
         :return: A dictionary containing the book details.
         '''
-        headers = [field.name for field in BookFields]
-        book_to_add = book.dict(include={field.name for field in BookFields})
-        w_set = WorksheetSets.stock
+        fields = w_set.value['fields']
+        # create a dictionary containing only the fields specified in the `WorksheetSet`
+        book_to_add = book.dict(include=set(fields))
         w_sheet = w_set.value['w_sheet']
         if not w_sheet:
             raise ValueError(
@@ -209,7 +211,8 @@ class Library:
             raise ValueError(
                 f"Can't to add an empty book to the worksheet <{w_set.name}>"
             )
-        values = [book_to_add.get(header.lower()) for header in headers]
+        # get the values of the book dictionary in the same order as the headers in the worksheet
+        values = [book_to_add.get(field) for field in fields]
         w_sheet.append_row(values)
         return book_to_add
 
@@ -250,6 +253,9 @@ if __name__ == '__main__':
         genre='Fantasy',
         year='2001',
         copies='2',
+        borrower='John Doe',
+        borrow_date='2023-02-25',
+        due_date='2023-04-1',
     )
-    appended_book = library.append_book(book)
+    appended_book = library.append_book(book, WorksheetSets.stock)
     print(appended_book)

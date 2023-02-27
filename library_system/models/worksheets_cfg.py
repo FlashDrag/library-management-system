@@ -10,10 +10,13 @@ class WorksheetSet(TypedDict):
     :param headers: list of header titles for the worksheet header row,
     from `BookFields` enum.
     e.g. ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies']
+    :param fields: list of fields of `Book` model, from `BookFields` enum.
+    e.g. ['isbn', 'title', 'author', 'genre', 'year', 'copies', 'borrower', 'borrow_date', 'due_date']
     :param w_sheet: gspread Worksheet instance
     '''
     title: str
     headers: list[str]
+    fields: list[str]
     w_sheet: None | Worksheet
 
 
@@ -30,10 +33,12 @@ class WorksheetSets(Enum):
     stock = WorksheetSet(
         title='stock',
         headers=list(map(lambda field: field.value, BookFields)),
+        fields=list(map(lambda field: field.name, BookFields)),
         w_sheet=None
     )
     borrowed = WorksheetSet(
         title='borrowed',
         headers=list(map(lambda field: field.value, BorrowerFields)),
+        fields=list(map(lambda field: field.name, BorrowerFields)),
         w_sheet=None
     )

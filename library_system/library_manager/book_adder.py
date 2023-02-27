@@ -127,7 +127,7 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
     print(tabulate([book_to_add], headers='keys') + '\n')
 
-    print('How many copies do you want to add?')
+    print(f'{F.HEADER}How many copies do you want to add?{F.ENDC}')
     copies = get_book_input(
         book, BookFields.copies, msg='Enter the number of copies in range 1-10:')
     try:
@@ -154,7 +154,7 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         get_book_input(book, field)
 
     try:
-        added_book = library.append_book(book)
+        added_book = library.append_book(book, WorksheetSets.stock)
     except Exception as e:
         print(e)
     else:

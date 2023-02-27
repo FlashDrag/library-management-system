@@ -217,7 +217,9 @@ class Library:
         w_sheet.append_row(values)
         return book_to_add
 
-    def remove_book(self, book_to_remove: dict, w_set: WorksheetSet, copies_to_remove: int = 1, totally: bool = False):
+    def remove_book(
+            self, book_to_remove: dict, w_set: WorksheetSet, copies_to_remove: int = 1, totally: bool = False
+    ) -> dict | None:
         '''
         Remove a book from the worksheet.
 
@@ -225,7 +227,7 @@ class Library:
         :param w_set: The `WorksheetSet` to remove the book from.
         :param copies_to_remove: The number of copies to remove.
         :param totally: If `True` the book row will be removed from the worksheet.
-        :return: A dictionary containing the book details.
+        :return: A dictionary containing the updated book details or None if book totally deleted
         '''
         w_sheet = w_set['w_sheet']
         if not w_sheet:
@@ -236,12 +238,12 @@ class Library:
         current_copies = book_to_remove['Copies']
         if totally or not current_copies or not current_copies.isdigit():
             w_sheet.delete_row(cell_row)
-            return book_to_remove
+            return None
 
         new_num_copies = int(current_copies) - copies_to_remove
         if new_num_copies <= 0:
             w_sheet.delete_row(cell_row)
-            return book_to_remove
+            return None
 
         field = 'copies'
         header = w_sheet.find(
@@ -293,7 +295,8 @@ if __name__ == '__main__':
     found_books = library.search_books(
         book[book_field.name], book_field, WorksheetSets.stock.value
     )
-    print(f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
+    print(
+        f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
 
     # add book copies
     book_to_add = found_books[0]
@@ -310,12 +313,16 @@ if __name__ == '__main__':
     found_books = library.search_books(
         book[book_field.name], book_field, WorksheetSets.stock.value
     )
-    print(f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
+    print(
+        f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
 
     # remove
     book_to_remove = found_books[0]
-    copies_to_remove = 5
-    updated_book = library.remove_book(
+    copies_to_remove = 20
+    removed_book = library.remove_book(
         book_to_remove, WorksheetSets.stock.value, copies_to_remove
     )
-    print(f'Updated book: {updated_book}')
+    if removed_book:
+        print(f'Updated book: {removed_book}')
+    else:
+        print('Book totally removed')

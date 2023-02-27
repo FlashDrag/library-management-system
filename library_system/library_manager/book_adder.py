@@ -50,7 +50,7 @@ def find_books(library: Library, book_field: BookFields, book_value: str) -> lis
     :param book_value: validated user input from the Book model
     :return: list of books matching the BookFields attribute and value provided by the user
     '''
-    print(f"Searching for {book_value} in the Library...")
+    print(f'Searching for "{book_value}" in the Library...')
     found_books = library.search_books(
         book_value, book_field, WorksheetSets.stock.value
     )
@@ -76,7 +76,7 @@ def run_search_results_menu(library: Library, book: Book, book_field: BookFields
           f'"{book[book_field.name]}"{F.ENDC}\n')
     search_results_menu = Menu(
         'What do you want to do?',
-        ['Show all books to choose from', 'Continue adding the book'],
+        ['Show all the books to select and add new copies.', 'Continue adding the book, fill all fields.'],
         Table_Formats.rounded_outline
     )
     search_results_menu.run()
@@ -133,9 +133,10 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
     try:
         # add the book to the library stock
         updated_book_dict = library.add_book_copies(
-            book_to_add, int(copies))
+            book_to_add, WorksheetSets.stock.value, int(copies)
+        )
     except Exception as e:
-        print(e)
+        print(f'Error: {e}. Restart the application.')
         exit()
     else:
         clear_terminal()
@@ -154,7 +155,7 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         get_book_input(book, field)
 
     try:
-        added_book = library.append_book(book, WorksheetSets.stock)
+        added_book = library.append_book(book, WorksheetSets.stock.value)
     except Exception as e:
         print(e)
     else:

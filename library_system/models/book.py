@@ -110,8 +110,8 @@ class Book(BaseModel):
         '''
         if year is None:
             return year
-        if year < 0 or year > datetime.now().year:
-            raise ValueError('Incorrect year')
+        if year < 1 or year > datetime.now().year:
+            raise ValueError('Incorrect year. Can be in range: 1 - current year.')
         return year
 
     @validator('copies')

@@ -157,64 +157,105 @@ class Library:
 
         return result_list
 
-    def add_book_copies(self, book_to_add: dict, copies: int) -> dict:
+    def add_book_copies(self, book_to_add: dict, w_set: WorksheetSet, copies_to_add: int) -> dict:
         '''
         Add copies to the existing book in the stock worksheet.
 
         :param book_to_add: A dictionary containing the book details.
-        :param copies: The number of copies to add.
+        :param w_set: The `WorksheetSet` to add the book copies to.
+        :param copies_to_add: The number of copies to add.
         :return: Dictionary containing a book with updated number of copies.
         '''
+        w_sheet = w_set['w_sheet']
+        if not w_sheet:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set['title']}>"
+            )
         cell_row = book_to_add['cell_row']
         current_copies = book_to_add['Copies']
         if not current_copies or not current_copies.isdigit():
-            new_num_copies = copies
+            new_num_copies = copies_to_add
         else:
-            new_num_copies = int(current_copies) + copies
-        field = BookFields.copies.name
-        w_set = WorksheetSets.stock
-        if not w_set.value['w_sheet']:
-            raise ValueError(
-                f"Can't to find the worksheet <{w_set.name}>"
-            )
-        header = w_set.value['w_sheet'].find(
+            new_num_copies = int(current_copies) + copies_to_add
+        field = 'copies'
+        header = w_sheet.find(
             field, in_row=1, case_sensitive=False
         )
         if not header:
             raise ValueError(
-                f"Can't to find the header <{field}> in the worksheet <{w_set.name}>"
+                f"Can't to find the header <{field}> in the worksheet <{w_set['title']}>"
             )
         col_num = header.col
 
-        w_set.value['w_sheet'].update_cell(cell_row, col_num, new_num_copies)
+        w_sheet.update_cell(cell_row, col_num, new_num_copies)
         book_to_add['Copies'] = new_num_copies
         return book_to_add
 
-    def append_book(self, book: Book, w_set: WorksheetSets):
+    def append_book(self, book: Book, w_set: WorksheetSet):
         '''
         Append a book to the worksheet.
         Will be added only the fields specified in the `WorksheetSet`.
 
         :param book: A `Book` model instance.
-        :param w_set: The `WorksheetSet` enum to append the book to.
+        :param w_set: The `WorksheetSet` to append the book to.
         :return: A dictionary containing the book details.
         '''
-        fields = w_set.value['fields']
-        # create a dictionary containing only the fields specified in the `WorksheetSet`
-        book_to_add = book.dict(include=set(fields))
-        w_sheet = w_set.value['w_sheet']
+        w_sheet = w_set['w_sheet']
         if not w_sheet:
             raise ValueError(
-                f"Can't to find the worksheet <{w_set.name}>"
+                f"Can't to find the worksheet <{w_set['title']}>"
             )
+        fields = w_set['fields']
+        # create a dictionary containing only the fields specified in the `WorksheetSet`
+        book_to_add = book.dict(include=set(fields))
         if not book_to_add:
             raise ValueError(
-                f"Can't to add an empty book to the worksheet <{w_set.name}>"
+                f"Can't to add an empty book to the worksheet <{w_set['title']}>"
             )
         # get the values of the book dictionary in the same order as the headers in the worksheet
         values = [book_to_add.get(field) for field in fields]
         w_sheet.append_row(values)
         return book_to_add
+
+    def remove_book(self, book_to_remove: dict, w_set: WorksheetSet, copies_to_remove: int = 1, totally: bool = False):
+        '''
+        Remove a book from the worksheet.
+
+        :param book_to_remove: A dictionary containing the book details.
+        :param w_set: The `WorksheetSet` to remove the book from.
+        :param copies_to_remove: The number of copies to remove.
+        :param totally: If `True` the book row will be removed from the worksheet.
+        :return: A dictionary containing the book details.
+        '''
+        w_sheet = w_set['w_sheet']
+        if not w_sheet:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set['title']}>"
+            )
+        cell_row = book_to_remove['cell_row']
+        current_copies = book_to_remove['Copies']
+        if totally or not current_copies or not current_copies.isdigit():
+            w_sheet.delete_row(cell_row)
+            return book_to_remove
+
+        new_num_copies = int(current_copies) - copies_to_remove
+        if new_num_copies <= 0:
+            w_sheet.delete_row(cell_row)
+            return book_to_remove
+
+        field = 'copies'
+        header = w_sheet.find(
+            field, in_row=1, case_sensitive=False
+        )
+        if not header:
+            raise ValueError(
+                f"Can't to find the header <{field}> in the worksheet <{w_set['title']}>"
+            )
+        col_num = header.col
+
+        w_sheet.update_cell(cell_row, col_num, new_num_copies)
+        book_to_remove['Copies'] = new_num_copies
+        return book_to_remove
 
 
 # for testing purposes
@@ -231,20 +272,6 @@ if __name__ == '__main__':
 
     library.set_worksheets(list(WorksheetSets))
 
-    # search books
-    book = Book(title='Python')
-    book_field = BookFields.title
-    finded_books = library.search_books(
-        book[book_field.name], book_field, WorksheetSets.stock.value
-    )
-    print(finded_books)
-
-    # add book copies
-    book_to_add = finded_books[1]
-    copies = 3
-    updated_book = library.add_book_copies(book_to_add, copies)
-    print(updated_book)
-
     # append book
     book = Book(
         isbn='978-3-16-148410-0',
@@ -257,5 +284,38 @@ if __name__ == '__main__':
         borrow_date='2023-02-25',
         due_date='2023-04-1',
     )
-    appended_book = library.append_book(book, WorksheetSets.stock)
-    print(appended_book)
+    appended_book = library.append_book(book, WorksheetSets.stock.value)
+    print(f'Appended book: {appended_book}')
+
+    # search books
+    book = Book(title='Lord of the Rings')
+    book_field = BookFields.title
+    found_books = library.search_books(
+        book[book_field.name], book_field, WorksheetSets.stock.value
+    )
+    print(f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
+
+    # add book copies
+    book_to_add = found_books[0]
+    copies = 8
+    updated_book = library.add_book_copies(
+        book_to_add, WorksheetSets.stock.value, copies
+    )
+    print(f'Updated book: {updated_book}')
+
+    # remove book copies
+    # search
+    book = Book(title='Lord of the Rings')
+    book_field = BookFields.title
+    found_books = library.search_books(
+        book[book_field.name], book_field, WorksheetSets.stock.value
+    )
+    print(f'Found books matching the {book_field.value} "{book[book_field.name]}": {found_books}')
+
+    # remove
+    book_to_remove = found_books[0]
+    copies_to_remove = 5
+    updated_book = library.remove_book(
+        book_to_remove, WorksheetSets.stock.value, copies_to_remove
+    )
+    print(f'Updated book: {updated_book}')

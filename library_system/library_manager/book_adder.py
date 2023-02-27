@@ -1,6 +1,7 @@
 from tabulate import tabulate
 import time
 
+from library_system.config import library_init
 from library_system.views.formatters import font as F, clear_terminal
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input
 from library_system.views.menus import MenuSets
@@ -26,37 +27,6 @@ def run_add_book_menu() -> BookFields:
     selected = menu.get_selected_option_str().split()[1]
     book_field = getattr(BookFields, selected)
     return book_field
-
-
-def get_book_value(book: Book, book_field: BookFields) -> str:
-    '''
-    Get the user input based on the selected BookFields attribute and assign it to the Book model.
-
-    :param book: Book instance
-    :param selected_field: selected BookFields attribute
-    :return: validated user input with the Book model
-    '''
-    book_value = get_book_input(book, book_field)
-
-    return book_value
-
-
-def find_books(library: Library, book_field: BookFields, book_value: str) -> list[dict]:
-    '''
-    Try to find the books matching the BookFields attribute and value provided by the user.
-
-    :param library: Library instance
-    :param book_field: selected BookFields attribute
-    :param book_value: validated user input from the Book model
-    :return: list of books matching the BookFields attribute and value provided by the user
-    '''
-    print(f'Searching for "{book_value}" in the Library...')
-    found_books = library.search_books(
-        book_value, book_field, WorksheetSets.stock.value
-    )
-    time.sleep(1)
-
-    return found_books
 
 
 def run_search_results_menu(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
@@ -104,7 +74,7 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
         f'"{book[book_field.name]}"{F.ENDC}\n'
     )
     show_books_menu = Menu(
-        'Choose the book you want to add:',
+        'Select the book you want to add:',
         found_books,
         Table_Formats.rounded_outline
     )
@@ -129,15 +99,18 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
 
     print(f'{F.HEADER}How many copies do you want to add?{F.ENDC}')
     copies = get_book_input(
-        book, BookFields.copies, msg='Enter the number of copies in range 1-10:')
+        book, BookFields.copies, msg='Enter a number of copies in range 1-10:')
     try:
         # add the book to the library stock
         updated_book_dict = library.add_book_copies(
             book_to_add, WorksheetSets.stock.value, int(copies)
         )
-    except Exception as e:
-        print(f'Error: {e}. Restart the application.')
-        exit()
+    except Exception:
+        print(f'{F.ERROR}Failed to add the book copies to the library stock. Try again{F.ENDC}')
+        # TODO add logging
+        # logger.error(f'Failed to add the book to the library stock: {e}')
+        library_init()
+        add_book(library)
     else:
         clear_terminal()
         print(
@@ -156,8 +129,12 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
 
     try:
         added_book = library.append_book(book, WorksheetSets.stock.value)
-    except Exception as e:
-        print(e)
+    except Exception:
+        print(f'{F.ERROR}Failed to add the book to the library stock. Try again{F.ENDC}')
+        # TODO add logging
+        # logger.error(f'Failed to add the book to the library stock: {e}')
+        library_init()
+        add_book(library)
     else:
         clear_terminal()
         print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}')
@@ -172,15 +149,26 @@ def add_book(library: Library):
     display_header()
 
     book_field = run_add_book_menu()
-    book_value = get_book_value(book, book_field)
+    book_value = get_book_input(book, book_field)
 
-    found_books = find_books(library, book_field, book_value)
-
-    if len(found_books) > 0:
-        clear_terminal()
-        run_search_results_menu(library, book, book_field, found_books)
+    print(f'Searching for "{book_value}" in the Library...')
+    try:
+        found_books = library.search_books(
+            book_value, book_field, WorksheetSets.stock.value
+        )
+    except Exception:
+        print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
+        # TODO add logging
+        # logger.error(f'Failed to search for the book: {e}')
+        library_init()
+        add_book(library)
     else:
-        print(f'{F.YELLOW}No books matching the {book_field.value}{F.ENDC}\n')
         time.sleep(2)
-        clear_terminal()
-        add_full_book(library, book, book_field)
+        if len(found_books) > 0:
+            clear_terminal()
+            run_search_results_menu(library, book, book_field, found_books)
+        else:
+            print(f'{F.YELLOW}No books matching the {book_field.value}{F.ENDC}\n')
+            time.sleep(2)
+            clear_terminal()
+            add_full_book(library, book, book_field)

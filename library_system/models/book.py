@@ -6,7 +6,7 @@ from re import sub
 
 class BookFields(Enum):
     '''
-    Book fields for `Book` model
+    Book fields for `Book` model and for header row in `stock` worksheet
     '''
     isbn = 'ISBN'
     title = 'Title'
@@ -19,6 +19,27 @@ class BookFields(Enum):
         return f'Enter {self.value} of the Book:'
 
 
+class BorrowerFields(Enum):
+    '''
+    Borrower fields for `Book` model and for header row in `borrowed` worksheet
+    '''
+    isbn = 'ISBN'
+    title = 'Title'
+    author = 'Author'
+    genre = 'Genre'
+    year = 'Year'
+    copies = 'Copies'
+    borrower = 'Borrower name'
+    borrow_date = 'Borrow date'
+    due_date = 'Due date'
+
+    def __str__(self):
+        if self.name in ['borrower', 'borrow_date', 'due_date']:
+            return f'Enter {self.value}:'
+        else:
+            return f'Enter {self.value} of the Book:'
+
+
 class Book(BaseModel):
     '''
     Book model for validation and serialization.
@@ -29,6 +50,9 @@ class Book(BaseModel):
     genre: str | None = None
     year: str | int | None = None
     copies: str | int | None = None
+    borrower: str | None = None
+    borrow_date: str | None = None
+    due_date: str | None = None
 
     class Config:
         # perform validation on assignment to attributes

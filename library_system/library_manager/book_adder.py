@@ -16,13 +16,13 @@ def display_header():
 def run_add_book_menu() -> BookFields:
     '''
     Display the menu `how to add a book` with the options.
-    Get the selected option from the menu and split it to get the book field (e.g. `by isbn` -> `isbn`).
+    Get the selected option from the menu and split it to get the book field (e.g. `Search by ISBN` -> `isbn`).
     Get book field attribute from the BookFields enum.
     :return: BookFields attribute
     '''
     menu = Menu(**MenuSets.add_book.value)
     menu.run()
-    selected = menu.get_selected_option_str().split()[1]
+    selected = menu.get_selected_option_str().split()[2]
     book_field = getattr(BookFields, selected)
     return book_field
 
@@ -120,10 +120,20 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
 
 
 def add_full_book(library: Library, book: Book, book_field: BookFields):
+    '''
+    Prompt the user to enter the remaining book fields.
+    Add the book to the library stock using the library.append_book() method.
+
+    param library: Library instance
+    param book: Book instance
+    param book_field: selected BookFields attribute
+    '''
     clear_terminal()
     print(f'{F.YELLOW}CONTINUE ADDING A NEW BOOK{F.ENDC}\n')
+    # get the remaining book fields
     fields = [field for field in BookFields if field != book_field]
 
+    # get the remaining book fields from the user
     for field in fields:
         get_book_input(book, field)
 
@@ -175,5 +185,3 @@ def add_book(library: Library):
             time.sleep(2)
             clear_terminal()
             add_full_book(library, book, book_field)
-
-

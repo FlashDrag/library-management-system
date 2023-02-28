@@ -16,13 +16,13 @@ def display_header():
 def run_remove_book_menu() -> BookFields:
     '''
     Display the menu `how to remove a book` with the options.
-    Get the selected option from the menu and split it to get the book field (e.g. `by isbn` -> `isbn`).
+    Get the selected option from the menu and split it to get the book field (e.g. `Search by ISBN` -> `isbn`).
     Get book field attribute from the BookFields enum.
     :return: BookFields attribute
     '''
     menu = Menu(**MenuSets.remove_book.value)
     menu.run()
-    selected = menu.get_selected_option_str().split()[1]
+    selected = menu.get_selected_option_str().split()[2]
     book_field = getattr(BookFields, selected)
     return book_field
 
@@ -58,6 +58,16 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
 
 
 def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
+    '''
+    Ask the user if they want to remove the full book or just some copies.
+     - If the user wants to remove the full book, remove it from the stock worksheet,
+         using the `remove_book` library method.
+     - If the user wants to remove some copies, call the `remove_copies` function.
+
+    :param library: Library instance
+    :param book: Book instance
+    :param book_to_remove: dictionary of the selected book
+    '''
     clear_terminal()
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
 
@@ -84,10 +94,18 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
         else:
             print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
     if selected == 2:
-        remove_copies(library, book, book_to_remove)
+        remove_copies(library, book_to_remove)
 
 
-def remove_copies(library: Library, book: Book, book_to_remove: dict):
+def remove_copies(library: Library, book_to_remove: dict):
+    '''
+    Ask the user how many copies they want to remove.
+    Remove the given number of book copies from the stock worksheet
+    using the `remove_book` library method.
+
+    :param library: Library instance
+    :param book_to_remove: dictionary of the selected book
+    '''
     print(f'{F.HEADER}How many copies do you want to remove?{F.ENDC}')
 
     while True:
@@ -119,6 +137,14 @@ def remove_copies(library: Library, book: Book, book_to_remove: dict):
 
 
 def show_updated_book(removed_book: dict | None, copies_to_remove: int):
+    '''
+    Display the updated book.
+    If the book has been completely removed,
+    display a message without the book details.
+
+    :param removed_book: dictionary of the updated book
+    :param copies_to_remove: number of copies to remove
+    '''
     if not removed_book:
         print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
     else:

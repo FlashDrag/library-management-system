@@ -28,13 +28,14 @@ class BorrowFields(Enum):
     author = 'Author'
     genre = 'Genre'
     year = 'Year'
-    copies = 'Copies'
     borrower = 'Borrower name'
     borrow_date = 'Borrow date'
     due_date = 'Due date'
 
     def __str__(self):
-        if self.name in ['borrower', 'borrow_date', 'due_date']:
+        if self.name in ('borrow_date', 'due_date'):
+            return f'Enter {self.value} in format "dd-mm-yyyy":'
+        elif self.name == 'borrower':
             return f'Enter {self.value}:'
         else:
             return f'Enter {self.value} of the Book:'

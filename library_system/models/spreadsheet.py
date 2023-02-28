@@ -261,6 +261,18 @@ class Library:
         book_to_remove[BookFields.copies.name] = new_num_copies
         return book_to_remove
 
+    def check_out_book(self, book_to_check_out: dict, book: Book):
+        stock_set = WorksheetSets.stock.value
+        borrowed_set = WorksheetSets.borrowed.value
+
+        # add a book to the borrowed worksheet with the borrower's details
+        self.append_book(book, borrowed_set, book_to_check_out)
+
+        # remove a single copy of the book from the library stock
+        upd_book = self.remove_book(book_to_check_out, stock_set)
+
+        return upd_book
+
 
 # for testing purposes
 # The below code will be executed only if this module is run as a script

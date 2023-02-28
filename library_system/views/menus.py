@@ -40,3 +40,9 @@ class MenuSets(Enum):
         options=['By ISBN', 'By title', 'By author'],
         table_format=Table_Formats.rounded_outline
     )
+
+    check_out_book = MenuSet(
+        title='How to check out a book from the library stock?',
+        options=['By ISBN', 'By title', 'By author'],
+        table_format=Table_Formats.rounded_outline
+    )

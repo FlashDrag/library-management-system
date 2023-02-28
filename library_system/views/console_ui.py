@@ -1,9 +1,10 @@
 import logging
+import time
 from enum import Enum
 from tabulate import tabulate
 
 from pydantic import ValidationError
-from library_system.models.book import Book, BookFields
+from library_system.models.book import Book, BookFields, BorrowFields
 from library_system.models.validators import IntInRange, MenuOptions, NonEmptyStr
 
 from library_system.views.formatters import font as F
@@ -181,7 +182,7 @@ class Menu:
         self._get_user_input()
 
 
-def get_book_input(book: Book, field: BookFields, msg: str | None = None) -> str:
+def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None = None) -> str:
     '''
     Gets user input for specific field of the Book.
     Assigns it trought pydantic validation to the Book instance.
@@ -201,11 +202,13 @@ def get_book_input(book: Book, field: BookFields, msg: str | None = None) -> str
             # pass user input to the Book instance field based on field name
             setattr(book, field.name, user_input)
         except ValidationError as e:
-            print(e.errors()[0]['msg'], 'Try again.\n')
+            print(f"{F.ERROR}{e.errors()[0]['msg']}.Try again.{F.ENDC}\n")
         except ValueError as e:
             logging.error(e)
-            print('Something went wrong. Restart the App. Exiting...\n')
+            print(f"{F.ERROR}Something went wrong. Restarting...{F.ENDC}\n")
+            time.sleep(2)
             exit()
+            # TODO restart the app
         else:
             return book[field.name]
 

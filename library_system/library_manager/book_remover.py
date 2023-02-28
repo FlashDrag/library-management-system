@@ -78,9 +78,11 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
             )
         except Exception:
             print(f'{F.ERROR}Failed to remove the book. Try again{F.ENDC}')
+            print(f'{F.ERROR}Restarting...{F.ENDC}')
             # TODO: add logging
             # logger.error(f'Failed to remove the book: {e}')
             library_init()
+            time.sleep(2)
             remove_book(library)
         else:
             print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
@@ -107,9 +109,11 @@ def remove_copies(library: Library, book: Book, book_to_remove: dict):
                 )
             except Exception:
                 print(f'{F.ERROR}Failed to remove the book. Try again{F.ENDC}')
+                print(f'{F.ERROR}Restarting...{F.ENDC}')
                 # TODO: add logging
                 # logger.error(f'Failed to remove the book: {e}')
                 library_init()
+                time.sleep(2)
                 remove_book(library)
             else:
                 show_updated_book(removed_book, copies_to_remove)
@@ -136,22 +140,24 @@ def remove_book(library: Library):
     book_field = run_remove_book_menu()
     book_value = get_book_input(book, book_field)
 
-    print(f'Searching for "{book_value}" in the Library...')
+    print(f'Searching for "{book_value}" in the Library stock...')
     try:
         found_books = library.search_books(
             book_value, book_field, WorksheetSets.stock.value
         )
     except Exception:
         print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
+        print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to search for the book: {e}')
         library_init()
+        time.sleep(2)
         remove_book(library)
     else:
-        time.sleep(2)
         if not len(found_books):
-            print(f'{F.YELLOW}No books matching the {book_field.value}{F.ENDC}\n'
-                  f'Try again')
+            print(f'{F.ERROR}No books matching the {book_field.value}\n'
+                  f'Try again...{F.ENDC}')
+            time.sleep(2)
             remove_book(library)
         else:
             book_to_remove = show_found_books(book, book_field, found_books)

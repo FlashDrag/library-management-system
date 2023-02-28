@@ -107,9 +107,11 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
         )
     except Exception:
         print(f'{F.ERROR}Failed to add the book copies to the library stock. Try again{F.ENDC}')
+        print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
         library_init()
+        time.sleep(2)
         add_book(library)
     else:
         clear_terminal()
@@ -131,9 +133,11 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         added_book = library.append_book(book, WorksheetSets.stock.value)
     except Exception:
         print(f'{F.ERROR}Failed to add the book to the library stock. Try again{F.ENDC}')
+        print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
         library_init()
+        time.sleep(2)
         add_book(library)
     else:
         clear_terminal()
@@ -151,24 +155,25 @@ def add_book(library: Library):
     book_field = run_add_book_menu()
     book_value = get_book_input(book, book_field)
 
-    print(f'Searching for "{book_value}" in the Library...')
+    print(f'Searching for "{book_value}" in the Library stock...')
     try:
         found_books = library.search_books(
             book_value, book_field, WorksheetSets.stock.value
         )
     except Exception:
         print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
+        print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to search for the book: {e}')
         library_init()
+        time.sleep(2)
         add_book(library)
     else:
-        time.sleep(2)
         if len(found_books) > 0:
             clear_terminal()
             run_search_results_menu(library, book, book_field, found_books)
         else:
-            print(f'{F.YELLOW}No books matching the {book_field.value}{F.ENDC}\n')
+            print(f'{F.ERROR}No books matching the {book_field.value}{F.ENDC}\n')
             time.sleep(2)
             clear_terminal()
             add_full_book(library, book, book_field)

@@ -1,8 +1,8 @@
 import logging
 from pyfiglet import figlet_format
 
-from library_system.config import LOGTAIL_TOKEN, library_init
-from library_system.views.formatters import clear_terminal
+from library_system.config import LOGTAIL_TOKEN
+from library_system.tools import clear_terminal, library_init
 from library_system.models.spreadsheet import Library
 from library_system.views.console_ui import Menu
 from library_system.views.menus import MenuSets
@@ -11,13 +11,13 @@ from library_system import library_manager
 from logtail import LogtailHandler
 
 # log to Logtail service
-handler = LogtailHandler(source_token=LOGTAIL_TOKEN)
+logtail_handler = LogtailHandler(source_token=LOGTAIL_TOKEN)
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - [%(filename)s -> %(funcName)s() -> %(lineno)s]: %(message)s",
     datefmt="%d-%b-%y %H:%M",
-    handlers=[handler]
+    handlers=[logtail_handler]
 )
 logger = logging.getLogger(__name__)
 

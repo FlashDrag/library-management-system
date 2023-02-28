@@ -1,7 +1,6 @@
 import time
 
-from library_system.config import library_init
-from library_system.views.formatters import font as F, clear_terminal
+from library_system.tools import library_init, cleanup_app, clear_terminal, F
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
@@ -109,8 +108,8 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(2)
         add_book(library)
     else:
         clear_terminal()
@@ -135,8 +134,8 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(2)
         add_book(library)
     else:
         clear_terminal()
@@ -164,8 +163,8 @@ def add_book(library: Library):
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to search for the book: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(2)
         add_book(library)
     else:
         if len(found_books) > 0:
@@ -176,3 +175,5 @@ def add_book(library: Library):
             time.sleep(2)
             clear_terminal()
             add_full_book(library, book, book_field)
+
+

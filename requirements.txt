@@ -13,6 +13,7 @@ msgpack==1.0.4
 mypy==1.0.0
 mypy-extensions==1.0.0
 oauthlib==3.2.2
+psutil==5.9.4
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.10.0

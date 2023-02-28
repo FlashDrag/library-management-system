@@ -1,7 +1,6 @@
 import time
 
-from library_system.config import library_init
-from library_system.views.formatters import font as F, clear_terminal
+from library_system.tools import clear_terminal, cleanup_app, library_init, F
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
@@ -79,8 +78,8 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
             print(f'{F.ERROR}Restarting...{F.ENDC}')
             # TODO: add logging
             # logger.error(f'Failed to remove the book: {e}')
+            cleanup_app()
             library_init()
-            time.sleep(2)
             remove_book(library)
         else:
             print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
@@ -110,8 +109,8 @@ def remove_copies(library: Library, book: Book, book_to_remove: dict):
                 print(f'{F.ERROR}Restarting...{F.ENDC}')
                 # TODO: add logging
                 # logger.error(f'Failed to remove the book: {e}')
+                cleanup_app()
                 library_init()
-                time.sleep(2)
                 remove_book(library)
             else:
                 show_updated_book(removed_book, copies_to_remove)
@@ -148,8 +147,8 @@ def remove_book(library: Library):
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to search for the book: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(2)
         remove_book(library)
     else:
         if not len(found_books):

@@ -2,8 +2,7 @@ import logging
 from datetime import date as dt
 import time
 
-from library_system.config import library_init
-from library_system.views.formatters import font as F, clear_terminal
+from library_system.tools import library_init, cleanup_app, clear_terminal, F
 from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
@@ -79,8 +78,8 @@ def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
         print(f'{F.ERROR}Failed to check out the book. Try again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         logger.error(f'Failed to check out the book: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(3)
         check_out_book(library)
     else:
         show_updated_book(upd_book)
@@ -114,8 +113,8 @@ def check_out_book(library: Library):
         print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         logger.error(f'Failed to search for the book: {e}')
+        cleanup_app()
         library_init()
-        time.sleep(3)
         check_out_book(library)
     else:
         if not len(found_books):

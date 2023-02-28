@@ -1,14 +1,14 @@
 import logging
-import time
 from enum import Enum
 from tabulate import tabulate
-
 from pydantic import ValidationError
+
+from library_system.tools import restart_app
 from library_system.models.book import Book, BookFields, BorrowFields
 from library_system.models.validators import IntInRange, MenuOptions, NonEmptyStr
 from library_system.models.worksheets_cfg import WorksheetSets
 
-from library_system.views.formatters import font as F
+from library_system.tools import F
 
 logger = logging.getLogger(__name__)
 
@@ -207,9 +207,7 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
         except ValueError as e:
             logging.error(e)
             print(f"{F.ERROR}Something went wrong. Restarting...{F.ENDC}\n")
-            time.sleep(2)
-            exit()
-            # TODO restart the app
+            restart_app()
         else:
             return book[field.name]
 

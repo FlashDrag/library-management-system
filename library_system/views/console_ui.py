@@ -216,8 +216,10 @@ def display_book(book_to_display: dict):
     '''
     Displays a book in a table format in order to the worksheet fields.
     '''
-    fields = WorksheetSets.stock.value['fields'] + ['cell_row']
-    values = [book_to_display[field] for field in fields]
+    sheet_fields = WorksheetSets.stock.value['fields']
+    # add `cell_row` displaying table if it is existed in the book dict
+    fields = (sheet_fields + ['cell_row']) if 'cell_row' in book_to_display else sheet_fields
+    values = [book_to_display.get(field) for field in fields]
     print(tabulate([values], fields) + '\n')
 
 

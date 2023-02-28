@@ -7,15 +7,13 @@ from library_system.models.book import BookFields, BorrowFields
 class WorksheetSet(TypedDict):
     '''
     :param title: title of worksheet
-    :param headers: list of header titles for the worksheet header row,
-    from `BookFields` enum.
+    :param fields: list of header titles for the worksheet header row and for `Book` model,
+    from `BookFields` enum or `BorrowFields` enum.
     e.g. ['ISBN', 'Title', 'Author', 'Genre', 'Year', 'Copies']
-    :param fields: list of fields of `Book` model, from `BookFields` enum.
-    e.g. ['isbn', 'title', 'author', 'genre', 'year', 'copies', 'borrower', 'borrow_date', 'due_date']
+    e.g. ['isbn', 'title', 'author', 'genre', 'year', 'borrower', 'borrow_date', 'due_date']
     :param w_sheet: gspread Worksheet instance
     '''
     title: str
-    headers: list[str]
     fields: list[str]
     w_sheet: None | Worksheet
 
@@ -23,7 +21,7 @@ class WorksheetSet(TypedDict):
 class WorksheetSets(Enum):
     '''
     Enum of `WorksheetSet` instances.
-    Each `WorksheetSet` contains: worksheet `title`, `headers` and `w_sheet`(gspread `Worksheet` instance).
+    Each `WorksheetSet` contains: worksheet `title`, `fields` and `w_sheet`(gspread `Worksheet` instance).
 
     Example. To get `Worksheet` instance of `stock` google worksheet by title:
     use `WorksheetSets.stock.value['w_sheet']`:
@@ -32,13 +30,11 @@ class WorksheetSets(Enum):
     '''
     stock = WorksheetSet(
         title='stock',
-        headers=list(map(lambda field: field.value, BookFields)),
         fields=list(map(lambda field: field.name, BookFields)),
         w_sheet=None
     )
     borrowed = WorksheetSet(
         title='borrowed',
-        headers=list(map(lambda field: field.value, BorrowFields)),
         fields=list(map(lambda field: field.name, BorrowFields)),
         w_sheet=None
     )

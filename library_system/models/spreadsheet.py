@@ -6,7 +6,7 @@ from google.oauth2.service_account import Credentials
 from google.auth.exceptions import GoogleAuthError
 
 from library_system.models.worksheets_cfg import WorksheetSets, WorksheetSet
-from library_system.models.book import Book, BookFields
+from library_system.models.book import Book, BookFields, BorrowFields
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class Library:
 
         for w_set in w_sets:
             title = w_set.value['title']
-            headers = w_set.value['headers']
+            headers = w_set.value['fields']
 
             if title not in google_sheet_titles:
                 worksheet = self.s_sheet.add_worksheet(
@@ -100,7 +100,7 @@ class Library:
             # set gspread Google worksheet instance to `WorksheetSet` dict to `w_sheet` parameter
             w_set.value['w_sheet'] = worksheet
 
-    def search_books(self, book_value: str, book_field: BookFields, w_set: WorksheetSet) -> list[dict]:
+    def search_books(self, book_value: str, book_field: BookFields | BorrowFields, w_set: WorksheetSet) -> list[dict]:
         # TODO: exlude worksheet header row from search
         '''
         Search a book value with the specified worksheet header - `book_field` and
@@ -113,8 +113,8 @@ class Library:
         :return: A list of dictionaries containing the book details.
 
         Example return:
-        [{'ISBN': '9781449357351', 'Title': 'Python Cookbook', 'Author': 'David Beazley, Brian K. Jones',
-         'Genre': 'Computers', 'Year': '2013', 'Copies': '16', 'cell_row': 84},]
+        [{'isbn': '9781449357351', 'title': 'Python Cookbook', 'author': 'David Beazley, Brian K. Jones',
+         'genre': 'Computers', 'year': '2013', 'copies': '16', 'cell_row': 84},]
         '''
 
         worksheet = w_set['w_sheet']
@@ -137,7 +137,7 @@ class Library:
         col_num = header.col
 
         # find all cells with the specified value in the column of the header
-        if book_field in (BookFields.title, BookFields.author, BookFields.genre):
+        if book_field in (BookFields.title, BookFields.author, BookFields.genre, BorrowFields.borrower):
             # match the value substring
             regex = re.compile(rf'.*{book_value}.*', re.IGNORECASE)
         else:
@@ -148,7 +148,7 @@ class Library:
         )
 
         # create a list of dictionaries containing the book details
-        headers = w_set['headers'] + ['cell_row']
+        headers = w_set['fields'] + ['cell_row']
         result_list = []
         for cell in matched_cells:
             value_list = worksheet.row_values(cell.row) + [cell.row]
@@ -172,7 +172,7 @@ class Library:
                 f"Can't to find the worksheet <{w_set['title']}>"
             )
         cell_row = book_to_add['cell_row']
-        current_copies = book_to_add['Copies']
+        current_copies = book_to_add[BookFields.copies.name]
         if not current_copies or not current_copies.isdigit():
             new_num_copies = copies_to_add
         else:
@@ -188,13 +188,13 @@ class Library:
         col_num = header.col
 
         w_sheet.update_cell(cell_row, col_num, new_num_copies)
-        book_to_add['Copies'] = new_num_copies
+        book_to_add[BookFields.copies.name] = new_num_copies
         return book_to_add
 
-    def append_book(self, book: Book, w_set: WorksheetSet):
+    def append_book(self, book: Book, w_set: WorksheetSet, book_to_add: dict | None = None):
         '''
         Append a book to the worksheet.
-        Will be added only the fields specified in the `WorksheetSet`.
+        Will be added only the fields specified in the given `WorksheetSet`.
 
         :param book: A `Book` model instance.
         :param w_set: The `WorksheetSet` to append the book to.
@@ -203,15 +203,17 @@ class Library:
         w_sheet = w_set['w_sheet']
         if not w_sheet:
             raise ValueError(
-                f"Can't to find the worksheet <{w_set['title']}>"
+                f"Failed to connect worksheet <{w_set['title']}>"
             )
         fields = w_set['fields']
-        # create a dictionary containing only the fields specified in the `WorksheetSet`
-        book_to_add = book.dict(include=set(fields))
         if not book_to_add:
-            raise ValueError(
-                f"Can't to add an empty book to the worksheet <{w_set['title']}>"
-            )
+            # create a dictionary from Book model values,
+            # containing only the fields specified in the given `WorksheetSet`
+            book_to_add = book.dict(include=set(fields))
+            if not book_to_add:
+                raise ValueError(
+                    f"Can't to add an empty book to the worksheet <{w_set['title']}>"
+                )
         # get the values of the book dictionary in the same order as the headers in the worksheet
         values = [book_to_add.get(field) for field in fields]
         w_sheet.append_row(values)
@@ -235,7 +237,7 @@ class Library:
                 f"Can't to find the worksheet <{w_set['title']}>"
             )
         cell_row = book_to_remove['cell_row']
-        current_copies = book_to_remove['Copies']
+        current_copies = book_to_remove[BookFields.copies.name]
         if totally or not current_copies or not current_copies.isdigit():
             w_sheet.delete_row(cell_row)
             return None
@@ -256,7 +258,7 @@ class Library:
         col_num = header.col
 
         w_sheet.update_cell(cell_row, col_num, new_num_copies)
-        book_to_remove['Copies'] = new_num_copies
+        book_to_remove[BookFields.copies.name] = new_num_copies
         return book_to_remove
 
 

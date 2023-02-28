@@ -34,11 +34,24 @@
 ## User Experience (UX)
 
 ### User Stories
-- #### Librarian
-    ...
+- #### Librarian goals
+    - As a librarian, I want to be able to add a new book to the library stock.
+    - As a librarian, I want to be able to add some copies of a existed book to the library stock by specific field (ISBN, title, author, etc.)
 
-- #### Frequent user goals
-  - ...
+    - As a librarian, I want to be able to remove a some copies of a existed book from the library stock.
+    - As a librarian, I want to be able to remove a full book from the library stock.
+
+    - As a librarian, I want to be able to check out a book from the library.
+    - As a librarian, I want to be able to return a book to the library.
+
+    - As a librarian, I want to be able to see the list of all books in the library stock.
+    - As a librarian, I want to be able to see the list of books by specific field (author, title, genre etc.) in the library stock.
+
+    - As a librarian, I want to be able to see the all books that are currently checked out.
+    - As a librarian, I want to be able to see the list of books that are overdue.
+
+    - As a librarian, I want to be able to find a book by specific field (author, title, genre etc.) in the library stock.
+    - As a librarian, I want to be able to find a book by specific field (title, borrower, borrow_date etc.) in the `borrowed` worksheet.
 
 [Back to top](#table-of-contents)
 

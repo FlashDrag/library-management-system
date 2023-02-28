@@ -20,13 +20,13 @@ def display_header():
 def run_borrow_book_menu() -> BookFields:
     '''
     Display the menu `how to check out a book` with the options.
-    Get the selected option from the menu and split it to get the book field (e.g. `by isbn` -> `isbn`).
+    Get the selected option from the menu and split it to get the book field (e.g. `Search by ISBN` -> `isbn`).
     Get book field attribute from the BorrowFields enum.
     :return: BorrowFields attribute
     '''
     menu = Menu(**MenuSets.check_out_book.value)
     menu.run()
-    selected = menu.get_selected_option_str().split()[1]
+    selected = menu.get_selected_option_str().split()[2]
     book_field = getattr(BookFields, selected)
     return book_field
 
@@ -95,7 +95,7 @@ def show_updated_book(updated_book: dict | None):
         display_book(updated_book)
 
 
-# entry point for the add book functionality
+# entry point for the check out book functionality
 def check_out_book(library: Library):
     book = Book()
 

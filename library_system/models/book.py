@@ -28,9 +28,9 @@ class BorrowFields(Enum):
     author = 'Author'
     genre = 'Genre'
     year = 'Year'
-    borrower = 'Borrower name'
-    borrow_date = 'Borrow date'
-    due_date = 'Due date'
+    borrower = 'Borrower_name'
+    borrow_date = 'Borrow_date'
+    due_date = 'Due_date'
 
     def __str__(self):
         if self.name in ('borrow_date', 'due_date'):

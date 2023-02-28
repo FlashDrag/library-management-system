@@ -1,7 +1,7 @@
 from typing import TypedDict
 from gspread import Worksheet
 from enum import Enum
-from library_system.models.book import BookFields, BorrowerFields
+from library_system.models.book import BookFields, BorrowFields
 
 
 class WorksheetSet(TypedDict):
@@ -38,7 +38,7 @@ class WorksheetSets(Enum):
     )
     borrowed = WorksheetSet(
         title='borrowed',
-        headers=list(map(lambda field: field.value, BorrowerFields)),
-        fields=list(map(lambda field: field.name, BorrowerFields)),
+        headers=list(map(lambda field: field.value, BorrowFields)),
+        fields=list(map(lambda field: field.name, BorrowFields)),
         w_sheet=None
     )

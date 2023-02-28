@@ -19,7 +19,7 @@ class BookFields(Enum):
         return f'Enter {self.value} of the Book:'
 
 
-class BorrowerFields(Enum):
+class BorrowFields(Enum):
     '''
     Borrower fields for `Book` model and for header row in `borrowed` worksheet
     '''
@@ -126,6 +126,23 @@ class Book(BaseModel):
                 'Incorrect number of copies. Must be in range 0-10.')
         return copies
 
+    @validator('due_date')
+    def validate_due_date(cls, due_date):
+        '''
+        Checks if due date is in the future.
+
+        :return: due date in string format: dd-mm-yyyy
+        '''
+        if due_date is None:
+            return due_date
+        try:
+            due_date = datetime.strptime(due_date, '%d-%m-%Y')
+        except ValueError:
+            raise ValueError('Incorrect due date. Must be in format: dd-mm-yyyy.')
+        if due_date <= datetime.now():
+            raise ValueError('Due date must be in the future.')
+        return datetime.strftime(due_date, '%d-%m-%Y')
+
 
 # For testing purposes
 # The below code will be executed only if this module is run as a script
@@ -144,4 +161,5 @@ if __name__ == '__main__':
     book.title = ''
     book.year = -324
     book.copies = 11
+    book.due_date = '8-03-2023'
     print(book.dict())

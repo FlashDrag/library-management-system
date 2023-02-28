@@ -1,11 +1,10 @@
 import logging
-from tabulate import tabulate
 from datetime import date as dt
 import time
 
 from library_system.config import library_init
 from library_system.views.formatters import font as F, clear_terminal
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input
+from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields, BorrowFields
@@ -64,7 +63,7 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
 def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
     clear_terminal()
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    print(tabulate([book_to_check_out], headers='keys') + '\n')
+    display_book(book_to_check_out)
 
     for field in (BorrowFields.borrower, BorrowFields.due_date):
         value = get_book_input(book, field)
@@ -94,7 +93,7 @@ def show_updated_book(updated_book: dict | None):
         clear_terminal()
         print(f'{F.YELLOW}The book has been checked out.{F.ENDC}\n')
         print(f'{F.YELLOW}Current stock:{F.ENDC}\n')
-        print(tabulate([updated_book], headers='keys'))
+        display_book(updated_book)
 
 
 # entry point for the add book functionality

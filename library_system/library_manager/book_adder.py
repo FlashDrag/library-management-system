@@ -1,9 +1,8 @@
-from tabulate import tabulate
 import time
 
 from library_system.config import library_init
 from library_system.views.formatters import font as F, clear_terminal
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input
+from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -95,7 +94,7 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
     '''
     clear_terminal()
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    print(tabulate([book_to_add], headers='keys') + '\n')
+    display_book(book_to_add)
 
     print(f'{F.HEADER}How many copies do you want to add?{F.ENDC}')
     copies = get_book_input(
@@ -118,7 +117,7 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
         print(
             f'{F.YELLOW}Successfully added {copies} copies of the book to the library stock.{F.ENDC}')
         print(f'{F.YELLOW}Updated book:{F.ENDC}\n')
-        print(tabulate([updated_book_dict], headers='keys'))
+        display_book(updated_book_dict)
 
 
 def add_full_book(library: Library, book: Book, book_field: BookFields):
@@ -143,7 +142,7 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         clear_terminal()
         print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}')
         print(f'{F.YELLOW}Added book:{F.ENDC}\n')
-        print(tabulate([added_book], headers='keys'))
+        display_book(added_book)
 
 
 # entry point for the add book functionality

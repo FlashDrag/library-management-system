@@ -6,6 +6,7 @@ from tabulate import tabulate
 from pydantic import ValidationError
 from library_system.models.book import Book, BookFields, BorrowFields
 from library_system.models.validators import IntInRange, MenuOptions, NonEmptyStr
+from library_system.models.worksheets_cfg import WorksheetSets
 
 from library_system.views.formatters import font as F
 
@@ -211,6 +212,15 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
             # TODO restart the app
         else:
             return book[field.name]
+
+
+def display_book(book_to_display: dict):
+    '''
+    Displays a book in a table format in order to the worksheet fields.
+    '''
+    fields = WorksheetSets.stock.value['fields'] + ['cell_row']
+    values = [book_to_display[field] for field in fields]
+    print(tabulate([values], fields) + '\n')
 
 
 '''

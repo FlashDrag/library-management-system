@@ -1,9 +1,8 @@
-from tabulate import tabulate
 import time
 
 from library_system.config import library_init
 from library_system.views.formatters import font as F, clear_terminal
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input
+from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -62,7 +61,6 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
 def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
     clear_terminal()
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    print(tabulate([book_to_remove], headers='keys') + '\n')
 
     menu = Menu(
         'Do you want to remove the full book or just some copies?',
@@ -128,7 +126,7 @@ def show_updated_book(removed_book: dict | None, copies_to_remove: int):
         clear_terminal()
         print(f'{F.YELLOW}Successfully removed {copies_to_remove} copies{F.ENDC}\n')
         print(f'{F.YELLOW}Updated book:{F.ENDC}\n')
-        print(tabulate([removed_book], headers='keys'))
+        display_book(removed_book)
 
 
 # entry point for the remove book functionality

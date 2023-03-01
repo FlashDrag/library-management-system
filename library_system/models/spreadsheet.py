@@ -149,11 +149,12 @@ class Library:
         )
 
         # create a list of dictionaries containing the book details
-        headers = w_set['fields'] + ['cell_row']
+        headers = w_set['fields']
         result_list = []
         for cell in matched_cells:
-            value_list = worksheet.row_values(cell.row) + [cell.row]
+            value_list = worksheet.row_values(cell.row)
             value_dict = dict(zip(headers, value_list))
+            value_dict['cell_row'] = cell.row
             result_list.append(value_dict)
 
         return result_list
@@ -172,8 +173,12 @@ class Library:
             raise ValueError(
                 f"Can't to find the worksheet <{w_set['title']}>"
             )
-        cell_row = book_to_add['cell_row']
-        current_copies = book_to_add[BookFields.copies.name]
+        cell_row = book_to_add.get('cell_row')
+        if not cell_row:
+            raise ValueError(
+                f"Can't to find the cell row <{cell_row}> in the worksheet <{w_set['title']}>"
+            )
+        current_copies = book_to_add.get(BookFields.copies.name)
         if not current_copies or not current_copies.isdigit():
             new_num_copies = copies_to_add
         else:
@@ -215,6 +220,7 @@ class Library:
                 raise ValueError(
                     f"Can't to add an empty book to the worksheet <{w_set['title']}>"
                 )
+        book_to_add.setdefault('copies', 1)  # add copies field if not exists
         # get the values of the book dictionary in the same order as the headers in the worksheet
         values = [book_to_add.get(field) for field in fields]
         w_sheet.append_row(values)

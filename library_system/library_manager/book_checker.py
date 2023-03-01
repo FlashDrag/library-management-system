@@ -82,15 +82,18 @@ def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
         library = library_init()
         check_out_book(library)
     else:
-        show_updated_book(upd_book)
+        borrower = book_to_check_out.get(BorrowFields.borrower_name.name)
+        show_updated_book(upd_book, borrower)
 
 
-def show_updated_book(updated_book: dict | None):
+def show_updated_book(updated_book: dict | None, borrower: str | None):
     if not updated_book:
-        print(f'{F.YELLOW}The book was completely checked out from the library stock.{F.ENDC}\n')
+        print(f'{F.YELLOW}The book has been borrowed by {borrower} and\n'
+              f'completely checked out from the library stock.{F.ENDC}\n')
     else:
         clear_terminal()
-        print(f'{F.YELLOW}The book has been checked out.{F.ENDC}\n')
+        print(f'{F.YELLOW}A copy of the book has been borrowed by {borrower} and\n'
+              f'checked out from the library stock.{F.ENDC}\n')
         print(f'{F.YELLOW}Current stock:{F.ENDC}\n')
         display_book(updated_book)
 

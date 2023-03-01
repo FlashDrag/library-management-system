@@ -7,7 +7,6 @@ from library_system.tools import restart_app
 from library_system.models.book import Book, BookFields, BorrowFields
 from library_system.models.validators import IntInRange, MenuOptions, NonEmptyStr
 from library_system.models.worksheets_cfg import WorksheetSets
-
 from library_system.tools import F
 
 logger = logging.getLogger(__name__)
@@ -137,13 +136,13 @@ class Menu:
                 )
             except ValidationError as e:
                 print(
-                    f'{F.ERROR}{e.errors()[0].get("msg", "Error")}. Try again{F.ENDC}\n'
+                    f'{F.ERROR}{e.errors()[0].get("msg", "Error")}\nTry again{F.ENDC}\n'
                 )
                 continue
             except ValueError as e:
                 print(f'''{F.ERROR}Incorrect code: '''
                       f'''`{str(e).split("'")[1]}`. '''
-                      f'''Code must be an integer. Try again\n {F.ENDC}''')
+                      f'''Code must be an integer.\nTry again\n {F.ENDC}''')
                 continue
             else:
                 self._selected_code = user_selection.num
@@ -209,7 +208,7 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
             # pass user input to the Book instance field based on field name
             setattr(book, field.name, user_input)
         except ValidationError as e:
-            print(f"{F.ERROR}{e.errors()[0]['msg']}.Try again.{F.ENDC}\n")
+            print(f"{F.ERROR}{e.errors()[0]['msg']}\nTry again.{F.ENDC}\n")
         except ValueError as e:
             logging.error(e)
             print(f"{F.ERROR}Something went wrong. Restarting...{F.ENDC}\n")
@@ -218,15 +217,23 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
             return book[field.name]
 
 
-def display_book(book_to_display: dict):
+def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.stock):
     '''
     Displays a book in a table format in order to the worksheet fields.
+
+    :param book_to_display: dict with book data to display
+    :param w_set: worksheet set to get the fields from
     '''
-    sheet_fields = WorksheetSets.stock.value['fields']
+    sheet_fields = w_set.value['fields']
     # add `cell_row` displaying table if it is existed in the book dict
     fields = (sheet_fields + ['cell_row']) if 'cell_row' in book_to_display else sheet_fields
     values = [book_to_display.get(field) for field in fields]
-    max_col_widths = [13, 22, 16, 13, 4, 4, 4]
+    if w_set.name == WorksheetSets.stock.name:
+        max_col_widths = [13, 20, 15, 13, 4, 4, 4]
+    elif w_set.name == WorksheetSets.borrowed.name:
+        max_col_widths = [13, 15, 12, 8, 4, 8, 5, 5, 4]
+    else:
+        max_col_widths = None
     print(tabulate([values], fields, maxcolwidths=max_col_widths) + '\n')
 
 

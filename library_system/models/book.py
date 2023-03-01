@@ -28,14 +28,14 @@ class BorrowFields(Enum):
     author = 'Author'
     genre = 'Genre'
     year = 'Year'
-    borrower = 'Borrower_name'
+    borrower_name = 'Borrower_name'
     borrow_date = 'Borrow_date'
     due_date = 'Due_date'
 
     def __str__(self):
-        if self.name in ('borrow_date', 'due_date'):
+        if self.name in (BorrowFields.borrow_date.name, BorrowFields.due_date.name):
             return f'Enter {self.value} in format "dd-mm-yyyy":'
-        elif self.name == 'borrower':
+        elif self.name == BorrowFields.borrower_name.name:
             return f'Enter {self.value}:'
         else:
             return f'Enter {self.value} of the Book:'
@@ -51,9 +51,11 @@ class Book(BaseModel):
     genre: str | None = None
     year: str | int | None = None
     copies: str | int | None = None
-    borrower: str | None = None
+    borrower_name: str | None = None
     borrow_date: str | None = None
     due_date: str | None = None
+
+    search_mode: bool = False
 
     class Config:
         # perform validation on assignment to attributes
@@ -127,8 +129,25 @@ class Book(BaseModel):
                 'Incorrect number of copies. Must be in range 0-10.')
         return copies
 
+    @validator('borrow_date')
+    def validate_borrow_date(cls, borrow_date):
+        '''
+        Checks if borrow_date not in the future.
+
+        :return: due date in string format: dd-mm-yyyy
+        '''
+        if borrow_date is None:
+            return borrow_date
+        try:
+            borrow_date = datetime.strptime(borrow_date, '%d-%m-%Y')
+        except ValueError:
+            raise ValueError('Incorrect borrow date. Must be in format: dd-mm-yyyy.')
+        if borrow_date > datetime.now():
+            raise ValueError('Borrow date cannot be in the future.')
+        return datetime.strftime(borrow_date, '%d-%m-%Y')
+
     @validator('due_date')
-    def validate_due_date(cls, due_date):
+    def validate_due_date(cls, due_date, values):
         '''
         Checks if due date is in the future.
 
@@ -140,6 +159,10 @@ class Book(BaseModel):
             due_date = datetime.strptime(due_date, '%d-%m-%Y')
         except ValueError:
             raise ValueError('Incorrect due date. Must be in format: dd-mm-yyyy.')
+
+        # if search mode is on, skip the date in the future check
+        if values.get('search_mode'):
+            return datetime.strftime(due_date, '%d-%m-%Y')
         if due_date <= datetime.now():
             raise ValueError('Due date must be in the future.')
         return datetime.strftime(due_date, '%d-%m-%Y')

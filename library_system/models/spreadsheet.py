@@ -137,7 +137,8 @@ class Library:
         col_num = header.col
 
         # find all cells with the specified value in the column of the header
-        if book_field in (BookFields.title, BookFields.author, BookFields.genre, BorrowFields.borrower):
+        if book_field.name in (
+                BookFields.title.name, BookFields.author.name, BookFields.genre.name, BorrowFields.borrower_name.name):
             # match the value substring
             regex = re.compile(rf'.*{book_value}.*', re.IGNORECASE)
         else:
@@ -191,7 +192,7 @@ class Library:
         book_to_add[BookFields.copies.name] = new_num_copies
         return book_to_add
 
-    def append_book(self, book: Book, w_set: WorksheetSet, book_to_add: dict | None = None):
+    def append_book(self, book_to_add: Book | dict, w_set: WorksheetSet):
         '''
         Append a book to the worksheet.
         Will be added only the fields specified in the given `WorksheetSet`.
@@ -206,7 +207,7 @@ class Library:
                 f"Failed to connect worksheet <{w_set['title']}>"
             )
         fields = w_set['fields']
-        if not book_to_add:
+        if isinstance(book_to_add, Book):
             # create a dictionary from Book model values,
             # containing only the fields specified in the given `WorksheetSet`
             book_to_add = book.dict(include=set(fields))
@@ -237,7 +238,7 @@ class Library:
                 f"Can't to find the worksheet <{w_set['title']}>"
             )
         cell_row = book_to_remove['cell_row']
-        current_copies = book_to_remove[BookFields.copies.name]
+        current_copies = book_to_remove.get(BookFields.copies.name)
         if totally or not current_copies or not current_copies.isdigit():
             w_sheet.delete_row(cell_row)
             return None
@@ -261,15 +262,47 @@ class Library:
         book_to_remove[BookFields.copies.name] = new_num_copies
         return book_to_remove
 
-    def check_out_book(self, book_to_check_out: dict, book: Book):
+    def check_out_book(self, book_to_check_out: dict):
+        '''
+        Check out a book from the library stock.
+
+        :param book_to_check_out: A dictionary containing the book details.
+        :return: A dictionary containing the updated book details.
+        '''
         stock_set = WorksheetSets.stock.value
         borrowed_set = WorksheetSets.borrowed.value
 
         # add a book to the borrowed worksheet with the borrower's details
-        self.append_book(book, borrowed_set, book_to_check_out)
+        self.append_book(book_to_check_out, borrowed_set)
 
         # remove a single copy of the book from the library stock
         upd_book = self.remove_book(book_to_check_out, stock_set)
+
+        return upd_book
+
+    def return_book(self, book_to_return: dict) -> dict:
+        '''
+        Return a book to the library stock and remove it from the borrowed worksheet.
+
+        :param book_to_return: A dictionary containing the book details.
+        :return: A dictionary containing the updated book details.
+        '''
+        book_field = BookFields.isbn
+        book_value = book_to_return.get(book_field.name)
+        w_set = WorksheetSets.stock.value
+        if not book_value:
+            raise ValueError(
+                f"Can't to find the book value {book_field.name} in book_to_return dict"
+            )
+        found_books = self.search_books(book_value, book_field, w_set)
+        if len(found_books) > 0:
+            upd_book = self.add_book_copies(found_books[0], w_set, 1)
+        else:
+            upd_book = self.append_book(book_to_return, w_set)
+
+        # remove the book from the borrowed worksheet
+        self.remove_book(
+            book_to_return, WorksheetSets.borrowed.value, totally=True)
 
         return upd_book
 
@@ -296,7 +329,7 @@ if __name__ == '__main__':
         genre='Fantasy',
         year='2001',
         copies='2',
-        borrower='John Doe',
+        borrower_name='John Doe',
         borrow_date='2023-02-25',
         due_date='2023-04-1',
     )

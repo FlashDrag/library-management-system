@@ -13,14 +13,21 @@ from library_system.tools import F
 logger = logging.getLogger(__name__)
 
 
-class Table_Formats(Enum):
+class TableFormats(Enum):
     '''
-    Supported table formats for `tabulate` library
+    Supported table formats for `tabulate` library.
+    First few formats can be used with `maxheadercolwidths` parameter.
     '''
+    # ---
     plain = "plain"
     simple = "simple"
-    gihub = "github"
     grid = 'grid'
+    pipe = 'pipe'
+    orgtbl = 'orgtbl'
+    presto = 'presto'
+    # ---
+    jira = 'jira'
+    github = "github"
     simple_grid = 'simple_grid'
     rounded_grid = 'rounded_grid'
     heavy_grid = 'heavy_grid'
@@ -34,11 +41,7 @@ class Table_Formats(Enum):
     mixed_outline = 'mixed_outline'
     double_outline = 'double_outline'
     fancy_outline = 'fancy_outline'
-    pipe = 'pipe'
-    orgtbl = 'orgtbl'
     asciidoc = 'asciidoc'
-    jira = 'jira'
-    presto = 'presto'
     pretty = 'pretty'
     psql = 'psql'
     rst = 'rst'
@@ -64,19 +67,20 @@ class Menu:
     :param name: menu name
     :param options: list of menu options
     :param table_format: table output format from Table_Formats enum
+    :param maxcolwidths: max column width for table output
     '''
 
     def __init__(self,
                  title: str,
                  options: list[str] | list[dict],
-                 table_format: Table_Formats = Table_Formats.simple,
-                 sort_options: bool = False):
+                 table_format: TableFormats = TableFormats.simple,
+                 maxcolwidths: int | list[int] | None = None):
         # Validates the input menu name and options list using `NonEmptyStr` and `MenuOptions` validators.
         self._name: str = NonEmptyStr(str_value=title).str_value
         self._options: list = MenuOptions(lst=options).lst
         # gets the value from `Table_Formats` enum.
         self._table_format: str = table_format.value
-        self._sort_options = sort_options
+        self.maxcolwidths = maxcolwidths
 
         self._numbered_options: list[dict] = self._numerate_options()
         self._selected_code: int | None = None
@@ -105,7 +109,9 @@ class Menu:
         table = tabulate(
             self._numbered_options,
             headers='keys',
-            tablefmt=self._table_format
+            tablefmt=self._table_format,
+            maxcolwidths=self.maxcolwidths,
+            maxheadercolwidths=self.maxcolwidths
         )
         return table
 
@@ -220,7 +226,8 @@ def display_book(book_to_display: dict):
     # add `cell_row` displaying table if it is existed in the book dict
     fields = (sheet_fields + ['cell_row']) if 'cell_row' in book_to_display else sheet_fields
     values = [book_to_display.get(field) for field in fields]
-    print(tabulate([values], fields) + '\n')
+    max_col_widths = [13, 22, 16, 13, 4, 4, 4]
+    print(tabulate([values], fields, maxcolwidths=max_col_widths) + '\n')
 
 
 '''
@@ -240,7 +247,7 @@ if __name__ == '__main__':
                'Check Out Book',
                'Return Book',
                'View Library Stock']
-    table_format = Table_Formats.double_grid
+    table_format = TableFormats.double_grid
     menu = Menu(name, options, table_format)
     menu.run()
     print(f'Selected option code: {menu.get_selected_code()}')

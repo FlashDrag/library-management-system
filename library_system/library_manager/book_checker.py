@@ -3,7 +3,7 @@ from datetime import date as dt
 import time
 
 from library_system.tools import library_init, cleanup_app, clear_terminal, F
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
+from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields, BorrowFields
@@ -50,7 +50,8 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
     show_books_menu = Menu(
         'Select the book you want to check out:',
         found_books,
-        Table_Formats.rounded_outline
+        TableFormats.grid,
+        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
     )
     show_books_menu.run()
     # get the selected book to check out in the form of a dictionary

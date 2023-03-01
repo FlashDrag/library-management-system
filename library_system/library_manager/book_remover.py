@@ -1,7 +1,7 @@
 import time
 
 from library_system.tools import clear_terminal, cleanup_app, library_init, F
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
+from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -48,7 +48,8 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
     show_books_menu = Menu(
         'Select the book you want to remove:',
         found_books,
-        Table_Formats.rounded_outline
+        TableFormats.grid,
+        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
     )
     show_books_menu.run()
     # get the selected book to remove in the form of a dictionary
@@ -74,7 +75,7 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
     menu = Menu(
         'Do you want to remove the full book or just some copies?',
         ['Full book', 'Some copies'],
-        Table_Formats.rounded_outline
+        TableFormats.rounded_outline
     )
     menu.run()
     selected = menu.get_selected_code()

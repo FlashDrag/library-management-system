@@ -1,7 +1,7 @@
 import time
 
 from library_system.tools import library_init, cleanup_app, clear_terminal, F
-from library_system.views.console_ui import Menu, Table_Formats, get_book_input, display_book
+from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -45,7 +45,7 @@ def run_search_results_menu(library: Library, book: Book, book_field: BookFields
     search_results_menu = Menu(
         'What do you want to do?',
         ['Show all the books to select and add new copies.', 'Continue adding the book, fill all fields.'],
-        Table_Formats.rounded_outline
+        TableFormats.rounded_outline
     )
     search_results_menu.run()
     search_menu_selected = search_results_menu.get_selected_code()
@@ -74,7 +74,8 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
     show_books_menu = Menu(
         'Select the book you want to add:',
         found_books,
-        Table_Formats.rounded_outline
+        TableFormats.grid,
+        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
     )
     show_books_menu.run()
     # get the selected book to add in the form of a dictionary

@@ -231,10 +231,10 @@ def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.sto
     if w_set.name == WorksheetSets.stock.name:
         max_col_widths = [13, 20, 15, 13, 4, 4, 4]
     elif w_set.name == WorksheetSets.borrowed.name:
-        max_col_widths = [13, 15, 12, 8, 4, 8, 5, 5, 4]
+        max_col_widths = [13, 10, 8, 6, 4, 8, 5, 5, 4]
     else:
         max_col_widths = None
-    print(tabulate([values], fields, maxcolwidths=max_col_widths) + '\n')
+    print(tabulate([values], fields, maxcolwidths=max_col_widths, maxheadercolwidths=max_col_widths) + '\n')
 
 
 '''

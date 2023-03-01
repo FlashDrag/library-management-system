@@ -49,7 +49,7 @@ def show_found_books(book: Book, book_field: BookFields | BorrowFields, found_bo
         'Select the book you want to return:',
         found_books,
         TableFormats.grid,
-        maxcolwidths=[2, 13, 10, 8, 6, 4, 6, 5, 5, 4]
+        maxcolwidths=[2, 13, 8, 5, 5, 4, 6, 3, 3, 3]
     )
     show_books_menu.run()
     # get the selected book to return in the form of a dictionary

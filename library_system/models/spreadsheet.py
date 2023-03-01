@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 import re
 
 import gspread as gs
@@ -311,6 +312,41 @@ class Library:
             book_to_return, WorksheetSets.borrowed.value, totally=True)
 
         return upd_book
+
+    def get_overdue_borrowers(self) -> list[dict]:
+        '''
+        Get a list of overdue borrowers.
+
+        :return: A list of dictionaries containing the overdue borrowers details.
+        '''
+        w_set = WorksheetSets.borrowed.value
+        w_sheet = w_set['w_sheet']
+        if not w_sheet:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set['title']}>"
+            )
+
+        overdue_borrowers = w_sheet.get_all_records(head=1)
+        # add the cell row number to each book dictionary
+        overdue_borrowers_with_cell_row = [
+            {**book, 'cell_row': i + 2} for i, book in enumerate(overdue_borrowers)
+        ]
+
+        # filter out the books that are overdue
+        today = datetime.today()
+        overdue_borrowers = []
+        for book in overdue_borrowers_with_cell_row:
+            due_date = book.get(BorrowFields.due_date.name)
+            if due_date and isinstance(due_date, str):
+                try:
+                    # convert the due date string to a date object
+                    due_date = datetime.strptime(due_date, '%d-%m-%Y')
+                except ValueError:
+                    continue
+                else:
+                    if due_date < today:
+                        overdue_borrowers.append(book)
+        return overdue_borrowers
 
 
 # for testing purposes

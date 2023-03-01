@@ -36,7 +36,7 @@ class MenuSets(Enum):
                  'Remove Book',
                  'Check Out Book',
                  'Return Book',
-                 'View Library Stock'],
+                 'Check Overdue Borrowers'],
         table_format=TableFormats.outline,
         maxcolwidths=None
     )

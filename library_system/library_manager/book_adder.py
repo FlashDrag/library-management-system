@@ -1,6 +1,6 @@
 import time
 
-from library_system.tools import library_init, cleanup_app, clear_terminal, F
+from library_system.tools import library_init, clear_terminal, F
 from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
@@ -105,12 +105,11 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
             book_to_add, WorksheetSets.stock.value, int(copies)
         )
     except Exception:
-        print(f'{F.ERROR}Failed to add the book copies to the library stock. Try again{F.ENDC}')
+        print(f'{F.ERROR}Failed to add the book copies to the library stock.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
-        cleanup_app()
-        library_init()
+        library = library_init()
         add_book(library)
     else:
         clear_terminal()
@@ -141,12 +140,11 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
     try:
         added_book = library.append_book(book, WorksheetSets.stock.value)
     except Exception:
-        print(f'{F.ERROR}Failed to add the book to the library stock. Try again{F.ENDC}')
+        print(f'{F.ERROR}Failed to add the book to the library stock.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to add the book to the library stock: {e}')
-        cleanup_app()
-        library_init()
+        library = library_init()
         add_book(library)
     else:
         clear_terminal()
@@ -170,12 +168,11 @@ def add_book(library: Library):
             book_value, book_field, WorksheetSets.stock.value
         )
     except Exception:
-        print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
+        print(f'{F.ERROR}Failed to search for the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         # TODO add logging
         # logger.error(f'Failed to search for the book: {e}')
-        cleanup_app()
-        library_init()
+        library = library_init()
         add_book(library)
     else:
         if len(found_books) > 0:

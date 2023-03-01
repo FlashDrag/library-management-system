@@ -1,8 +1,6 @@
 import os
 import sys
-import psutil
 import logging
-import time
 
 from library_system.config import SHEET_NAME, CREDS_PATH
 from library_system.models.spreadsheet import Library
@@ -42,9 +40,9 @@ def library_init() -> Library:
     library.connect()
     if not library.isConnected:
         print(f'{F.ERROR}Cannot connect to the Library Spreadsheet. Restart the App or try again later.\n'
-              f'Restarting...{F.ENDC}')
-        logger.error('Failed to connect to the Library Spreadsheet. Restarting...')
-        restart_app()
+              f'Exiting...{F.ENDC}')
+        logger.error('Failed to connect to the Library Spreadsheet.')
+        quit()
     else:
         print(f'{F.BOLD}Succesfully connected.{F.ENDC}\n')
         logger.info('Connected to the Library Spreadsheet.')
@@ -52,27 +50,9 @@ def library_init() -> Library:
     return library
 
 
-# `restart_app` and `cleanup_app` functions based on
-# code snippet from Stack Overflow answer by s3ni0r:
-# https://stackoverflow.com/questions/11329917
-def cleanup_app():
-    """
-    Closes all file descriptors and network connections
-    that are associated with the current process.
-    """
-    time.sleep(2)
-    try:
-        p = psutil.Process(os.getpid())
-        for handler in p.open_files() + p.connections():
-            os.close(handler.fd)
-    except Exception as e:
-        logging.error(e)
-
-
 def restart_app():
     """
     Restarts the current program.
     """
-    cleanup_app()
     python = sys.executable
-    os.execl(python, python, *sys.argv)
+    os.execv(python, [python] + sys.argv)

@@ -2,7 +2,7 @@ import logging
 from datetime import date as dt
 import time
 
-from library_system.tools import library_init, cleanup_app, clear_terminal, F
+from library_system.tools import library_init, clear_terminal, F
 from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
@@ -65,7 +65,7 @@ def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
     print(f'{F.YELLOW}You selected:{F.ENDC}\n')
     display_book(book_to_check_out)
 
-    for field in (BorrowFields.borrower, BorrowFields.due_date):
+    for field in (BorrowFields.borrower_name, BorrowFields.due_date):
         value = get_book_input(book, field)
         book_to_check_out[field.name] = value
 
@@ -74,13 +74,12 @@ def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
     book_to_check_out[BorrowFields.borrow_date.name] = today.strftime('%d-%m-%Y')
 
     try:
-        upd_book = library.check_out_book(book_to_check_out, book)
+        upd_book = library.check_out_book(book_to_check_out)
     except Exception as e:
-        print(f'{F.ERROR}Failed to check out the book. Try again{F.ENDC}')
+        print(f'{F.ERROR}Failed to check out the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         logger.error(f'Failed to check out the book: {e}')
-        cleanup_app()
-        library_init()
+        library = library_init()
         check_out_book(library)
     else:
         show_updated_book(upd_book)
@@ -111,11 +110,10 @@ def check_out_book(library: Library):
             book_value, book_field, WorksheetSets.stock.value
         )
     except Exception as e:
-        print(f'{F.ERROR}Failed to search for the book. Try again{F.ENDC}')
+        print(f'{F.ERROR}Failed to search for the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
         logger.error(f'Failed to search for the book: {e}')
-        cleanup_app()
-        library_init()
+        library = library_init()
         check_out_book(library)
     else:
         if not len(found_books):

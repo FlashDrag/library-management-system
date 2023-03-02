@@ -26,7 +26,7 @@ def display_overdue_borrowers(overdue_borrowers: list[dict]):
         overdue_borrowers,
         box.ASCII_DOUBLE_HEAD,
         title,
-        padding=(1, 0),
+        padding=(1, 0, 0, 1),
         expand=True
     )
 

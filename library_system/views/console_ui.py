@@ -25,7 +25,9 @@ class Menu:
     :param name: menu name
     :param options: list of menu options
     :param table_format: table output format
-    :param maxcolwidths: max column width for table output
+    :param expand: expand table to the full width of the console
+    :param padding: table padding: (top, right, bottom, left). Default:
+    (0, 1) - no padding on top and bottom, 1 space on the right and left.
     '''
 
     def __init__(self,

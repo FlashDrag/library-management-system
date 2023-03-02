@@ -1,5 +1,6 @@
 import time
 from rich import box
+import logging
 
 from library_system.tools import library_init, clear_terminal, F
 from library_system.views.console_ui import Menu, get_book_input, display_book
@@ -8,6 +9,8 @@ from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
 from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.back_to_menu import back_to_menu
+
+logger = logging.getLogger(__name__)
 
 
 def display_header():
@@ -106,17 +109,17 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
         updated_book_dict = library.add_book_copies(
             book_to_add, WorksheetSets.stock.value, int(copies)
         )
-    except Exception:
+    except Exception as e:
         print(f'{F.ERROR}Failed to add the book copies to the library stock.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        # TODO add logging
-        # logger.error(f'Failed to add the book to the library stock: {e}')
+        logger.error(f'Failed to add the book to the library stock: {type(e)}: {e}')
         library = library_init()
         add_book(library)
     else:
         clear_terminal()
         print(
             f'{F.YELLOW}Successfully added {copies} copies of the book to the library stock.{F.ENDC}\n')
+        logger.info(f'Added {copies} copies of the book: {book_to_add}')
         title = 'Updated book:'
         display_book(updated_book_dict, table_title=title)
 
@@ -141,22 +144,23 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
 
     try:
         added_book = library.append_book(book, WorksheetSets.stock.value)
-    except Exception:
+    except Exception as e:
         print(f'{F.ERROR}Failed to add the book to the library stock.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        # TODO add logging
-        # logger.error(f'Failed to add the book to the library stock: {e}')
+        logger.error(f'Failed to add the book to the library stock: {type(e)}: {e}')
         library = library_init()
         add_book(library)
     else:
         clear_terminal()
         print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}\n')
+        logger.info(f'Added the new book: {book}')
         title = 'Added book:'
         display_book(added_book, table_title=title)
 
 
 # entry point for the add book functionality
 def add_book(library: Library):
+    logger.info('Starting the `add book` functionality.')
     book = Book()
 
     display_header()
@@ -169,11 +173,10 @@ def add_book(library: Library):
         found_books = library.search_books(
             book_value, book_field, WorksheetSets.stock.value
         )
-    except Exception:
+    except Exception as e:
         print(f'{F.ERROR}Failed to search for the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        # TODO add logging
-        # logger.error(f'Failed to search for the book: {e}')
+        logger.error(f'Failed to search for the book: {type(e)}: {e}')
         library = library_init()
         add_book(library)
     else:

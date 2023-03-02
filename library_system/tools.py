@@ -55,4 +55,5 @@ def restart_app():
     Restarts the current program.
     """
     python = sys.executable
+    logger.info('Restarting the app...')
     os.execv(python, [python] + sys.argv)

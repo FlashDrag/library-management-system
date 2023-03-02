@@ -72,6 +72,7 @@ def return_book_to_stock(library: Library, book_to_return: dict):
     title = 'You selected:'
     display_book(book_to_return, WorksheetSets.borrowed, table_title=title)
     print('Returning the book to the Library stock...\n')
+    logger.info(f'Returning the book to the Library stock: {book_to_return}')
     try:
         upd_book = library.return_book(book_to_return)
     except Exception as e:
@@ -90,6 +91,7 @@ def show_updated_book(updated_book: dict):
 
     :param updated_book: dictionary with the updated book details
     '''
+    logger.info(f'The book was returned to the library stock: {updated_book}')
     print(f'{F.YELLOW}The book was returned to the library stock.{F.ENDC}\n')
     title = 'The current book details in the library stock:'
     display_book(updated_book, table_title=title)
@@ -97,6 +99,7 @@ def show_updated_book(updated_book: dict):
 
 # entry point for the return book functionality
 def return_book(library: Library):
+    logger.info('Running the return book functionality')
     book = Book(search_mode=True)
 
     display_header()
@@ -113,7 +116,7 @@ def return_book(library: Library):
     except Exception as e:
         print(f'{F.ERROR}Failed to search for the book.\nTry again\n'
               f'Restarting...{F.ENDC}')
-        logger.error(f'Failed to search for the book: {e}')
+        logger.error(f'Failed to search for the book: {type(e)}: {e}')
         library = library_init()
         return_book(library)
     else:

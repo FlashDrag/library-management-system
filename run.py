@@ -1,4 +1,5 @@
 import logging
+import sys
 from pyfiglet import figlet_format
 
 from library_system.config import LOGTAIL_TOKEN
@@ -6,6 +7,7 @@ from library_system.tools import clear_terminal, library_init
 from library_system.models.spreadsheet import Library
 from library_system.views.console_ui import Menu
 from library_system.views.menus import MenuSets
+from library_system.back_to_menu import F
 from library_system import library_manager
 
 from logtail import LogtailHandler
@@ -47,8 +49,12 @@ def run_selected_option(library: Library, selected_option: str):
     :param selected_option: selected option name
     '''
     func_name = selected_option.replace(' ', '_')
-    # TODO add testing for execution each function from library_manager based on the user selection from the Main Menu
-    getattr(library_manager, func_name)(library)
+    try:
+        getattr(library_manager, func_name)(library)
+    except AttributeError:
+        logger.info(f'Invalid option selected: {selected_option}')
+        print(f'{F.ERROR}Invalid option selected: {selected_option}{F.ENDC}')
+        sys.exit()
 
 
 def main():

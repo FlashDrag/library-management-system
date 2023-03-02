@@ -80,7 +80,7 @@ def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
     except Exception as e:
         print(f'{F.ERROR}Failed to check out the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        logger.error(f'Failed to check out the book: {e}')
+        logger.error(f'Failed to check out the book: {type(e)}: {e}')
         library = library_init()
         check_out_book(library)
     else:
@@ -96,12 +96,14 @@ def show_updated_book(updated_book: dict | None, borrower: str | None):
         clear_terminal()
         print(f'{F.YELLOW}A copy of the book has been borrowed by {borrower} and\n'
               f'checked out from the library stock.{F.ENDC}\n')
+        logger.info(f'Book: {updated_book} has been borrowed by {borrower}')
         title = 'Current stock:'
         display_book(updated_book, table_title=title)
 
 
 # entry point for the check out book functionality
 def check_out_book(library: Library):
+    logger.info('Starting the check out book functionality')
     book = Book()
 
     display_header()
@@ -117,7 +119,7 @@ def check_out_book(library: Library):
     except Exception as e:
         print(f'{F.ERROR}Failed to search for the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        logger.error(f'Failed to search for the book: {e}')
+        logger.error(f'Failed to search for the book: {type(e)}: {e}')
         library = library_init()
         check_out_book(library)
     else:

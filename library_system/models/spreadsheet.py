@@ -64,7 +64,7 @@ class Library:
             logger.error(e)
         except Exception as e:
             # catch-all Exception block is still included to handle any unexpected errors that may occur
-            logger.error(f"An unexpected error occurred: {e}")
+            logger.error(f"An unexpected error occurred: {type(e)}: {e}")
 
     def set_worksheets(self, w_sets: list[WorksheetSets]) -> None:
         '''

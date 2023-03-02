@@ -1,5 +1,6 @@
 import time
 from rich import box
+import logging
 
 from library_system.tools import clear_terminal, library_init, F
 from library_system.views.console_ui import Menu, get_book_input, display_book
@@ -8,6 +9,9 @@ from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
 from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.back_to_menu import back_to_menu
+
+
+logger = logging.getLogger(__name__)
 
 
 def display_header():
@@ -60,7 +64,7 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
     return book_to_remove
 
 
-def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
+def prompt_remove_copies(library: Library, book_to_remove: dict):
     '''
     Ask the user if they want to remove the full book or just some copies.
      - If the user wants to remove the full book, remove it from the stock worksheet,
@@ -82,19 +86,20 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
     menu.run()
     selected = menu.get_selected_code()
     if selected == 1:
+        logger.info(f'Removing the full book: {book_to_remove}')
         try:
             library.remove_book(
                 book_to_remove, WorksheetSets.stock.value, totally=True
             )
-        except Exception:
+        except Exception as e:
             print(f'{F.ERROR}Failed to remove the book.\nTry again{F.ENDC}')
             print(f'{F.ERROR}Restarting...{F.ENDC}')
-            # TODO: add logging
-            # logger.error(f'Failed to remove the book: {e}')
+            logger.error(f'Failed to remove the book: {type(e)}: {e}')
             library = library_init()
             remove_book(library)
         else:
             print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
+            logger.info('Book has been completely removed')
     if selected == 2:
         remove_copies(library, book_to_remove)
 
@@ -120,15 +125,15 @@ def remove_copies(library: Library, book_to_remove: dict):
             print(f'{F.ERROR}Please enter a valid number{F.ENDC}')
         else:
             print('Removing....')
+            logger.info(f'Removing {copies_to_remove} copies of {book_to_remove}')
             try:
                 removed_book = library.remove_book(
                     book_to_remove, WorksheetSets.stock.value, copies_to_remove
                 )
-            except Exception:
+            except Exception as e:
                 print(f'{F.ERROR}Failed to remove the book.\nTry again{F.ENDC}')
                 print(f'{F.ERROR}Restarting...{F.ENDC}')
-                # TODO: add logging
-                # logger.error(f'Failed to remove the book: {e}')
+                logger.error(f'Failed to remove the book: {type(e)}: {e}')
                 library = library_init()
                 remove_book(library)
             else:
@@ -148,15 +153,18 @@ def show_updated_book(removed_book: dict | None, copies_to_remove: int):
     '''
     if not removed_book:
         print(f'{F.YELLOW}The Book has been completely removed{F.ENDC}\n')
+        logger.info('Book has been completely removed')
     else:
         clear_terminal()
         print(f'{F.YELLOW}Successfully removed {copies_to_remove} copies{F.ENDC}\n')
+        logger.info(f'Successfully removed {copies_to_remove} copies')
         title = 'Updated book:'
         display_book(removed_book, table_title=title)
 
 
 # entry point for the remove book functionality
 def remove_book(library: Library):
+    logger.info('Starting remove book functionality')
     book = Book()
 
     display_header()
@@ -169,11 +177,10 @@ def remove_book(library: Library):
         found_books = library.search_books(
             book_value, book_field, WorksheetSets.stock.value
         )
-    except Exception:
+    except Exception as e:
         print(f'{F.ERROR}Failed to search for the book.\nTry again{F.ENDC}')
         print(f'{F.ERROR}Restarting...{F.ENDC}')
-        # TODO add logging
-        # logger.error(f'Failed to search for the book: {e}')
+        logger.error(f'Failed to search for the book: {type(e)}: {e}')
         library = library_init()
         remove_book(library)
     else:
@@ -184,5 +191,5 @@ def remove_book(library: Library):
             remove_book(library)
         else:
             book_to_remove = show_found_books(book, book_field, found_books)
-            prompt_remove_copies(library, book, book_to_remove)
+            prompt_remove_copies(library, book_to_remove)
             back_to_menu(library)

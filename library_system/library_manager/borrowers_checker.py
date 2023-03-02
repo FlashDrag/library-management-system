@@ -35,6 +35,7 @@ def check_overdue_borrowers(library: Library):
     '''
     Shows borrwers that have not returned the book on time
     '''
+    logger.info('Checking for overdue borrowers')
     print('Searching for overdue borrowers in the Library "borrowed" sheet...')
     time.sleep(2)
     try:

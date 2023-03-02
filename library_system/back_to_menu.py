@@ -42,6 +42,8 @@ def back_to_menu(library: Library):
         input()
     # catch KeyboardInterrupt to exit the app
     except KeyboardInterrupt:
+        clear_terminal()
+        print(f"{F.YELLOW}Thanks for using the Library Management System!{F.ENDC}")
         print(f'{F.ERROR}Exiting...{F.ENDC}')
         sys.exit()
     else:

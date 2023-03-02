@@ -7,6 +7,7 @@ from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
 from library_system.models.worksheets_cfg import WorksheetSets
+from library_system.back_to_menu import back_to_menu
 
 
 def display_header():
@@ -180,8 +181,9 @@ def add_book(library: Library):
         if len(found_books) > 0:
             clear_terminal()
             run_search_results_menu(library, book, book_field, found_books)
+            back_to_menu(library)
         else:
             print(f'{F.ERROR}No books matching the {book_field.value}{F.ENDC}\n')
-            time.sleep(2)
+            time.sleep(3)
             clear_terminal()
             add_full_book(library, book, book_field)

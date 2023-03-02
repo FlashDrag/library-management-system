@@ -8,6 +8,7 @@ from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields, BorrowFields
 from library_system.models.worksheets_cfg import WorksheetSets
+from library_system.back_to_menu import back_to_menu
 
 logger = logging.getLogger(__name__)
 
@@ -120,8 +121,9 @@ def return_book(library: Library):
         if not len(found_books):
             print(f'{F.ERROR}No books matching the {borrow_field.value}\n'
                   f'Try again...{F.ENDC}')
-            time.sleep(2)
+            time.sleep(3)
             return_book(library)
         else:
             book_to_return = show_found_books(book, borrow_field, found_books)
             return_book_to_stock(library, book_to_return)
+            back_to_menu(library)

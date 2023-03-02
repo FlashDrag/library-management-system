@@ -7,6 +7,7 @@ from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
 from library_system.models.worksheets_cfg import WorksheetSets
+from library_system.back_to_menu import back_to_menu
 
 
 def display_header():
@@ -180,8 +181,9 @@ def remove_book(library: Library):
         if not len(found_books):
             print(f'{F.ERROR}No books matching the {book_field.value}\n'
                   f'Try again...{F.ENDC}')
-            time.sleep(2)
+            time.sleep(3)
             remove_book(library)
         else:
             book_to_remove = show_found_books(book, book_field, found_books)
             prompt_remove_copies(library, book, book_to_remove)
+            back_to_menu(library)

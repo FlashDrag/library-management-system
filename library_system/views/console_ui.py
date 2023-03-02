@@ -98,8 +98,9 @@ class Menu:
         if isinstance(self._options[0], dict):
             # add new key `Code` with unique number to each dictionary and add it to a new list
             # `{"Code": i + 1} | d` creates new dict and merge `|` it with dict from `self._options`
-            numbered_options = [{"Code": i + 1} |
-                                d for i, d in enumerate(self._options)]
+            numbered_options = [
+                {"Code": i + 1} | d for i, d in enumerate(self._options)
+            ]
 
         return numbered_options  # type: ignore
 

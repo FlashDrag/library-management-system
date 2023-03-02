@@ -78,6 +78,7 @@ class Menu:
             table.add_row(*map(str, d.values()))
 
         console = Console()
+        console.width = 90
         console.print(table, overflow='fold')
 
     def _numerate_options(self) -> list[dict]:

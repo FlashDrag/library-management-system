@@ -20,7 +20,13 @@ def display_overdue_borrowers(overdue_borrowers: list[dict]):
     print(f'{F.YELLOW}Found {len(overdue_borrowers)} overdue borrowers{F.ENDC}\n')
     title = 'Showing all overdue borrowers'
 
-    Menu.print_table(overdue_borrowers, box.ASCII_DOUBLE_HEAD, title)
+    Menu.print_table(
+        overdue_borrowers,
+        box.ASCII_DOUBLE_HEAD,
+        title,
+        padding=(1, 0),
+        expand=True
+    )
 
 
 # entry point for the checked_out viewer

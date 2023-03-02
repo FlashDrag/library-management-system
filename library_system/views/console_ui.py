@@ -3,7 +3,7 @@ import logging
 from rich.table import Table
 from rich.console import Console
 from rich.style import Style
-from rich import box
+from rich import box, padding as p
 
 from pydantic import ValidationError
 
@@ -24,7 +24,7 @@ class Menu:
 
     :param name: menu name
     :param options: list of menu options
-    :param table_format: table output format from Table_Formats enum
+    :param table_format: table output format
     :param maxcolwidths: max column width for table output
     '''
 
@@ -32,19 +32,26 @@ class Menu:
                  title: str,
                  options: list[str] | list[dict],
                  table_format: box.Box = box.MINIMAL,
-                 maxcolwidths: int | list[int] | None = None):
+                 expand: bool = False,
+                 padding: p.PaddingDimensions = (0, 1)):
         # Validates the input menu name and options list using `NonEmptyStr` and `MenuOptions` validators.
         self._title: str = NonEmptyStr(str_value=title).str_value
         self._options: list = MenuOptions(lst=options).lst
-        # gets the value from `Table_Formats` enum.
+
         self._table_format = table_format
-        self.maxcolwidths = maxcolwidths
+        self._expand = expand
+        self._padding = padding
 
         self._numbered_options: list[dict] = self._numerate_options()
         self._selected_code: int | None = None
 
     @staticmethod
-    def print_table(options: list[dict], table_format: box.Box, title: str | None = None):
+    def print_table(
+            options: list[dict],
+            table_format: box.Box,
+            title: str | None = None,
+            expand: bool = False,
+            padding: p.PaddingDimensions = (0, 1)):
         '''
         Prints a table based on options list of dictionaries using `rich` library.
         Set column headers to the keys of the first dictionary in the list.
@@ -53,9 +60,12 @@ class Menu:
         Default settings: title style - green, title justify - left, column overflow - fold;
         console print default options: overflow - fold
 
-        :param title: table title
         :param options: list of dictionaries with table data
         :param table_format: table output format
+        :param title: table title
+        :param expand: expand table to the full width of the console
+        :param padding: table padding: (top, right, bottom, left). Default:
+        (0, 1) - no padding on top and bottom, 1 space on the right and left.
         '''
 
         title_style = Style(color='green')
@@ -63,7 +73,9 @@ class Menu:
             title=title,
             title_style=title_style,
             title_justify='left',
-            box=table_format)
+            box=table_format,
+            expand=expand,
+            padding=padding)
         headers = options[0].keys()
         for header in headers:
             table.add_column(header, overflow='fold')
@@ -80,12 +92,14 @@ class Menu:
         '''
         # TODO sort options self._sort_options if True
         if isinstance(self._options[0], str):
-            numbered_options = [{'Code': i + 1, 'Option': item} for i, item in enumerate(self._options)]
+            numbered_options = [{'Code': i + 1, 'Option': item}
+                                for i, item in enumerate(self._options)]
 
         if isinstance(self._options[0], dict):
             # add new key `Code` with unique number to each dictionary and add it to a new list
             # `{"Code": i + 1} | d` creates new dict and merge `|` it with dict from `self._options`
-            numbered_options = [{"Code": i + 1} | d for i, d in enumerate(self._options)]
+            numbered_options = [{"Code": i + 1} |
+                                d for i, d in enumerate(self._options)]
 
         return numbered_options  # type: ignore
 
@@ -122,7 +136,8 @@ class Menu:
         :return int: selected option code
         '''
         if self._selected_code is None:
-            raise ValueError('Cannot get selected code from self._selected_code')
+            raise ValueError(
+                'Cannot get selected code from self._selected_code')
         return self._selected_code
 
     def get_selected_option_str(self) -> str:
@@ -131,10 +146,13 @@ class Menu:
         :return str: selected option
         '''
         if self._selected_code is None:
-            raise ValueError('Cannot get selected code from self._selected_code')
-        selected_option = self._numbered_options[self._selected_code - 1].get('Option', None)
+            raise ValueError(
+                'Cannot get selected code from self._selected_code')
+        selected_option = self._numbered_options[self._selected_code - 1].get(
+            'Option', None)
         if selected_option is None:
-            raise ValueError(f'Cannot get option from self._numbered_options[{self._selected_code - 1}]')
+            raise ValueError(
+                f'Cannot get option from self._numbered_options[{self._selected_code - 1}]')
         return selected_option.lower()
 
     def get_selected_option_dict(self) -> dict:
@@ -143,7 +161,8 @@ class Menu:
         :return dict: selected option
         '''
         if self._selected_code is None:
-            raise ValueError('Cannot get selected code from self._selected_code')
+            raise ValueError(
+                'Cannot get selected code from self._selected_code')
         selected_option = self._numbered_options[self._selected_code - 1]
         del selected_option['Code']
         return selected_option
@@ -152,7 +171,9 @@ class Menu:
         '''
         Displays the menu and gets user input.
         '''
-        Menu.print_table(self._numbered_options, self._table_format, self._title)
+        Menu.print_table(self._numbered_options,
+                         self._table_format, self._title,
+                         self._expand, self._padding)
         self._get_user_input()
 
 
@@ -185,7 +206,11 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
             return book[field.name]
 
 
-def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.stock, table_title: str | None = None):
+def display_book(
+    book_to_display: dict,
+    w_set: WorksheetSets = WorksheetSets.stock,
+    table_title: str | None = None,
+):
     '''
     Displays a book in a table format in order to the worksheet fields.
 
@@ -195,11 +220,13 @@ def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.sto
     '''
     sheet_fields = w_set.value['fields']
     # add `cell_row` displaying table if it is existed in the book dict
-    fields = (sheet_fields + ['cell_row']) if 'cell_row' in book_to_display else sheet_fields
+    fields = (sheet_fields + ['cell_row']
+              ) if 'cell_row' in book_to_display else sheet_fields
     values = [book_to_display.get(field) for field in fields]
     book_to_print = dict(zip(fields, values))
 
-    Menu.print_table([book_to_print], box.MARKDOWN, title=table_title)
+    Menu.print_table([book_to_print], box.MARKDOWN,
+                     title=table_title, expand=True)
 
 
 '''

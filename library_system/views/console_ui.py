@@ -3,7 +3,7 @@ import logging
 from rich.table import Table
 from rich.console import Console
 from rich.style import Style
-from rich import box, padding as p
+from rich import box
 
 from pydantic import ValidationError
 
@@ -26,23 +26,19 @@ class Menu:
     :param options: list of menu options
     :param table_format: table output format
     :param expand: expand table to the full width of the console
-    :param padding: table padding: (top, right, bottom, left). Default:
-    (0, 1) - no padding on top and bottom, 1 space on the right and left.
     '''
 
     def __init__(self,
                  title: str,
                  options: list[str] | list[dict],
                  table_format: box.Box = box.MINIMAL,
-                 expand: bool = False,
-                 padding: p.PaddingDimensions = (0, 1)):
+                 expand: bool = False):
         # Validates the input menu name and options list using `NonEmptyStr` and `MenuOptions` validators.
         self._title: str = NonEmptyStr(str_value=title).str_value
         self._options: list = MenuOptions(lst=options).lst
 
         self._table_format = table_format
         self._expand = expand
-        self._padding = padding
 
         self._numbered_options: list[dict] = self._numerate_options()
         self._selected_code: int | None = None
@@ -52,8 +48,7 @@ class Menu:
             options: list[dict],
             table_format: box.Box,
             title: str | None = None,
-            expand: bool = False,
-            padding: p.PaddingDimensions = (0, 1)):
+            expand: bool = False):
         '''
         Prints a table based on options list of dictionaries using `rich` library.
         Set column headers to the keys of the first dictionary in the list.
@@ -66,8 +61,6 @@ class Menu:
         :param table_format: table output format
         :param title: table title
         :param expand: expand table to the full width of the console
-        :param padding: table padding: (top, right, bottom, left). Default:
-        (0, 1) - no padding on top and bottom, 1 space on the right and left.
         '''
 
         title_style = Style(color='green')
@@ -76,8 +69,7 @@ class Menu:
             title_style=title_style,
             title_justify='left',
             box=table_format,
-            expand=expand,
-            padding=padding)
+            expand=expand)
         headers = options[0].keys()
         for header in headers:
             table.add_column(header, overflow='fold')
@@ -176,7 +168,7 @@ class Menu:
         '''
         Menu.print_table(self._numbered_options,
                          self._table_format, self._title,
-                         self._expand, self._padding)
+                         self._expand)
         self._get_user_input()
 
 

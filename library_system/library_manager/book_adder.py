@@ -77,8 +77,7 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
         'Select the book you want to add:',
         found_books,
         box.ASCII_DOUBLE_HEAD,
-        expand=True,
-        padding=(1, 0, 0, 1)
+        expand=True
     )
     show_books_menu.run()
     # get the selected book to add in the form of a dictionary

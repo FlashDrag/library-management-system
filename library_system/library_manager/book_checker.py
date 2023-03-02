@@ -53,8 +53,7 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
         'Select the book you want to check out:',
         found_books,
         box.ASCII_DOUBLE_HEAD,
-        expand=True,
-        padding=(1, 0, 0, 1)
+        expand=True
     )
     show_books_menu.run()
     # get the selected book to check out in the form of a dictionary

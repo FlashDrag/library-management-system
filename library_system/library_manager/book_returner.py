@@ -1,8 +1,9 @@
 import logging
 import time
+from rich import box
 
 from library_system.tools import library_init, clear_terminal, F
-from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
+from library_system.views.console_ui import Menu, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields, BorrowFields
@@ -48,8 +49,7 @@ def show_found_books(book: Book, book_field: BookFields | BorrowFields, found_bo
     show_books_menu = Menu(
         'Select the book you want to return:',
         found_books,
-        TableFormats.grid,
-        maxcolwidths=[2, 13, 8, 5, 5, 4, 6, 3, 3, 3]
+        box.ASCII_DOUBLE_HEAD
     )
     show_books_menu.run()
     # get the selected book to return in the form of a dictionary
@@ -67,8 +67,8 @@ def return_book_to_stock(library: Library, book_to_return: dict):
     :param book_to_return: dictionary with the book details
     '''
     clear_terminal()
-    print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    display_book(book_to_return, WorksheetSets.borrowed)
+    title = 'You selected:'
+    display_book(book_to_return, WorksheetSets.borrowed, table_title=title)
     print('Returning the book to the Library stock...\n')
     try:
         upd_book = library.return_book(book_to_return)
@@ -89,8 +89,8 @@ def show_updated_book(updated_book: dict):
     :param updated_book: dictionary with the updated book details
     '''
     print(f'{F.YELLOW}The book was returned to the library stock.{F.ENDC}\n')
-    print(f'{F.YELLOW}The current book details in the library stock:{F.ENDC}\n')
-    display_book(updated_book)
+    title = 'The current book details in the library stock:'
+    display_book(updated_book, table_title=title)
 
 
 # entry point for the return book functionality

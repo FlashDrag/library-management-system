@@ -1,9 +1,10 @@
 import logging
 from datetime import date as dt
 import time
+from rich import box
 
 from library_system.tools import library_init, clear_terminal, F
-from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
+from library_system.views.console_ui import Menu, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields, BorrowFields
@@ -50,8 +51,7 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
     show_books_menu = Menu(
         'Select the book you want to check out:',
         found_books,
-        TableFormats.grid,
-        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
+        box.ASCII_DOUBLE_HEAD
     )
     show_books_menu.run()
     # get the selected book to check out in the form of a dictionary
@@ -62,8 +62,8 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
 
 def set_borowing_details(library: Library, book: Book, book_to_check_out: dict):
     clear_terminal()
-    print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    display_book(book_to_check_out)
+    title = 'You selected:'
+    display_book(book_to_check_out, table_title=title)
 
     for field in (BorrowFields.borrower_name, BorrowFields.due_date):
         value = get_book_input(book, field)
@@ -94,8 +94,8 @@ def show_updated_book(updated_book: dict | None, borrower: str | None):
         clear_terminal()
         print(f'{F.YELLOW}A copy of the book has been borrowed by {borrower} and\n'
               f'checked out from the library stock.{F.ENDC}\n')
-        print(f'{F.YELLOW}Current stock:{F.ENDC}\n')
-        display_book(updated_book)
+        title = 'Current stock:'
+        display_book(updated_book, table_title=title)
 
 
 # entry point for the check out book functionality

@@ -2,7 +2,7 @@ from typing import TypedDict
 from enum import Enum
 
 from library_system.models.book import BookFields, BorrowFields
-from library_system.views.console_ui import TableFormats
+from rich import box
 
 
 class MenuSet(TypedDict):
@@ -14,8 +14,7 @@ class MenuSet(TypedDict):
     '''
     title: str
     options: list[str]
-    table_format: TableFormats
-    maxcolwidths: int | list[int] | None
+    table_format: box.Box
 
 
 # create a list of search book menu options based on BookFields enum excluding the `copies` field
@@ -37,33 +36,28 @@ class MenuSets(Enum):
                  'Check Out Book',
                  'Return Book',
                  'Check Overdue Borrowers'],
-        table_format=TableFormats.outline,
-        maxcolwidths=None
+        table_format=box.MINIMAL_DOUBLE_HEAD,
     )
     add_book = MenuSet(
         title='How to add a book to the library stock?',
         options=search_book_menu_options,
-        table_format=TableFormats.rounded_outline,
-        maxcolwidths=None
+        table_format=box.MINIMAL_DOUBLE_HEAD,
     )
 
     remove_book = MenuSet(
         title='How to remove a book from the library stock?',
         options=search_book_menu_options,
-        table_format=TableFormats.rounded_outline,
-        maxcolwidths=None
+        table_format=box.MINIMAL_DOUBLE_HEAD,
     )
 
     check_out_book = MenuSet(
         title='How to check out a book from the library stock?',
         options=search_book_menu_options,
-        table_format=TableFormats.rounded_outline,
-        maxcolwidths=None
+        table_format=box.MINIMAL_DOUBLE_HEAD,
     )
 
     return_book = MenuSet(
         title='How to return a book to the library stock?',
         options=search_borrower_menu_options,
-        table_format=TableFormats.rounded_outline,
-        maxcolwidths=None
+        table_format=box.MINIMAL_DOUBLE_HEAD,
     )

@@ -1,6 +1,10 @@
 import logging
-from enum import Enum
-from tabulate import tabulate
+
+from rich.table import Table
+from rich.console import Console
+from rich.style import Style
+from rich import box
+
 from pydantic import ValidationError
 
 from library_system.tools import restart_app
@@ -10,51 +14,6 @@ from library_system.models.worksheets_cfg import WorksheetSets
 from library_system.tools import F
 
 logger = logging.getLogger(__name__)
-
-
-class TableFormats(Enum):
-    '''
-    Supported table formats for `tabulate` library.
-    First few formats can be used with `maxheadercolwidths` parameter.
-    '''
-    # ---
-    plain = "plain"
-    simple = "simple"
-    grid = 'grid'
-    pipe = 'pipe'
-    orgtbl = 'orgtbl'
-    presto = 'presto'
-    # ---
-    jira = 'jira'
-    github = "github"
-    simple_grid = 'simple_grid'
-    rounded_grid = 'rounded_grid'
-    heavy_grid = 'heavy_grid'
-    mixed_grid = 'mixed_grid'
-    double_grid = 'double_grid'
-    fancy_grid = 'fancy_grid'
-    outline = 'outline'
-    simple_outline = 'simple_outline'
-    rounded_outline = 'rounded_outline'
-    heavy_outline = 'heavy_outline'
-    mixed_outline = 'mixed_outline'
-    double_outline = 'double_outline'
-    fancy_outline = 'fancy_outline'
-    asciidoc = 'asciidoc'
-    pretty = 'pretty'
-    psql = 'psql'
-    rst = 'rst'
-    mediawiki = 'mediawiki'
-    moinmoin = 'moinmoin'
-    youtrack = 'youtrack'
-    html = 'html'
-    unsafehtml = 'unsafehtml'
-    latex = 'latex'
-    latex_raw = 'latex_raw'
-    latex_booktabs = 'latex_booktabs'
-    latex_longtable = 'latex_longtable'
-    textile = 'textile'
-    tsv = 'tsv'
 
 
 class Menu:
@@ -72,17 +31,48 @@ class Menu:
     def __init__(self,
                  title: str,
                  options: list[str] | list[dict],
-                 table_format: TableFormats = TableFormats.simple,
+                 table_format: box.Box = box.MINIMAL,
                  maxcolwidths: int | list[int] | None = None):
         # Validates the input menu name and options list using `NonEmptyStr` and `MenuOptions` validators.
-        self._name: str = NonEmptyStr(str_value=title).str_value
+        self._title: str = NonEmptyStr(str_value=title).str_value
         self._options: list = MenuOptions(lst=options).lst
         # gets the value from `Table_Formats` enum.
-        self._table_format: str = table_format.value
+        self._table_format = table_format
         self.maxcolwidths = maxcolwidths
 
         self._numbered_options: list[dict] = self._numerate_options()
         self._selected_code: int | None = None
+
+    @staticmethod
+    def print_table(options: list[dict], table_format: box.Box, title: str | None = None):
+        '''
+        Prints a table based on options list of dictionaries using `rich` library.
+        Set column headers to the keys of the first dictionary in the list.
+        Set row values to the values of the dictionaries in the list.
+
+        Default settings: title style - green, title justify - left, column overflow - fold;
+        console print default options: overflow - fold
+
+        :param title: table title
+        :param options: list of dictionaries with table data
+        :param table_format: table output format
+        '''
+
+        title_style = Style(color='green')
+        table = Table(
+            title=title,
+            title_style=title_style,
+            title_justify='left',
+            box=table_format)
+        headers = options[0].keys()
+        for header in headers:
+            table.add_column(header, overflow='fold')
+
+        for d in options:
+            table.add_row(*map(str, d.values()))
+
+        console = Console()
+        console.print(table, overflow='fold')
 
     def _numerate_options(self) -> list[dict]:
         '''
@@ -98,28 +88,6 @@ class Menu:
             numbered_options = [{"Code": i + 1} | d for i, d in enumerate(self._options)]
 
         return numbered_options  # type: ignore
-
-    def _render_table(self):
-        '''
-        Render the table using `tabulate` library.
-        Set table headers as keys of `self._numbered_options` dicts.
-        :return: table with numbered options
-        '''
-        table = tabulate(
-            self._numbered_options,
-            headers='keys',
-            tablefmt=self._table_format,
-            maxcolwidths=self.maxcolwidths,
-            maxheadercolwidths=self.maxcolwidths
-        )
-        return table
-
-    def display(self):
-        '''
-        Displays the menu name with table of options.
-        '''
-        print(F.HEADER + self._name + F.ENDC)
-        print(self._render_table())
 
     def _get_user_input(self):
         '''
@@ -184,7 +152,7 @@ class Menu:
         '''
         Displays the menu and gets user input.
         '''
-        self.display()
+        Menu.print_table(self._numbered_options, self._table_format, self._title)
         self._get_user_input()
 
 
@@ -217,24 +185,21 @@ def get_book_input(book: Book, field: BookFields | BorrowFields, msg: str | None
             return book[field.name]
 
 
-def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.stock):
+def display_book(book_to_display: dict, w_set: WorksheetSets = WorksheetSets.stock, table_title: str | None = None):
     '''
     Displays a book in a table format in order to the worksheet fields.
 
     :param book_to_display: dict with book data to display
     :param w_set: worksheet set to get the fields from
+    :param table_title: table title
     '''
     sheet_fields = w_set.value['fields']
     # add `cell_row` displaying table if it is existed in the book dict
     fields = (sheet_fields + ['cell_row']) if 'cell_row' in book_to_display else sheet_fields
     values = [book_to_display.get(field) for field in fields]
-    if w_set.name == WorksheetSets.stock.name:
-        max_col_widths = [13, 20, 15, 13, 4, 4, 4]
-    elif w_set.name == WorksheetSets.borrowed.name:
-        max_col_widths = [13, 10, 8, 6, 4, 8, 5, 5, 4]
-    else:
-        max_col_widths = None
-    print(tabulate([values], fields, maxcolwidths=max_col_widths, maxheadercolwidths=max_col_widths) + '\n')
+    book_to_print = dict(zip(fields, values))
+
+    Menu.print_table([book_to_print], box.MARKDOWN, title=table_title)
 
 
 '''
@@ -248,14 +213,14 @@ The below code will be executed only if this module is run as a script
 '''
 if __name__ == '__main__':
     # Menu
-    name = 'Library Main Menu'
+    title = 'Library Main Menu'
     options = ['Add Book',
                'Remove Book',
                'Check Out Book',
                'Return Book',
                'View Library Stock']
-    table_format = TableFormats.double_grid
-    menu = Menu(name, options, table_format)
+    table_format = box.DOUBLE_EDGE
+    menu = Menu(title, options, table_format)
     menu.run()
     print(f'Selected option code: {menu.get_selected_code()}')
     print(f'Selected str option: {menu.get_selected_option_str()}')

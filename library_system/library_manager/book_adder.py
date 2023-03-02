@@ -1,7 +1,8 @@
 import time
+from rich import box
 
 from library_system.tools import library_init, clear_terminal, F
-from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
+from library_system.views.console_ui import Menu, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -45,7 +46,7 @@ def run_search_results_menu(library: Library, book: Book, book_field: BookFields
     search_results_menu = Menu(
         'What do you want to do?',
         ['Show all the books to select and add new copies.', 'Continue adding the book, fill all fields.'],
-        TableFormats.rounded_outline
+        box.MINIMAL_DOUBLE_HEAD
     )
     search_results_menu.run()
     search_menu_selected = search_results_menu.get_selected_code()
@@ -74,8 +75,7 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
     show_books_menu = Menu(
         'Select the book you want to add:',
         found_books,
-        TableFormats.grid,
-        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
+        box.ASCII_DOUBLE_HEAD
     )
     show_books_menu.run()
     # get the selected book to add in the form of a dictionary
@@ -93,8 +93,8 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
     param book_to_add: book to add to the library stock
     '''
     clear_terminal()
-    print(f'{F.YELLOW}You selected:{F.ENDC}\n')
-    display_book(book_to_add)
+    title = 'You selected:'
+    display_book(book_to_add, table_title=title)
 
     print(f'{F.HEADER}How many copies do you want to add?{F.ENDC}')
     copies = get_book_input(
@@ -114,9 +114,9 @@ def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
     else:
         clear_terminal()
         print(
-            f'{F.YELLOW}Successfully added {copies} copies of the book to the library stock.{F.ENDC}')
-        print(f'{F.YELLOW}Updated book:{F.ENDC}\n')
-        display_book(updated_book_dict)
+            f'{F.YELLOW}Successfully added {copies} copies of the book to the library stock.{F.ENDC}\n')
+        title = 'Updated book:'
+        display_book(updated_book_dict, table_title=title)
 
 
 def add_full_book(library: Library, book: Book, book_field: BookFields):
@@ -148,9 +148,9 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         add_book(library)
     else:
         clear_terminal()
-        print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}')
-        print(f'{F.YELLOW}Added book:{F.ENDC}\n')
-        display_book(added_book)
+        print(f'{F.YELLOW}Successfully added the book to the library stock.{F.ENDC}\n')
+        title = 'Added book:'
+        display_book(added_book, table_title=title)
 
 
 # entry point for the add book functionality

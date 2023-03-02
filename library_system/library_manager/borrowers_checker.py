@@ -1,8 +1,9 @@
 import logging
-from tabulate import tabulate
 
+from rich import box
+
+from library_system.views.console_ui import Menu
 from library_system.tools import clear_terminal, F
-from library_system.views.console_ui import TableFormats
 from library_system.models.spreadsheet import Library
 
 
@@ -17,16 +18,9 @@ def display_overdue_borrowers(overdue_borrowers: list[dict]):
     '''
     clear_terminal()
     print(f'{F.YELLOW}Found {len(overdue_borrowers)} overdue borrowers{F.ENDC}\n')
-    print(f'{F.YELLOW}Showing all overdue borrowers{F.ENDC}')
-    max_col_widths = [13, 10, 8, 6, 4, 8, 5, 5, 4]
-    overdue_borrowers_table = tabulate(
-        overdue_borrowers,
-        headers='keys',
-        tablefmt=TableFormats.grid.value,
-        maxcolwidths=max_col_widths,
-        maxheadercolwidths=max_col_widths
-    )
-    print(overdue_borrowers_table)
+    title = 'Showing all overdue borrowers'
+
+    Menu.print_table(overdue_borrowers, box.ASCII_DOUBLE_HEAD, title)
 
 
 # entry point for the checked_out viewer

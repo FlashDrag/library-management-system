@@ -1,7 +1,8 @@
 import time
+from rich import box
 
 from library_system.tools import clear_terminal, library_init, F
-from library_system.views.console_ui import Menu, TableFormats, get_book_input, display_book
+from library_system.views.console_ui import Menu, get_book_input, display_book
 from library_system.views.menus import MenuSets
 from library_system.models.spreadsheet import Library
 from library_system.models.book import Book, BookFields
@@ -48,8 +49,7 @@ def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]
     show_books_menu = Menu(
         'Select the book you want to remove:',
         found_books,
-        TableFormats.grid,
-        maxcolwidths=[4, 13, 13, 10, 8, 4, 3, 4]
+        box.ASCII_DOUBLE_HEAD
     )
     show_books_menu.run()
     # get the selected book to remove in the form of a dictionary
@@ -70,12 +70,12 @@ def prompt_remove_copies(library: Library, book: Book, book_to_remove: dict):
     :param book_to_remove: dictionary of the selected book
     '''
     clear_terminal()
-    print(f'{F.YELLOW}You selected:{F.ENDC}\n')
+    print(f'{F.YELLOW}You selected:{F.ENDC}')
 
     menu = Menu(
         'Do you want to remove the full book or just some copies?',
         ['Full book', 'Some copies'],
-        TableFormats.rounded_outline
+        box.MINIMAL_DOUBLE_HEAD
     )
     menu.run()
     selected = menu.get_selected_code()
@@ -149,8 +149,8 @@ def show_updated_book(removed_book: dict | None, copies_to_remove: int):
     else:
         clear_terminal()
         print(f'{F.YELLOW}Successfully removed {copies_to_remove} copies{F.ENDC}\n')
-        print(f'{F.YELLOW}Updated book:{F.ENDC}\n')
-        display_book(removed_book)
+        title = 'Updated book:'
+        display_book(removed_book, table_title=title)
 
 
 # entry point for the remove book functionality

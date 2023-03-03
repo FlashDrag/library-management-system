@@ -9,11 +9,29 @@
 
 ## Manual Testing
 
-- [x] Page responsiveness
-- [x] ...
-- [x] ...
-- [x] ...
-- [x] ...
+### Application features
+- #### Main menu
+- [x] The main menu is displayed when the application is started or refreshed.
+- #### Add book
+- [x] Navigate to the `Add book` menu by entering code `1`
+- [x] The `Add book` menu is displayed and provides the following option to search by: `ISBN`, `Title`, `Author`, `Genre`, `Year`.
+- [x] Each option is selected by entering the corresponding code number and the app asks to enter the value of the field to search for.
+- [x] Each value is validated and if the value is invalid, the app asks to enter the value again.
+- [x] If the value is valid, the book is searched for in the `stock` worksheet by the selected field and validated value.
+- [x] If the books are found, they are displayed in tabular format and the app asks to select a book to add copies to.
+- [x] If the book is not found, the app asks to enter the rest book details manually (isbn, title, author, genre, year and number of copies) and skip the first entered field as it saved in the Book object.
+- [x] Seleted book displayed in tabular format and the app asks to enter the number of copies to add.
+- [x] If the number of copies is invalid, the app notifies that and prompts to enter the number of copies again.
+- [x] If the number of copies is valid, the book is added to the `stock` worksheet and the updated book is displayed in tabular format.
+- [x] If the book with the same `ISBN` found in the `stock` worksheet, the book is immediately displayed and app asks to select the book to add copies to.
+- [x] If the initial selected field was `ISBN` and book not found, the app asks to enter the rest book details manually (title, author, genre, year and number of copies) and the app does not check other fields in the `stock` worksheet as the `ISBN` is unique and other fields can be the same.
+- [x] The Book successfully added to the `stock` worksheet and the updated book is displayed in tabular format.
+- [x] The app prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+<!-- - [x] ... -->
+
+#### Remove book
+<!-- - [x] Navigate to the `Remove book` menu by entering code `2` -->
 
 [Back to top](#contents)
 

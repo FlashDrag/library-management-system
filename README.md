@@ -11,7 +11,7 @@ The app uses the Pydantic model for data validation which provides a convenient 
 
 [SpreadSheet](https://docs.google.com/spreadsheets/d/1guVUVRVMsu2nebKllN6_58nDraMnEftIoTaRtlUnRME/edit?usp=sharing)
 
-![App screenshot](docs/images/mockup.png)
+![App screenshot](docs/images/supp-images/mockup.png)
 
 ## Table of Contents
 - [**User Experience UX**](#user-experience-ux)
@@ -42,33 +42,29 @@ The app uses the Pydantic model for data validation which provides a convenient 
     - As a librarian, I want to be able to add a new book to the library stock.
     - As a librarian, I want to be able to add some copies of a existed book to the library stock by specific field (ISBN, title, author, etc.)
 
-    - As a librarian, I want to be able to remove a some copies of a existed book from the library stock.
-    - As a librarian, I want to be able to remove a full book from the library stock.
+    - As a librarian, I want to be able to remove some copies of a existed book from the library stock.
+    - As a librarian, I want to be able to completely remove a book from the library stock.
 
-    - As a librarian, I want to be able to check out a book from the library.
+    - As a librarian, I want to be able to check out a book for a specific borrower.
     - As a librarian, I want to be able to return a book to the library.
 
     - As a librarian, I want to be able to see the list of all books in the library stock.
-    - As a librarian, I want to be able to see the list of books by specific field (author, title, genre etc.) in the library stock.
+    - As a librarian, I want to be able to see the list of books sorted by specific field (author, title, genre, date etc.) in the library stock.
 
     - As a librarian, I want to be able to see the all books that are currently checked out.
+    - As a librarian, I want to be able to see the list of books that are currently checked out sorted by specific field (title, borrower, borrow_date, due_date etc.) in the `borrowed` worksheet.
     - As a librarian, I want to be able to see the list of books that are overdue.
-
-    - As a librarian, I want to be able to find a book by specific field (author, title, genre etc.) in the library stock.
-    - As a librarian, I want to be able to find a book by specific field (title, borrower, borrow_date etc.) in the `borrowed` worksheet.
 
 [Back to top](#table-of-contents)
 
 
 ### Structure
+The library management system is a terminal-based application that is presented in a one-page menu. The main menu is displayed when the app is launched. Each menu provide a list of options to the user in tabular format. Each option is represented by a code number to be entered by the user. The user can enter the code number of the option they want to choose. The app will then perform the action associated with that option. The code approach allows the user to navigate the app without having to type in full words or letters, which makes the app more user-friendly and easier to use.
 
-...
+#### Flowchart
+The flowchart was designed in [Microsoft Visio](). It shows the main flow of the app and the main functions that are used to perform the actions.
 
-[Back to top](#table-of-contents)
-
-
-### Flowchart
-![Flowchart](docs/supp-images/flowchart.png)
+![Flowchart](docs/images/supp-images/flowchart.png)
 
 ## Features
 - #### Main menu

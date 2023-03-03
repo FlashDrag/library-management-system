@@ -19,17 +19,23 @@ The app uses the Pydantic model for data validation which provides a convenient 
   - [Structure](#structure)
   - [Flowchart](#flowchart)
 - [**Features**](#features)
+  - [App features](#app-features)
     - [Main menu](#main-menu)
     - [Add book](#add-book)
     - [Remove book](#remove-book)
     - [Check out book](#check-out-book)
     - [Return book](#return-book)
-  - [MVC Model](#mvc-model)
-  - []()
-  - []()
-  - []()
-  - []()
-
+    - [Check Overdue borrowers](#check-overdue-borrowers)
+    - [View library stock](#view-library-stock)
+  - [Development features](#development-features)
+    - [MVC Model](#mvc-model)
+    - [API Integration](#api-integration)
+    - [Type Hints](#type-hints)
+    - [Pydantic Validation](#pydantic-validation)
+    - [Enum, TypedDict](#enum-typeddict)
+    - [Rich table](#rich-table)
+    - [Logging](#logging)
+    - [Error handling](#error-handling)
 - [**Technologies Used**](#technologies-used)
 - [**Testing**](#testing)
 - [**Deployment**](#deployment)
@@ -67,11 +73,38 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 ![Flowchart](docs/images/supp-images/flowchart.png)
 
 ## Features
-- #### Main menu
-    The main menu is the first screen that the user sees when the app is launched. It provides a list of options to the user in tabular format. Each option is represented by a code number to be entered by the user. The user can enter the code number of the option they want to choose. The app will then perform the action associated with that option.
+
+### App features
+
+#### Main menu
+  The main menu is the first screen that the user sees when the app is launched. It provides a list of options to the user in tabular format. Each option is represented by a code number to be entered by the user. The user can enter the code number of the option they want to choose. The app will then perform the action associated with that option.
+
+<details><summary>The main menu provides the following options</summary>
+
+![Main menu](docs/images/features/main-menu.png)
+</details>
+
 
 
 - #### Add book
+  The `Add book` option allows the librarian to add a book to the library stock. The librarian can add a new book or add some copies of a existed book to the library stock by specific field (ISBN, title, author, etc.).
+
+  Librarian can choose the field to search by. Then the librarian will be asked to enter the value of the field to search for. If value is valid, the book will be searched for in the `stock` worksheet by the selected field and validated value. All found books that match entered value in the selected specific field column will be displayed in tabular format and the librarian will be prompted to select a book to add copies to.
+
+  If initially, the first selected field was `ISBN` and book not found, the user will be prompted to enter the rest book details manually (title, author, genre, year and number of copies).
+
+  If initially, the first selected field other than `ISBN` and book not found, the user will be prompted to enter the book `ISBN` and the rest book details manually (title, author, genre, year and number of copies). After receiving the `ISBN` value, the app will search for the book with the same `ISBN` in the `stock` worksheet. If the book with the same `ISBN` already exists in the `stock` worksheet, the user cannot add a new book with the same `ISBN` and existing book will be displayed to the user and the user will be asked to choose the book to add copies to.
+
+<details><summary>Add book</summary>
+
+![add book](docs/images/features/add-book/add-book-1.png)
+
+![add book](docs/images/features/add-book/add-book-2.png)
+
+![add book](docs/images/features/add-book/add-book-3.png)
+
+![add book](docs/images/features/add-book/add-book-4.png)
+</details>
 
 - #### Remove book
 
@@ -79,18 +112,29 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 
 - #### Return book
 
-### MVC Model
+- #### Check Overdue borrowers
 
-### API Integration
+- #### View library stock
 
-### Type Hints
+[Back to top](#table-of-contents)
 
-### Pydantic Validation
+### Development features
 
-### Enum, TypedDict
+#### MVC Model
 
-### Tabulate
+#### API Integration
 
+#### Type Hints
+
+#### Pydantic Validation
+
+#### Enum, TypedDict
+
+#### Rich table
+
+#### Logging
+
+#### Error handling
 
 [Back to top](#table-of-contents)
 

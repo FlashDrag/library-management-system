@@ -70,7 +70,7 @@ class Menu:
         (0, 1) - no padding on top and bottom, 1 space on the right and left.
         '''
 
-        title_style = Style(color='green')
+        title_style = Style(color='purple')
         table = Table(
             title=title,
             title_style=title_style,

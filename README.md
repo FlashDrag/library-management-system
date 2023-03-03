@@ -1,13 +1,17 @@
 # Library Management System
 
+## Overview
+[Library Management System](https://library-management-system.herokuapp.com/) is a Python CLI application designed to manage a library's book inventory using a Google Spreadsheet API. The library management system allows the librarian to add and remove, check out and return books, as well as to view the list of all books in the library stock sorted by specific fields (author, title, genre, etc.) or view the list of books that are currently checked out or overdue.
+
+The app is built based on the MVC model that allows separating access to the data and operations on it from the user interface.
+
+The app uses the Pydantic model for data validation which provides a convenient way to validate data using type hints and provides clear error messages if the data is invalid.
+
 [App link](https://library-management-system.herokuapp.com/)
 
 [SpreadSheet](https://docs.google.com/spreadsheets/d/1guVUVRVMsu2nebKllN6_58nDraMnEftIoTaRtlUnRME/edit?usp=sharing)
 
-[Library Management System](https://library-management-system.herokuapp.com/) is a Python CLI application that uses the gspread library to access a Google Spreadsheet and perform operations on it. The app idea is to create a library management system that allows the librarian to add, remove, check out and return books. The app is built using the MVC model and the Pydantic library for data validation.
-
-
-![Responsive Mockup](docs/supp-images/responsive-mockup.png)
+![App screenshot](docs/images/mockup.png)
 
 ## Table of Contents
 - [**User Experience UX**](#user-experience-ux)
@@ -68,6 +72,8 @@
 
 ## Features
 - #### Main menu
+    The main menu is the first screen that the user sees when the app is launched. It provides a list of options to the user in tabular format. Each option is represented by a code number to be entered by the user. The user can enter the code number of the option they want to choose. The app will then perform the action associated with that option.
+
 
 - #### Add book
 

@@ -139,7 +139,7 @@ class Menu:
     def get_selected_option_str(self) -> str:
         '''
         Gets the selected option based on the selected code.
-        :return str: selected option
+        :return str: selected option in lowercase. Example: 'add book'.
         '''
         if self._selected_code is None:
             raise ValueError(

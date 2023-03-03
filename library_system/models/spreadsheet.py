@@ -198,7 +198,7 @@ class Library:
         book_to_add[BookFields.copies.name] = new_num_copies
         return book_to_add
 
-    def append_book(self, book_to_add: Book | dict, w_set: WorksheetSet):
+    def append_book(self, book: Book | dict, w_set: WorksheetSet):
         '''
         Append a book to the worksheet.
         Will be added only the fields specified in the given `WorksheetSet`.
@@ -213,7 +213,7 @@ class Library:
                 f"Failed to connect worksheet <{w_set['title']}>"
             )
         fields = w_set['fields']
-        if isinstance(book_to_add, Book):
+        if isinstance(book, Book):
             # create a dictionary from Book model values,
             # containing only the fields specified in the given `WorksheetSet`
             book_to_add = book.dict(include=set(fields))
@@ -221,6 +221,8 @@ class Library:
                 raise ValueError(
                     f"Can't to add an empty book to the worksheet <{w_set['title']}>"
                 )
+        elif isinstance(book, dict):
+            book_to_add = book
         book_to_add.setdefault('copies', 1)  # add copies field if not exists
         # get the values of the book dictionary in the same order as the headers in the worksheet
         values = [book_to_add.get(field) for field in fields]

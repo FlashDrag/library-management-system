@@ -18,7 +18,7 @@ def display_header():
     print(f'{F.YELLOW}ADDING BOOKS{F.ENDC}\n')
 
 
-def run_add_book_menu() -> BookFields:
+def run_field_selection_menu() -> BookFields:
     '''
     Display the menu `how to add a book` with the options.
     Get the selected option from the menu and split it to get the book field (e.g. `Search by ISBN` -> `isbn`).
@@ -32,41 +32,12 @@ def run_add_book_menu() -> BookFields:
     return book_field
 
 
-def run_search_results_menu(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
-    '''
-    Display the menu what to do with the search results.
-    Get the selected option from the menu and run the appropriate function:
-    - show_found_books(): display the search results
-    - add_full_book(): - continue adding the book without displaying the search results
-
-    param library: Library instance
-    param book: Book instance
-    param book_field: selected BookFields attribute
-    param found_books: list of books matching the BookFields attribute and value provided by the user
-    '''
-    print(f'{F.YELLOW}Found {len(found_books)} '
-          f'books matching the {book_field.value} '
-          f'"{book[book_field.name]}"{F.ENDC}\n')
-    search_results_menu = Menu(
-        'What do you want to do?',
-        ['Show all the books to select and add new copies.', 'Continue adding the book, fill all fields.'],
-        box.MINIMAL_DOUBLE_HEAD
-    )
-    search_results_menu.run()
-    search_menu_selected = search_results_menu.get_selected_code()
-    if search_menu_selected == 1:
-        show_found_books(library, book, book_field, found_books)
-    if search_menu_selected == 2:
-        add_full_book(library, book, book_field)
-
-
-def show_found_books(library: Library, book: Book, book_field: BookFields, found_books: list[dict]):
+def show_found_books(book: Book, book_field: BookFields, found_books: list[dict]):
     '''
     Display search results in a menu:
     all books matching the BookFields attribute and value provided by the user.
     Prompt the user to select the book to add and run the func add_copies_to_book().
 
-    param library: Library instance
     param book: Book instance
     param book_field: selected BookFields attribute
     param found_books: list of books matching the BookFields attribute and value provided by the user
@@ -85,7 +56,8 @@ def show_found_books(library: Library, book: Book, book_field: BookFields, found
     show_books_menu.run()
     # get the selected book to add in the form of a dictionary
     book_to_add = show_books_menu.get_selected_option_dict()
-    add_copies_to_book(library, book, book_to_add)
+
+    return book_to_add
 
 
 def add_copies_to_book(library: Library, book: Book, book_to_add: dict):
@@ -133,10 +105,11 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
     param book: Book instance
     param book_field: selected BookFields attribute
     '''
-    clear_terminal()
-    print(f'{F.YELLOW}CONTINUE ADDING A NEW BOOK{F.ENDC}\n')
+
+    # skip the book field that was used to search for the book and the book ISBN
+    skip_fields = [BookFields.isbn, book_field]
     # get the remaining book fields
-    fields = [field for field in BookFields if field != book_field]
+    fields = [field for field in BookFields if field not in skip_fields]
 
     # get the remaining book fields from the user
     for field in fields:
@@ -158,14 +131,16 @@ def add_full_book(library: Library, book: Book, book_field: BookFields):
         display_book(added_book, table_title=title)
 
 
-# entry point for the add book functionality
-def add_book(library: Library):
-    logger.info('Starting the `add book` functionality.')
-    book = Book()
+def search_books(library: Library, book: Book, book_field: BookFields):
+    '''
+    Get the book field value from the user and
+    search for the book in the library stock using the library.search_books() method.
 
-    display_header()
+    param library: Library instance
+    param book: Book instance
+    param book_field: selected BookFields attribute
+    '''
 
-    book_field = run_add_book_menu()
     book_value = get_book_input(book, book_field)
 
     print(f'Searching for "{book_value}" in the Library stock...')
@@ -179,13 +154,39 @@ def add_book(library: Library):
         logger.error(f'Failed to search for the book: {type(e)}: {e}')
         library = library_init()
         add_book(library)
+        return None
     else:
-        if len(found_books) > 0:
-            clear_terminal()
-            run_search_results_menu(library, book, book_field, found_books)
+        return found_books
+
+
+# entry point for the add book functionality
+def add_book(library: Library):
+    logger.info('Starting the `add book` functionality.')
+    book = Book()
+
+    display_header()
+
+    book_field = run_field_selection_menu()
+    found_books = search_books(library, book, book_field)
+
+    if found_books:
+        clear_terminal()
+        book_to_add = show_found_books(book, book_field, found_books)
+        add_copies_to_book(library, book, book_to_add)
+        back_to_menu(library)
+    else:
+        print(f'{F.ERROR}No books matching the {book_field.value}{F.ENDC}\n')
+        time.sleep(3)
+        clear_terminal()
+        print(f'{F.YELLOW}CONTINUE ADDING A NEW BOOK{F.ENDC}\n')
+        if book_field == BookFields.isbn:
+            add_full_book(library, book, book_field)
+            back_to_menu(library)
+            return
+        found_books = search_books(library, book, BookFields.isbn)
+        if found_books:
+            book_to_add = show_found_books(book, BookFields.isbn, found_books)
+            add_copies_to_book(library, book, book_to_add)
             back_to_menu(library)
         else:
-            print(f'{F.ERROR}No books matching the {book_field.value}{F.ENDC}\n')
-            time.sleep(3)
-            clear_terminal()
             add_full_book(library, book, book_field)

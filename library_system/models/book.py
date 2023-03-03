@@ -2,6 +2,8 @@ from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, validator
 from re import sub
+from dateutil.parser import parse
+from dateutil.parser import ParserError
 
 
 class BookFields(Enum):
@@ -34,7 +36,7 @@ class BorrowFields(Enum):
 
     def __str__(self):
         if self.name in (BorrowFields.borrow_date.name, BorrowFields.due_date.name):
-            return f'Enter {self.value} in format "dd-mm-yyyy":'
+            return f'Enter {self.value} in one of the following formats: dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy'
         elif self.name == BorrowFields.borrower_name.name:
             return f'Enter {self.value}:'
         else:
@@ -139,9 +141,10 @@ class Book(BaseModel):
         if borrow_date is None:
             return borrow_date
         try:
-            borrow_date = datetime.strptime(borrow_date, '%d-%m-%Y')
-        except ValueError:
-            raise ValueError('Incorrect borrow date. Must be in format: dd-mm-yyyy.')
+            borrow_date = parse(borrow_date, dayfirst=True)
+        except (ParserError, ValueError, OverflowError):
+            raise ValueError('Incorrect borrow date. Must be in one of the following formats: '
+                             'dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy.')
         if borrow_date > datetime.now():
             raise ValueError('Borrow date cannot be in the future.')
         return datetime.strftime(borrow_date, '%d-%m-%Y')
@@ -155,10 +158,12 @@ class Book(BaseModel):
         '''
         if due_date is None:
             return due_date
+
         try:
-            due_date = datetime.strptime(due_date, '%d-%m-%Y')
-        except ValueError:
-            raise ValueError('Incorrect due date. Must be in format: dd-mm-yyyy.')
+            due_date = parse(due_date, dayfirst=True)
+        except (ParserError, ValueError, OverflowError):
+            raise ValueError('Incorrect due date. Must be in one of the following formats: '
+                             'dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy.')
 
         # if search mode is on, skip the date in the future check
         if values.get('search_mode'):

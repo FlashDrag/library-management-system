@@ -44,7 +44,7 @@ def show_found_books(book: Book, book_field: BookFields | BorrowFields, found_bo
     '''
     clear_terminal()
     print(
-        f'{F.YELLOW}Showing all books matching the {book_field.value} '
+        f'{F.YELLOW}Showing all {len(found_books)} books matching the {book_field.value} '
         f'"{book[book_field.name]}"{F.ENDC}\n'
     )
     show_books_menu = Menu(

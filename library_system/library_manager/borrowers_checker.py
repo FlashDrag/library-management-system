@@ -4,7 +4,7 @@ import time
 from rich import box
 
 from library_system.views.console_ui import Menu
-from library_system.tools import clear_terminal, F
+from library_system.tools import clear_terminal, F, library_init
 from library_system.models.spreadsheet import Library
 from library_system.back_to_menu import back_to_menu
 
@@ -43,10 +43,12 @@ def check_overdue_borrowers(library: Library):
     except Exception as e:
         print(f'{F.ERROR}Failed to get the overdue borrowers.\nRestart the app and try again{F.ENDC}')
         logger.error(f'Failed to get the overdue borrowers: {type(e)}: {e}')
-        quit()
+        library = library_init()
+        check_overdue_borrowers(library)
     else:
         if overdue_borrowers:
             display_overdue_borrowers(overdue_borrowers)
+            back_to_menu(library)
         else:
             clear_terminal()
             print(f'{F.YELLOW}No overdue borrowers found{F.ENDC}\n')

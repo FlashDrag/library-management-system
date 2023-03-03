@@ -36,7 +36,8 @@ class BorrowFields(Enum):
 
     def __str__(self):
         if self.name in (BorrowFields.borrow_date.name, BorrowFields.due_date.name):
-            return f'Enter {self.value} in one of the following formats: dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy'
+            return f'Enter {self.value} in one of the following formats:\n' \
+                f'dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy'
         elif self.name == BorrowFields.borrower_name.name:
             return f'Enter {self.value}:'
         else:
@@ -116,7 +117,8 @@ class Book(BaseModel):
         if year is None:
             return year
         if year < 1 or year > datetime.now().year:
-            raise ValueError('Incorrect year. Can be in range: 1 - current year.')
+            raise ValueError(
+                'Incorrect year. Can be in range: 1 - current year.')
         return year
 
     @validator('copies')
@@ -143,7 +145,7 @@ class Book(BaseModel):
         try:
             borrow_date = parse(borrow_date, dayfirst=True)
         except (ParserError, ValueError, OverflowError):
-            raise ValueError('Incorrect borrow date. Must be in one of the following formats: '
+            raise ValueError('Incorrect borrow date. Must be in one of the following formats:\n'
                              'dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy.')
         if borrow_date > datetime.now():
             raise ValueError('Borrow date cannot be in the future.')
@@ -162,7 +164,7 @@ class Book(BaseModel):
         try:
             due_date = parse(due_date, dayfirst=True)
         except (ParserError, ValueError, OverflowError):
-            raise ValueError('Incorrect due date. Must be in one of the following formats: '
+            raise ValueError('Incorrect due date. Must be in one of the following formats:\n'
                              'dd-mm-yyyy or dd/mm/yyyy or dd.mm.yyyy.')
 
         # if search mode is on, skip the date in the future check

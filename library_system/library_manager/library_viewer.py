@@ -117,7 +117,7 @@ def display_stock(
     else:
         print(f'{F.YELLOW}Books sorted in the order they appear in the Spreadsheet "{worksheet_set["title"]}"{F.ENDC}')
 
-    Menu.print_table(stock, box.ASCII_DOUBLE_HEAD, expand=True)
+    Menu.print_table(stock, box.ASCII_DOUBLE_HEAD, expand=True, padding=(1, 1, 0, 1))
 
 
 # entry point for the view library stock functionality

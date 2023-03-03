@@ -17,10 +17,18 @@ class MenuSet(TypedDict):
     table_format: box.Box
 
 
-# create a list of search book menu options based on BookFields enum excluding the `copies` field
+# list of search book menu options based on BookFields enum excluding the `copies` field
 search_book_menu_options = [('Search by ' + field.value) for field in BookFields if field != BookFields.copies]
-# create a list of search borrower menu options based on BorrowFields enum
+# list of search borrower menu options based on BorrowFields enum
 search_borrower_menu_options = [('Search by ' + field.value) for field in BorrowFields]
+
+# list of view stock menu options based on BookFields enum
+view_library_stock_menu_options = [('Sorted by ' + field.value) for field in BookFields]
+view_library_stock_menu_options.insert(0, 'Spreadsheet order')
+
+# list of borrowed_stock menu options based on BorrowFields enum
+view_borrowed_stock_menu_options = [('Sorted by ' + field.value) for field in BorrowFields]
+view_borrowed_stock_menu_options.insert(0, 'Spreadsheet order')
 
 
 class MenuSets(Enum):
@@ -35,7 +43,8 @@ class MenuSets(Enum):
                  'Remove Book',
                  'Check Out Book',
                  'Return Book',
-                 'Check Overdue Borrowers'],
+                 'Check Overdue Borrowers',
+                 'View Library Stocks'],
         table_format=box.MINIMAL_DOUBLE_HEAD,
     )
     add_book = MenuSet(
@@ -59,5 +68,17 @@ class MenuSets(Enum):
     return_book = MenuSet(
         title='How to return a book to the library stock?',
         options=search_borrower_menu_options,
+        table_format=box.MINIMAL_DOUBLE_HEAD,
+    )
+
+    view_library_stock = MenuSet(
+        title='How to view the library stock?',
+        options=view_library_stock_menu_options,
+        table_format=box.MINIMAL_DOUBLE_HEAD,
+    )
+
+    view_borrowed_stock = MenuSet(
+        title='How to view the borrowed stock?',
+        options=view_borrowed_stock_menu_options,
         table_format=box.MINIMAL_DOUBLE_HEAD,
     )

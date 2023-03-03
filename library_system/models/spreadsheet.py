@@ -1,5 +1,7 @@
 import logging
 from datetime import datetime
+from dateutil.parser import parse
+from dateutil.parser import ParserError
 import re
 
 import gspread as gs
@@ -342,13 +344,92 @@ class Library:
             if due_date and isinstance(due_date, str):
                 try:
                     # convert the due date string to a date object
-                    due_date = datetime.strptime(due_date, '%d-%m-%Y')
-                except ValueError:
+                    due_date = parse(due_date, dayfirst=True)
+                except (ParserError, ValueError, OverflowError):
                     continue
                 else:
                     if due_date < today:
                         overdue_borrowers.append(book)
-        return overdue_borrowers
+        # sort the overdue borrowers by due date (ascending)
+        sorted_borrowers = sort_data(
+            BorrowFields.due_date.name, overdue_borrowers)
+        return sorted_borrowers
+
+    def get_library_stock(
+            self,
+            w_set: WorksheetSet,
+            field: BookFields | BorrowFields | None = None,
+            reverse: bool = False
+    ) -> list[dict]:
+        '''
+        Get the library stock.
+        If a field is provided then the stock will be sorted by that field.
+
+        :param w_set: The worksheet set to get the stock from.
+        :param field: The field to sort the stock by.
+        :param reverse: If `True` the stock will be sorted in descending order.
+        :return: A list of dictionaries containing the library stock.
+        '''
+        w_sheet = w_set['w_sheet']
+        if not w_sheet:
+            raise ValueError(
+                f"Can't to find the worksheet <{w_set['title']}>"
+            )
+        dicts = w_sheet.get_all_records(head=1)
+        # add the cell row number to each book record
+        records = [
+            {**book, 'cell_row': i + 2} for i, book in enumerate(dicts)
+        ]
+        order_by = field.name if field else None
+        if not order_by:
+            return records
+        # sort the records by the field
+        sorted_records = sort_data(order_by, records, reverse)
+        return sorted_records
+
+
+def sort_data(key: str, records: list[dict], reverse: bool = False) -> list[dict]:
+    '''
+    Sorts the list of dictionaries by the key value:
+    - If key is `date` then sort by date if date valid else put it at the end of the list with the same date string.
+    - If key is `isbn`, `copies` or `year` then sort by int value if int valid
+    else put it at the end of the list with the same int string.
+    - If key is any other string then sort by string value.
+
+    :param key: key to sort by
+    :param records: list of dictionaries
+    :param reverse: sort in reverse order
+    :return: sorted list of dictionaries
+    '''
+    if key in (BorrowFields.borrow_date.name, BorrowFields.due_date.name):
+        def sort_date(d):
+            try:
+                return parse(d[key], dayfirst=True)
+            except (ParserError, ValueError, OverflowError):
+                if reverse:
+                    return datetime.min
+                else:
+                    return datetime.max
+        # sort by date if date valid else put it at the end of the list with the same date string
+        sorted_records = sorted(records, key=sort_date, reverse=reverse)
+    else:
+        if key in (BookFields.isbn.name, BookFields.copies.name, BookFields.year.name):
+            def sort_int(d):
+                '''sort by int value'''
+                try:
+                    return int(d[key])
+                except ValueError:
+                    if reverse:
+                        return float('-inf')  # smallest float
+                    else:
+                        return float('inf')  # largest float
+            sorted_records = sorted(records, key=sort_int, reverse=reverse)
+        else:
+            # sort by string value
+            sorted_records = sorted(
+                records, key=lambda d: str(d[key]), reverse=reverse)
+
+    return sorted_records
 
 
 # for testing purposes

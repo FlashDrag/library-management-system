@@ -3,3 +3,4 @@ from .book_remover import remove_book
 from .book_checker import check_out_book
 from .book_returner import return_book
 from .borrowers_checker import check_overdue_borrowers
+from .library_viewer import view_library_stocks

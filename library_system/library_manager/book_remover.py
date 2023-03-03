@@ -77,7 +77,7 @@ def prompt_remove_copies(library: Library, book_to_remove: dict):
     :param book_to_remove: dictionary of the selected book
     '''
     clear_terminal()
-    print(f'{F.YELLOW}You selected:{F.ENDC}')
+    display_book(book_to_remove, table_title='You selected:')
 
     menu = Menu(
         'Do you want to remove the full book or just some copies?',

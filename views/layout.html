@@ -34,7 +34,7 @@
             background-position: center;
         }
 
-        h1 {
+        h1, #copyright {
             color: #212322;
             background-color: #DEC8B1;
             border-radius: 5px;
@@ -45,6 +45,19 @@
 
         #terminal {
             border: 20px black solid;
+        }
+
+        #copyright {
+            margin-top: 15px;
+        }
+        /* link */
+        #copyright a {
+            color: #3d1b0b;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        #copyright a:hover {
+            text-decoration: 1px underline;
         }
 
         /**
@@ -212,6 +225,17 @@
     <main id="container">
         <h1>Library Management System</h1>
         @{body}
+        <footer id="copyright">
+            <span>©2023 | Developed by </span>
+            <a
+              href="https://github.com/FlashDrag"
+              target="_blank"
+              rel="noopener"
+              aria-label="Visit author GitHub page (opens in a new tab)"
+              >FlashDrag </a
+            >
+            <span>| All rights reserved.</span>
+          </footer>
     </main>
 
 </html>

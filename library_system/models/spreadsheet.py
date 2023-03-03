@@ -155,6 +155,9 @@ class Library:
         headers = w_set['fields']
         result_list = []
         for cell in matched_cells:
+            # skip the header row
+            if cell.row == 1:
+                continue
             value_list = worksheet.row_values(cell.row)
             value_dict = dict(zip(headers, value_list))
             value_dict['cell_row'] = cell.row

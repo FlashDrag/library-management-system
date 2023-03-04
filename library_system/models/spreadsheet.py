@@ -104,7 +104,6 @@ class Library:
             w_set.value['w_sheet'] = worksheet
 
     def search_books(self, book_value: str, book_field: BookFields | BorrowFields, w_set: WorksheetSet) -> list[dict]:
-        # TODO: exlude worksheet header row from search
         '''
         Search a book value with the specified worksheet header - `book_field` and
         in the specified worksheet - `w_set`.

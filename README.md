@@ -30,6 +30,7 @@ The app uses the Pydantic model for data validation which provides a convenient 
   - [Development features](#development-features)
     - [MVC Model](#mvc-model)
     - [API Integration](#api-integration)
+    - [Data model](#data-model)
     - [Type Hints](#type-hints)
     - [Pydantic Validation](#pydantic-validation)
     - [Enum, TypedDict](#enum-typeddict)
@@ -107,6 +108,43 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 </details>
 
 - #### Remove book
+  The `Remove book` option allows the librarian to remove a book from the library stock. The librarian can remove some copies of a existed book or completely remove a book from the library stock.
+
+  Librarian can choose the field to search by. Book will be searched for in the `stock` worksheet by the selected field and validated value. All found books that match entered value in the selected specific field column will be displayed in tabular format and the librarian will be prompted to select a book to remove copies from or completely remove the book.
+
+  If the book has no copies left, the book will be completely removed from the `stock` worksheet and the user will be notified.
+
+  If the book value not found, the user will be notified that no books match the entered value in the selected specific field column and then returned to field selection.
+
+  If the user removes some copies of a book, and the book has some copies left, the book will be updated in the `stock` worksheet and the updated book will be displayed to the user.
+
+<details><summary>Remove book</summary>
+
+![remove book](docs/images/features/remove-book/remove-book-1.png)
+
+![remove book](docs/images/features/remove-book/remove-book-2.png)
+
+![remove book](docs/images/features/remove-book/remove-book-3.png)
+
+![remove book](docs/images/features/remove-book/remove-book-4.png)
+
+![remove book](docs/images/features/remove-book/remove-book-5.png)
+
+![remove book](docs/images/features/remove-book/remove-book-6.png)
+
+---
+
+![remove book](docs/images/features/remove-book/remove-book-7.png)
+
+![remove book](docs/images/features/remove-book/remove-book-8.png)
+
+---
+
+![remove book](docs/images/features/remove-book/remove-book-9.png)
+
+![remove book](docs/images/features/remove-book/remove-book-10.png)
+
+</details>
 
 - #### Check out book
 
@@ -123,6 +161,8 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 #### MVC Model
 
 #### API Integration
+
+#### Data model
 
 #### Type Hints
 
@@ -167,7 +207,7 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 [Back to top](#table-of-contents)
 
 ## Testing
-See [TESTING.md](https://github.com/FlashDrag/library-management-system/blob/main/docs/testing.md) for an overview of the game testing and debugging.
+See [TESTING.md](https://github.com/FlashDrag/library-management-system/blob/main/docs/testing.md) for an overview of the app testing and debugging.
 
 [Back to top](#table-of-contents)
 
@@ -181,7 +221,7 @@ The app is hosted on [Heroku]()
 
 [Here you can find instructions](https://github.com/FlashDrag/love-sandwiches/blob/main/docs/instruction.md)
 
-#### To run the game on a local machine:
+#### To run the app on a local machine:
 To run this script, you need to have the following installed:
 - Python 3.x
 - gspread library

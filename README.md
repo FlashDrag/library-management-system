@@ -96,6 +96,9 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 
   If initially, the first selected field other than `ISBN` and book not found, the user will be prompted to enter the book `ISBN` and the rest book details manually (title, author, genre, year and number of copies). After receiving the `ISBN` value, the app will search for the book with the same `ISBN` in the `stock` worksheet. If the book with the same `ISBN` already exists in the `stock` worksheet, the user cannot add a new book with the same `ISBN` and existing book will be displayed to the user and the user will be asked to choose the book to add copies to.
 
+  After the user has selected the book to add copies to, the app will prompts the user to enter the number of copies to add. If the number of copies is valid (must be digit and in range 1-10), the number of copies will be added to the selected book and the book will be updated in the `stock` worksheet.
+  Updated book will be displayed to the user with the full information about the book, updated number of copies and number of row in the `stock` worksheet.
+
 <details><summary>Add book</summary>
 
 ![add book](docs/images/features/add-book/add-book-1.png)
@@ -116,7 +119,7 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 
   If the book value not found, the user will be notified that no books match the entered value in the selected specific field column and then returned to field selection.
 
-  If the user removes some copies of a book, and the book has some copies left, the book will be updated in the `stock` worksheet and the updated book will be displayed to the user.
+  If the user removes some copies of a book, and the book has some copies left, the book will be updated in the `stock` worksheet and the updated book will be displayed to the user with the full information about the book, updated number of copies and number of row in the `stock` worksheet.
 
 <details><summary>Remove book</summary>
 
@@ -133,6 +136,10 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 ![remove book](docs/images/features/remove-book/remove-book-6.png)
 
 ---
+
+<i>Another example of removing book.</i>
+
+Completely removing a book if entered number of copies to remove is equal or greater than the number of copies in the library stock.
 
 ![remove book](docs/images/features/remove-book/remove-book-7.png)
 
@@ -183,6 +190,27 @@ Completely checked out a book from the 'stock' as no copies left
 </details>
 
 - #### Return book
+The `Return book` option allows the librarian to return a book to the library stock. The librarian can choose the field to search by.
+
+Avialable search fields are: `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`. The book will be searched for in the `borrowed` worksheet by the selected field and entered validated value.
+
+Each value will be validated to ensure that is not empty. Besides that `ISBN` must be 13 digits long, `Year` must be a digit and cannot be greater than the current year, `Borrow date` cannot be greater than the current date and `Due date` can be any date. `Borrow date` and `Due date` must be in one of the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+
+All found books that matching entered value in the selected column will be displayed and the user will be prompted to select a book to return.
+Once the book is selected, the app will search for the book in the `stock` worksheet by the `ISBN` field and if the book is found, the number of copies will be increased by one and the book will be updated in the `stock` worksheet and removed from the `borrowed` worksheet. If the book is not found in the `stock` worksheet, the book will be added to the end of the `stock` worksheet with one copy and removed from the `borrowed` worksheet.
+Updated book will be displayed to the user with the full information about the book, updated number of copies and number of row in the `stock` worksheet.
+
+<details><summary>Return book</summary>
+
+![return book](docs/images/features/return-book/return-book-1.png)
+
+![return book](docs/images/features/return-book/return-book-2.png)
+
+![return book](docs/images/features/return-book/return-book-3.png)
+
+![return book](docs/images/features/return-book/return-book-4.png)
+
+</details>
 
 - #### Check Overdue borrowers
 
@@ -193,6 +221,8 @@ Completely checked out a book from the 'stock' as no copies left
 ### Development features
 
 #### MVC Model
+
+#### OOP Approach
 
 #### API Integration
 

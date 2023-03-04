@@ -297,16 +297,20 @@ The `Menu` class is responsible for displaying the menu and receiving user input
 
 #### API Integration
 
+
 #### Data model
 The application is divided into packages and modules.
 Separating the business logic from the user interface allows me to make the code more modular and easier to maintain. If I want to change the way the library works, I just modify the Library class without affecting the user interface. Similarly, if I need to change the user interface, I just modify the `console_ui` module that provides it without affecting the library itself.
 
 #### Type Hints, mypy, flake8
-Type hints uses to specify the types of inputs and outputs for the validation methods. `Pydantic` library to define data models that enforce specific rules and constraints.
+Python is a dynamically typed language, which means that data types do not need to be explicitly specified. This makes Python code more flexible and easier to write, but it also makes it more difficult to understand and maintain. Type hints allow you to specify the types of inputs and outputs for the validation methods. This makes the code easier to understand and maintain.
 
-`Mypy` is a static type checker for Python. It's a great tool for improving the quality of the code. It works great in combination with type hints. `Mypy` allows to find bugs before the code is executed. It also helps to understand the code better, as well as it is a great tool for refactoring and code review.
+Programs in professional development are developed by more than one person, and often you have to return to them after a certain period of time to fix bugs or add new features. In this case, it is very important to have a clear understanding of the code. But if the code was poorly written, then even the one who wrote it will spend a lot of time in six months to figure it out and remember what's what. Type hinting greatly simplifies the reading of the code and allows even those who have not written this code to quickly scream into the essence and start working with it.
 
-`Flake8` is a tool for style guide enforcement. It checks the code against PEP 8 style guide. It also checks for unused imports, unused variables, and other errors. `Flake8` is also a great tool for refactoring and code review and helps to keep the code clean and consistent.
+- `Mypy` is a static type checker for Python. The `mypy` extension supports type hinting well. While it doesn't affect how the program works, it does allow the IDE to hint at possible errors. Linter allows you to follow this code according to pip8 rules.
+It's a great tool for improving the quality of the code. It works great in combination with type hints. `Mypy` allows to find bugs before the code is executed. It also helps to understand the code better, as well as it is a great tool for refactoring and code review.
+
+- `Flake8` is a tool for style guide enforcement. It checks the code against PEP 8 style guide. It also checks for unused imports, unused variables, and other errors. `Flake8` is also a great tool for refactoring and code review and helps to keep the code clean and consistent.
 
 #### Enum, TypedDict
 In my CLI Python app, I use Enum and TypeDict to help organize and validate the input and output of my command-line arguments. The `Enum` class is used to define a set of constants. The `TypedDict` class is used to define a dictionary with a fixed set of keys and their types.

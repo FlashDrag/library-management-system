@@ -32,4 +32,4 @@
     **pip install --upgrade gspread google_auth**
 
 
-[Back to Readme](https://github.com/FlashDrag/love-sandwiches/blob/main/README.md)
+[Back to Readme](https://github.com/FlashDrag/library-management-system/blob/main/README.md)

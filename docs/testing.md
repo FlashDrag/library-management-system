@@ -11,8 +11,9 @@
         - [Return book](#return-book)
         - [Check Overdue borrowers](#check-overdue-borrowers)
         - [View Library Stocks](#view-library-stocks)
-- [Automated Unit testing](#automated-unit-testing)
+- [Automated testing](#automated-testing)
 - [Bugs/Issues](#bugsissues)
+- [Error handling](#error-handing)
 
 
 ## Manual Testing
@@ -134,35 +135,42 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 
 
 ## Automated testing
-<!-- TODO HTML validation -->
-<!-- [W3 Markup Validation](https://validator.w3.org/) - HTML Validation -->
-<!-- TODO CSS validation -->
-<!-- [W3 Jigsaw validation](https://jigsaw.w3.org/css-validator/) - CSS Validation -->
-<!-- TODO flake8 -->
-<!-- [flake8](https://flake8.pycqa.org/en/latest/) - Python code style: pep8, pyflakes and co -->
-<!-- TODO mypy -->
-<!-- [mypy](http://mypy-lang.org/) - Optional static typing for Python -->
-<!-- TODO PEP8 validation -->
-<!-- [PEP8](http://pep8online.com/) - Python code style: pep8 -->
+ [W3 Markup Validation](https://validator.w3.org/) - HTML Validation
+_HTML code passes throught the official W3C validator_
+
+[W3 Jigsaw validation](https://jigsaw.w3.org/css-validator/) - CSS Validation
+_All styles passed the CSS validator without errors._
+
+[flake8](https://flake8.pycqa.org/en/latest/) - Python code style: pep8, pyflakes and co
+_As flake8 was used from the beginning of the project, there were no errors._
+
+[mypy](http://mypy-lang.org/) - Optional static typing for Python
+As mypy was used from the beginning of the project, there were no errors.
+Mypy extension for VS Code was used throughout development.
+
+[PEP8](http://pep8online.com/) - Python code style: pep8
+pycodestyle was used to check the code style. There were no errors.
+
 <!-- TODO Unit testing -->
 <!-- [Pytest](https://docs.pytest.org/en/stable/) - Unit testing -->
-....
 
 [Back to top](#contents)
 
 
 ## Bugs/Issues
-...
+Initially, the `tabulate` library was used to display data in the console in the table format. As data is dynamically loaded from the Google Sheets API, the data is not always displayed correctly in the console in the table format. This is due to the that console is not very flexible in terms of displaying dynamic data. This is not a bug, but a limitation of the console. To resolve this issue the `tabulate` library was replaced with the `rich` library that partially solves the problem. The `rich` library is more flexible in terms of displaying dynamic data, but it still has some limitations.
 
-#### Unresolved
-....
+
 
 ### Error handing
-<!-- TODO Pydantic Validation -->
+- [x] The app uses try/except blocks to handle errors.
+- [x] Most errors are handled by specific exception handlers and logged to the logtail service.
+- [x] The app handles errors gracefully, and users are notified of the problem where appropriate.
+- [x] The app does not crash.
 - [x] The code intelligently handles empty or invalid data.
-- [x] API calls that fail to execute or return data will be handled gracefully, with the site users notified in an obvious way
 - [x] All input data is validated.
 - [x] Internal errors are handled gracefully, and users are notified of the problem where appropriate.
+- [x] API calls that fail handled gracefully, with the notification to the user and logging the error to the logtail service.
 
 [Back to top](#contents)
 

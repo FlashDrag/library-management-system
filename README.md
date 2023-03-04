@@ -295,9 +295,6 @@ The `Library` class is responsible for the library model. The `Library` class co
 
 The `Menu` class is responsible for displaying the menu and receiving user input. The `Menu` class is located in the `views` package. This class is responsible for the user interface of the application. The `Menu` class contains methods that use the `rich` library to display menus and results to the user in a more convenient and readable format.
 
-#### API Integration
-
-
 #### Data model
 The application is divided into packages and modules.
 Separating the business logic from the user interface allows me to make the code more modular and easier to maintain. If I want to change the way the library works, I just modify the Library class without affecting the user interface. Similarly, if I need to change the user interface, I just modify the `console_ui` module that provides it without affecting the library itself.
@@ -317,8 +314,13 @@ In my CLI Python app, I use Enum and TypeDict to help organize and validate the 
 
 By using Enum and TypeDict, the code is able to enforce constraints on the input and output of the app, making it more robust and maintainable. For example, the `MenuSets` Enum from `menus` module ensures that each menu has the required keys (title, options, table_format), and the `MenuSet` that inherits from TypedDict ensures that the values for these keys are of the expected type (str, list[str], and box.Box, respectively).
 
+#### Rich library
+Initially, the `tabulate` library was chosen for data output in tabulate format. However, I faced some challenges when trying to display the full information about the book. The table would break in small terminals, and I had to adjust the width of each column manually, which was not convenient. This became more difficult when the data was dynamic and constantly changing. To solve this problem, I switched to using the `rich` library. The `rich` library provides more flexibility in terms of setting and adjusting column widths, and it can automatically adjust to the size of the terminal. This made it much easier to display the data in a way that was visually appealing and easy to read, even when the data was changing.
 
-#### Rich table
+While I found the library a little late and did not have enough time to study it well, it was still a valuable tool for displaying dynamic data. That said, when working with large data sets, in some cases, the data is still displayed a little strangely due to the fact that it is hard to fit.
+
+In this project, you will find examples of how to use the `rich` library to display data in tables. You can easily customize the look and feel of the tables to match your needs, and the library is highly versatile and easy to use. If you are looking for a Python library for data output that is flexible and powerful, I highly recommend giving rich a try.
+
 
 #### Logging
 

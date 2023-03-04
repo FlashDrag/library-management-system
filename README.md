@@ -86,7 +86,6 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 </details>
 
 
-
 - #### Add book
   The `Add book` option allows the librarian to add a book to the library stock. The librarian can add a new book or add some copies of a existed book to the library stock by specific field (ISBN, title, author, etc.).
 
@@ -272,16 +271,30 @@ The book with the incorrect value is displayed at the end of the table.
 ### Development features
 
 #### MVC Model
+The Library Management System CLI Application in Python is designed using the Model-View-Controller (MVC) architectural pattern. This pattern separates the application into three interconnected components: the model, the view, and the controller.
+
+- #### Model and Pydantic Validation
+The model represents the application business logic, validation, `Book` and `Library` models which located in the `models` package. The `spreadsheet` module is responsible for connecting and working with the database which is Google Spreadsheet. `Library` class responsible for the library model. Validation `Book` model is implemented on the base Pydantic model, which actively support typing. Validation logic separated from user interface.
+Using the `Pydantic` library allows to reduce the time for creating custom validators, since it has a lot of ready-made validation templates.
+- #### View
+The view is represented by the `views` package.
+That package contains the `console_ui` module which is responsible for the user interface and interaction with the user. It is a separate module that can be used in other applications.
+
+The `console_ui` module uses the `rich` library to display the result to the user in a more convenient and readable format. Class `Menu` is responsible for displaying the menu and receiving user input.
+
+- #### Controller
+The controller is represented by the `library_manager` package. The managers ties the model and the view together. The `library_manager` is the component that knows about both the model and the view. It receives user input from `console_ui` module from `views` package and passes it to the model which is `spreadsheet` module. The model processes the data and returns the result to the controller. The controller uses the view (`console_ui`) to display the result to the user.
 
 #### OOP Approach
 
 #### API Integration
 
 #### Data model
+The application is divided into packages and modules.
+Separating the business logic from the user interface allows me to make the code more modular and easier to maintain. If I want to change the way the library works, I just modify the Library class without affecting the user interface. Similarly, if I need to change the user interface, I just modify the `console_ui` module that provides it without affecting the library itself.
 
 #### Type Hints
-
-#### Pydantic Validation
+Type hints uses to specify the types of inputs and outputs for the validation methods. Pydantic library to define data models that enforce specific rules and constraints.
 
 #### Enum, TypedDict
 

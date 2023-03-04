@@ -213,6 +213,15 @@ Updated book will be displayed to the user with the full information about the b
 </details>
 
 - #### Check Overdue borrowers
+The `Check Overdue borrowers` is a special feature that allows librarians to quickly identify borrowers who have overdue books. When the user selects this option, the app will search for all books in the `borrowed` worksheet that have a due date that is less than the current date. All found books will be sorted by the due date in <em>ascending order</em> and displayed to the user with the full information about the book, borrower name, borrow date, due date and row number in the `borrowed` worksheet. This feature will help librarians stay on top of overdue books and ensures that borrowers are notified promptly to return the books they have borrowed.
+By using this command line interface, librarians will easily perform this check at any time, without having to manually sift through spreadsheet records.
+If there are no overdue books, the librarian will be notified.
+
+<details><summary>Check Overdue borrowers</summary>
+
+![check overdue borrowers](docs/images/features/overdue-borrowers/overdue-borrowers.png)
+
+</details>
 
 - #### View library stock
 

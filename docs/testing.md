@@ -64,6 +64,7 @@
 
 [Back to top](#contents)
 
+
 #### Check out book
 - [x] Navigate to the `Check out book` menu by entering code `3`
 - [x] The `Check out book` menu is displayed and provides the following option to search by: `ISBN`, `Title`, `Author`, `Genre`, `Year`.
@@ -84,8 +85,8 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 - [x] The app prompts to enter any key to return to the main menu.
 - [x] The app returns to the main menu.
 
-
 [Back to top](#contents)
+
 
 #### Return book
 - [x] Navigate to the `Return book` menu by entering code `4`
@@ -101,11 +102,16 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 - [x] The app prompts to enter any key to return to the main menu.
 - [x] The app returns to the main menu.
 
-
 [Back to top](#contents)
 
+
 #### Check Overdue borrowers
-...
+- [x] Navigate to the `Check Overdue borrowers` menu by entering code `5`
+- [x] Check if there are any overdue books in the `borrowed` worksheet correctly.
+- [x] If there are overdue books, the app notifies that and displays the list of overdue books sorted by due date in <em>ascending order</em> in tabular format.
+- [x] If there are no overdue books, the app notifies that and prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+
 [Back to top](#contents)
 
 #### View Library Stocks

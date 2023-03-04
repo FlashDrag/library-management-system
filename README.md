@@ -163,7 +163,7 @@ The check out book option allows the librarian to check out a book to a borrower
 All found books that matching entered value in the selected column will be displayed and the user will be prompted to select a book to check out.
 Only one copy of the book can be checked out to a borrower at a time.
 
-Once the book is selected, the user will be prompted to enter the borrower's name. Then the entered name will be validated to ensure that the value is not empty. If the value is valid, the user will be asked to enter due date in one of the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'. Then the entered date will be validated using 'dateutils' parser to ensure that the value can be converted to a datetime object. If the value successfully converted to a datetime object, the app checks if the due date is in the future. When all checks are passed, the one copy of the book will be checked out from the 'stock' to the borrower and added to the `borrowed` worksheet with full information about the book, borrower name, borrow date and due date. The borrow date set to the current date automatically. Updated book with subtracted one copy will be displayed to the user. If the book has no copies left, the book will be completely removed from the `stock` worksheet and the user will be notified.
+Once the book is selected, the user will be prompted to enter the borrower's name. Then the entered name will be validated to ensure that the value is not empty. If the value is valid, the user will be asked to enter due date in one of the following formats: `dd/mm/yyyy`, `dd-mm-yyyy`, `dd.mm.yyyy`. Then the entered date will be validated using 'dateutils' parser to ensure that the value can be converted to a datetime object. If the value successfully converted to a datetime object, the app checks if the due date is in the future. When all checks are passed, the one copy of the book will be checked out from the 'stock' to the borrower and added to the `borrowed` worksheet with full information about the book, borrower name, borrow date and due date. The borrow date set to the current date automatically. Updated book with subtracted one copy will be displayed to the user. If the book has no copies left, the book will be completely removed from the `stock` worksheet and the user will be notified.
 
 <details><summary>Check out book</summary>
 
@@ -194,7 +194,7 @@ The `Return book` option allows the librarian to return a book to the library st
 
 Avialable search fields are: `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`. The book will be searched for in the `borrowed` worksheet by the selected field and entered validated value.
 
-Each value will be validated to ensure that is not empty. Besides that `ISBN` must be 13 digits long, `Year` must be a digit and cannot be greater than the current year, `Borrow date` cannot be greater than the current date and `Due date` can be any date. `Borrow date` and `Due date` must be in one of the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+Each value will be validated to ensure that is not empty. Besides that `ISBN` must be 13 digits long, `Year` must be a digit and cannot be greater than the current year, `Borrow date` cannot be greater than the current date and `Due date` can be any date. `Borrow date` and `Due date` must be in one of the following formats: `dd/mm/yyyy`, `dd-mm-yyyy`, `dd.mm.yyyy`.
 
 All found books that matching entered value in the selected column will be displayed and the user will be prompted to select a book to return.
 Once the book is selected, the app will search for the book in the `stock` worksheet by the `ISBN` field and if the book is found, the number of copies will be increased by one and the book will be updated in the `stock` worksheet and removed from the `borrowed` worksheet. If the book is not found in the `stock` worksheet, the book will be added to the end of the `stock` worksheet with one copy and removed from the `borrowed` worksheet.
@@ -213,7 +213,7 @@ Updated book will be displayed to the user with the full information about the b
 </details>
 
 - #### Check Overdue borrowers
-The `Check Overdue borrowers` is a special feature that allows librarians to quickly identify borrowers who have overdue books. When the user selects this option, the app will search for all books in the `borrowed` worksheet that have a due date that is less than the current date. All found books will be sorted by the due date in <em>ascending order</em> and displayed to the user with the full information about the book, borrower name, borrow date, due date and row number in the `borrowed` worksheet. This feature will help librarians stay on top of overdue books and ensures that borrowers are notified promptly to return the books they have borrowed.
+The `Check Overdue borrowers` is a special feature that allows librarians to quickly identify borrowers who have overdue books. When the user selects this option, the app will search for all books in the `borrowed` worksheet that have a due date that is less than the current date. All found books will be sorted by the due date in <em>ascending order</em> and displayed to the user with the full information about books, borrower names, borrow dates, due dates and row numbers in the `borrowed` worksheet. This feature will help librarians stay on top of overdue books and ensures that borrowers are notified promptly to return the books they have borrowed.
 By using this command line interface, librarians will easily perform this check at any time, without having to manually sift through spreadsheet records.
 If there are no overdue books, the librarian will be notified.
 
@@ -224,8 +224,50 @@ If there are no overdue books, the librarian will be notified.
 </details>
 
 - #### View library stock
+The `View library stock` option allows the librarian to view the entire inventory of books.
+
+The librarian will be prompted to select the `Library stock` or `Borrowed books` worksheet to view. The `stock` worksheet contains all books that are currently in stock and the `borrowed` worksheet contains all books that have been checked out to borrowers.
+
+When the worksheet is selected, the app will prompt the user to select the sorting field. The sorting field can be any of the following for the `stock` worksheet: `Spreadsheet order`, `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Copies` and for the `borrowed` worksheet: `Spreadsheet order`, `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`. The `Spreadsheet order` option will display the worksheet in the order it is stored in the spreadsheet.
+
+Once the sorting field is selected, the user will be prompted to select the sorting order. The sorting order can be `Ascending` or `Descending`. The app will then sort the selected worksheet by the selected field in the selected order and display the sorted worksheet to the user in tabular format with the full information about books and row numbers in the worksheet.
+
+<em>Values by which sorting is carried out are validated to implement the correct sorting. If some value did not pass validation and has an incorrect format for its field, it will be moved to the end of the displayed table. For example, if the sorting field is `due date` and some book has a value `30-02/2023` in the `due_date` field, it will be displayed at the end of the table, because the value `30-02/2023` is not a valid date format and cannot be sorted correctly. The same applies to other fields.
+
+Such cases are unlikely to occur if the book is added to the stock using this application since all data is validated when the book is added to the stock. The last screenshot is given as an example, and the invalid date was especially entered manually into the spreadsheet to demonstrate the correct sorting of the table.
+</em>
+
+The `View library stock` feature provides librarians with an easy way to get a quick overview of the entire inventory and track the availability of books. It also makes it easier to identify books that may need to be reordered or restocked.
+
+<details><summary>View library stock</summary>
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-1.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-2.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-3.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-4.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-5.png)
+
+----
+
+<i>An example of sorting by `due date` field with incorrect value in the `due_date` field.</i>
+The book with the incorrect value is displayed at the end of the table.
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-6.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-7.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-8.png)
+
+![view library stock](docs/images/features/view-library-stock/view-library-stock-9.png)
+
+</details>
 
 [Back to top](#table-of-contents)
+
 
 ### Development features
 

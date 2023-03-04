@@ -150,6 +150,15 @@ Mypy extension for VS Code was used throughout development.
 
 [PEP8](http://pep8online.com/) - Python code style: pep8
 pycodestyle was used to check the code style. There were no errors.
+*Exeption*: line length - 120 characters.
+
+The long lines were used by several reasons:
+- Efficiency: In some cases, using longer lines of code can improve the efficiency of your program. For example, if you need to perform a complex calculation that involves many nested function calls, it may be more efficient to write it as a single line of code rather than breaking it up into multiple lines.
+
+- Space constraints: If you are working with limited screen space, such as when working on a small laptop or mobile device, using longer lines of code can help you fit more code on the screen without having to scroll horizontally.
+
+- Personal preference: Some developers may simply prefer to write longer lines of code because it feels more natural or intuitive to them. While this may not be the most common approach, it can be a valid reason for using longer lines of code.
+
 
 <!-- TODO Unit testing -->
 <!-- [Pytest](https://docs.pytest.org/en/stable/) - Unit testing -->

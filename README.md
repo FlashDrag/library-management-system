@@ -17,7 +17,7 @@ The app uses the Pydantic model for data validation which provides a convenient 
 - [**User Experience UX**](#user-experience-ux)
   - [User Stories](#user-stories)
   - [Structure](#structure)
-  - [Flowchart](#flowchart)
+    - [Flowchart](#flowchart)
 - [**Features**](#features)
   - [App features](#app-features)
     - [Main menu](#main-menu)
@@ -34,15 +34,16 @@ The app uses the Pydantic model for data validation which provides a convenient 
       - [Controller](#controller)
     - [OOP Approach](#oop-approach)
     - [Data model](#data-model)
-    - [Type hints](#type-hints)
     - [Type Hints, mypy, flake8](#type-hints-mypy-flake8)
     - [Enum, TypedDict](#enum-typeddict)
     - [Rich library](#rich-library)
     - [Logging](#logging)
 - [**Technologies Used**](#technologies-used)
+- [**Dependencies**](#dependencies)
 - [**Testing**](#testing)
 - [**Deployment**](#deployment)
 - [**Credits**](#credits)
+- [**Contact**](#contact)
 
 ## User Experience (UX)
 
@@ -74,6 +75,8 @@ The library management system is a terminal-based application that is presented 
 The flowchart was designed in [Microsoft Visio](). It shows the main flow of the app and the main functions that are used to perform the actions.
 
 ![Flowchart](docs/images/supp-images/flowchart.png)
+
+[Back to top](#table-of-contents)
 
 ## Features
 
@@ -342,30 +345,29 @@ The Library Management System uses logging to capture errors and other informati
 [Back to top](#table-of-contents)
 
 ## Technologies Used
-- [Python](#) - building the app
-- [VSCode](#) - IDE
-- [GitHub]() - ...
-- [GIT]() - ...
-- [Heroku]() - ...
-- [Google Spreadsheets API]() - ...
-- []() - ...
-- []() - ...
-- []() - ...
-- []() - ...
-- []() - ...
-- []() - ...
+- [Python](#) - programming language, version 3.11.2
+- [HTML5](https://developer.mozilla.org/en-US/docs/Glossary/HTML5) - presenting the app
+- [CSS3](https://developer.mozilla.org/en-US/docs/Web/CSS) - styling the app
+- [VScode](https://code.visualstudio.com) - IDE used to write the code
+- [WSL - Ubuntu](https://ubuntu.com/wsl) - terminal environment
+- [GIT](https://git-scm.com/), [GitHub](https://github.com/) - tracking, storing, hosting project
+- [Heroku](https://www.heroku.com/) - hosting the app
+- [Google Spreadsheets API](https://developers.google.com/sheets/api) - storing the data
+- [iloveIMG](https://www.iloveimg.com) - compressing and resizing docs images
+- [Microsoft Visio](https://www.microsoft.com/en-us/microsoft-365/visio/flowchart-software) - creating the app flowchart
+
+[Back to top](#table-of-contents)
 
 ### Dependencies
-- [Pytest]() - ...
-- [datetime]() - ...
-- [Pydantic]() - ...
-- [gspread]() - Python library used to access and manage Google Spreadsheets.
-- [flake8]() - ...
-- [logtail]() - ...
-- [mypy]() - ...
-- [tabulate]() - ...
-- [Google OAuth2 client]() - authenticate the application and grant it access to the Google APIs.
-- []() - ...
+- [datetime](https://docs.python.org/3/library/datetime.html) - manipulating dates
+- [dateutils](https://dateutil.readthedocs.io/en/stable/) - parsing dates
+- [Pydantic](https://pydantic-docs.helpmanual.io/) - data validation and settings management using Python type hinting.
+- [gspread](https://gspread.readthedocs.io/en/latest/) - Python library used to access and manage Google Spreadsheets.
+- [flake8](https://flake8.pycqa.org/en/latest/) - tool for style guide enforcement.
+- [logtail](https://logtail.com/) - remote logging.
+- [mypy](https://mypy.readthedocs.io/en/stable/) - static type checker for Python.
+- [rich](https://rich.readthedocs.io/en/latest/) - Python library for data output.
+- [pycodestyle](https://pycodestyle.pycqa.org/en/latest/) - checking Python code against PEP 8.
 
 [Back to top](#table-of-contents)
 
@@ -378,11 +380,11 @@ See [TESTING.md](https://github.com/FlashDrag/library-management-system/blob/mai
 ## Deployment
 The App link is https://library-management-system.herokuapp.com/
 
-The app is hosted on [Heroku]()
+The app is hosted on [Heroku](https://www.heroku.com/). The app is deployed from the main branch on GitHub. The deployment is automatic, so every time a new commit is pushed to the master branch, the app is automatically deployed.
 
 #### How to connect to Google Spreadsheet API and get creadentials
 
-[Here you can find instructions](https://github.com/FlashDrag/love-sandwiches/blob/main/docs/instruction.md)
+[Here you can find instructions](https://github.com/FlashDrag/library-management-system/blob/main/docs/instruction.md)
 
 #### To run the app on a local machine:
 To run this script, you need to have the following installed:
@@ -391,37 +393,44 @@ To run this script, you need to have the following installed:
 - Google API credentials (in form of a JSON file)
 To run:
 - Clone this repository to your local machine
-- Replace the credentials JSON file with your own Google API credentials;
-- Run the script by executing python run.py in the terminal
+- Get the credentials [JSON file from Google API](https://github.com/FlashDrag/library-management-system/blob/main/docs/instruction.md);
+- Install dependencies by executing `pip install -r requirements.txt` in the terminal;
+- Create a file called `creds.json` in the root directory of the project and paste the JSON credentials into it;
+- Run the script by executing `python run.py` in the terminal
 
-#### To deploy the project:
+#### To deploy the project to Heroku:
 
 - ##### Creating the Heroku app
-1. When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
-    1. `heroku/python`
-    2. `heroku/nodejs`
+  - Fork or clone this repository.
+  - Log into your account on Heroku.
+  - Create a new Heroku app.
+  - Navigate to Settings tab in your Heroku app.
+  - Click on Reveal Config Vars.
+  - Set up environmental variables in config vars section:
+    - CREDS: paste the JSON credentials into the value field.
+    - PORT: 8000
+  - Set the buildbacks to python and NodeJS in that order:
+    - Click on the _Settings_ tab.
+    - Click on the _Buildpacks_ section.
+    - Click on the _Add buildpack_ button.
+    - Enter `heroku/python` and click _Save_.
+    - Click on the _Add buildpack_ button.
+    - Enter `heroku/nodejs` and click _Save_.
+  - Configure GitHub integration, choose main/master branch in the Deploy tab.
+    - Click on the _Deploy_ tab.
+    - Click on the _GitHub_ section.
+    - Enter your GitHub username and repository name.
+    - Click on the _Connect_ button.
+    - Click on the _Enable Automatic Deploys_ button to enable automatic deployment.
+    - Click on the _Deploy Branch_ button.
+  - Click on the _Open App_ button to open the app in the browser.
 
-2. Config Vars
-- Create a _Config Var_ called `PORT`. Set this to `8000`
-- Create another _Config Var_ called `CREDS` and paste the JSON credentials into the value field.
+  Note: if you are using a Heroku with student benefits, the app will go to sleep after 30 minutes of inactivity. The first request after the app has gone to sleep will take a few seconds to load.
 
-3. Connect your GitHub repository and deploy as normal.
 
-----
-- Fork or clone this repository.
-- Log into your account on Heroku.
-- Create a new Heroku app.
-- Navigate to Settings tab.
-- Set up environmental variables in config vars section. In this case, it's CREDS(credentials of Google service account) and PORT(value 8000).
-- Set the buildbacks to python and NodeJS in that order.
-- Configure GitHub integration, choose main branch in the Deploy tab.
-- Click Deploy branch.
-----
-[Back to top](#table-of-contents)
+#### Terminal app settings
 
-## Constraints
-
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
+The deployment terminal is set to 90 columns by 24 rows. That means that each line of text needs to be 90 characters or less otherwise it will be wrapped onto a second line.
 
 [Back to top](#table-of-contents)
 
@@ -430,6 +439,16 @@ The deployment terminal is set to 80 columns by 24 rows. That means that each li
 The [Library Management System](https://library-management-system.herokuapp.com/) programm based on my own implementation of code, applying what I've learned from [CodeInstitute Full Stack Developer Course](https://codeinstitute.net/ie/full-stack-software-development-diploma/) and other tutorials.
 
 ### Content
-...
+- App background image was taken from [Pexels](https://www.pexels.com/)
+- Favicons were taken from [icons8](https://icons8.com/)
+
+- The content of the app was written by developer Pavlo Myskov.
+
+[Back to top](#table-of-contents)
+
+## Contact
+- Contact information is available on my [LinkedIn](https://www.linkedin.com/in/pavlo-myskov/) profile.
+
+[<img src='https://img.shields.io/badge/Telegram-333333?style=for-the-badge&logo=telegram&logoColor=white&style=plastic&logoWidth=20&labelColor=2CA5E0' alt='Telegram'>](https://t.me/flashdrag) [<img src='https://img.shields.io/badge/LinkedIn-333333?style=for-the-badge&logo=linkedin&logoColor=white&style=plastic&logoWidth=20&labelColor=0077B5' alt='Telegram'>](https://www.linkedin.com/in/pavlo-myskov)
 
 [Back to top](#table-of-contents)

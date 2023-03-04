@@ -28,13 +28,16 @@ The app uses the Pydantic model for data validation which provides a convenient 
     - [Check Overdue borrowers](#check-overdue-borrowers)
     - [View library stock](#view-library-stock)
   - [Development features](#development-features)
-    - [MVC Model](#mvc-model)
-    - [API Integration](#api-integration)
+    - [MVC model](#mvc-model)
+      - [Model and Pydantic Validation](#model-and-pydantic-validation)
+      - [View](#view)
+      - [Controller](#controller)
+    - [OOP Approach](#oop-approach)
     - [Data model](#data-model)
-    - [Type Hints](#type-hints)
-    - [Pydantic Validation](#pydantic-validation)
+    - [Type hints](#type-hints)
+    - [Type Hints, mypy, flake8](#type-hints-mypy-flake8)
     - [Enum, TypedDict](#enum-typeddict)
-    - [Rich table](#rich-table)
+    - [Rich library](#rich-library)
     - [Logging](#logging)
     - [Error handling](#error-handling)
 - [**Technologies Used**](#technologies-used)
@@ -273,18 +276,20 @@ The book with the incorrect value is displayed at the end of the table.
 #### MVC Model
 The Library Management System CLI Application in Python is designed using the Model-View-Controller (MVC) architectural pattern. This pattern separates the application into three interconnected components: the model, the view, and the controller.
 
-- #### Model and Pydantic Validation
+- ##### Model and Pydantic Validation
 The model represents the application business logic, validation, `Book` and `Library` models which located in the `models` package. The `spreadsheet` module is responsible for connecting and working with the database which is Google Spreadsheet. `Library` class responsible for the library model. Validation `Book` model is implemented on the base Pydantic model, which actively support typing. Validation logic separated from user interface.
 Using the `Pydantic` library allows to reduce the time for creating custom validators, since it has a lot of ready-made validation templates.
 
-- #### View
+- ##### View
 The view is represented by the `views` package.
 That package contains the `console_ui` module which is responsible for the user interface and interaction with the user. It is a separate module that can be used in other applications.
 
 The `console_ui` module uses the `rich` library to display the result to the user in a more convenient and readable format. Class `Menu` is responsible for displaying the menu and receiving user input.
 
-- #### Controller
+- ##### Controller
 The controller is represented by the `library_manager` package. The managers ties the model and the view together. The `library_manager` is the component that knows about both the model and the view. It receives user input from `console_ui` module from `views` package and passes it to the model which is `spreadsheet` module. The model processes the data and returns the result to the controller. The controller uses the view (`console_ui`) to display the result to the user.
+
+[Back to top](#table-of-contents)
 
 #### OOP Approach
 The application is written using the object-oriented programming approach. The `Book` and `Library` classes are located in the `models` package. The `Book` class is responsible for the book model.
@@ -295,9 +300,13 @@ The `Library` class is responsible for the library model. The `Library` class co
 
 The `Menu` class is responsible for displaying the menu and receiving user input. The `Menu` class is located in the `views` package. This class is responsible for the user interface of the application. The `Menu` class contains methods that use the `rich` library to display menus and results to the user in a more convenient and readable format.
 
+[Back to top](#table-of-contents)
+
 #### Data model
 The application is divided into packages and modules.
 Separating the business logic from the user interface allows me to make the code more modular and easier to maintain. If I want to change the way the library works, I just modify the Library class without affecting the user interface. Similarly, if I need to change the user interface, I just modify the `console_ui` module that provides it without affecting the library itself.
+
+[Back to top](#table-of-contents)
 
 #### Type Hints, mypy, flake8
 Python is a dynamically typed language, which means that data types do not need to be explicitly specified. This makes Python code more flexible and easier to write, but it also makes it more difficult to understand and maintain. Type hints allow you to specify the types of inputs and outputs for the validation methods. This makes the code easier to understand and maintain.
@@ -309,10 +318,14 @@ It's a great tool for improving the quality of the code. It works great in combi
 
 - `Flake8` is a tool for style guide enforcement. It checks the code against PEP 8 style guide. It also checks for unused imports, unused variables, and other errors. `Flake8` is also a great tool for refactoring and code review and helps to keep the code clean and consistent.
 
+[Back to top](#table-of-contents)
+
 #### Enum, TypedDict
 In my CLI Python app, I use Enum and TypeDict to help organize and validate the input and output of my command-line arguments. The `Enum` class is used to define a set of constants. The `TypedDict` class is used to define a dictionary with a fixed set of keys and their types.
 
 By using Enum and TypeDict, the code is able to enforce constraints on the input and output of the app, making it more robust and maintainable. For example, the `MenuSets` Enum from `menus` module ensures that each menu has the required keys (title, options, table_format), and the `MenuSet` that inherits from TypedDict ensures that the values for these keys are of the expected type (str, list[str], and box.Box, respectively).
+
+[Back to top](#table-of-contents)
 
 #### Rich library
 Initially, the `tabulate` library was chosen for data output in tabulate format. However, I faced some challenges when trying to display the full information about the book. The table would break in small terminals, and I had to adjust the width of each column manually, which was not convenient. This became more difficult when the data was dynamic and constantly changing. To solve this problem, I switched to using the `rich` library. The `rich` library provides more flexibility in terms of setting and adjusting column widths, and it can automatically adjust to the size of the terminal. This made it much easier to display the data in a way that was visually appealing and easy to read, even when the data was changing.
@@ -321,6 +334,7 @@ While I found the library a little late and did not have enough time to study it
 
 In this project, you will find examples of how to use the `rich` library to display data in tables. You can easily customize the look and feel of the tables to match your needs, and the library is highly versatile and easy to use. If you are looking for a Python library for data output that is flexible and powerful, I highly recommend giving rich a try.
 
+[Back to top](#table-of-contents)
 
 #### Logging
 

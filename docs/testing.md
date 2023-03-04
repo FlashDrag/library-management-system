@@ -65,7 +65,26 @@
 [Back to top](#contents)
 
 #### Check out book
-...
+- [x] Navigate to the `Check out book` menu by entering code `3`
+- [x] The `Check out book` menu is displayed and provides the following option to search by: `ISBN`, `Title`, `Author`, `Genre`, `Year`.
+- [x] Each option is selected by entering the corresponding code number and the app asks to enter the value of the field to search for.
+- [x] Each value is validated and if the value is invalid, the app asks to enter the value again:
+ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in range 1 - current year
+- [x] When entered value is valid, the book is searched for in the `stock` worksheet by the selected field and validated value.
+- [x] If no books matching the search criteria, the app notifies that and returns to the field selection menu.
+- [x] All found books are displayed in tabular format and the app asks to select a book to check out.
+- [x] Selected book displayed in tabular format and the app asks to enter the borrower name.
+- [x] If the borrower name is empty, the app notifies that and prompts to enter the borrower name again.
+- [x] If the borrower name is not empty, the app asks to enter the due date in the folowing formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+- [x] Date is validated using `dateutil.parser.parse` and if the date is invalid, the app notifies that and prompts to enter the due date again.
+- [x] If the date is in the past, the app notifies that and prompts to enter the due date again.
+- [x] If book copies more than 1, a copy is removed from the `stock` worksheet and added to the `borrowed` worksheet with the borrower name current date and due date.
+- [x] Updated book is displayed in tabular format with the number of copies decreased by 1.
+- [x] If book copies equal to 1, the book is fully removed from the `stock` worksheet and added to the `borrowed` worksheet with the borrower name current date and due date and the app notifies that the book is completely checked out from the library stock.
+- [x] The app prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+
+
 [Back to top](#contents)
 
 #### Return book

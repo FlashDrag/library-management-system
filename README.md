@@ -39,7 +39,6 @@ The app uses the Pydantic model for data validation which provides a convenient 
     - [Enum, TypedDict](#enum-typeddict)
     - [Rich library](#rich-library)
     - [Logging](#logging)
-    - [Error handling](#error-handling)
 - [**Technologies Used**](#technologies-used)
 - [**Testing**](#testing)
 - [**Deployment**](#deployment)
@@ -337,8 +336,8 @@ In this project, you will find examples of how to use the `rich` library to disp
 [Back to top](#table-of-contents)
 
 #### Logging
-
-#### Error handling
+The built-in logging module provides a flexible framework for emitting diagnostic messages from applications.
+The Library Management System uses logging to capture errors and other information that may be useful for developers, but should not be displayed to end users. By default, log messages are written to the console. To be able to catch errors remotely and send them to the developer, I used the `logtail` library. This library allows me to send logs to the server and view them in the browser. This is a great tool for debugging and monitoring the application.
 
 [Back to top](#table-of-contents)
 

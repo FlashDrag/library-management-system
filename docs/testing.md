@@ -88,7 +88,20 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 [Back to top](#contents)
 
 #### Return book
-...
+- [x] Navigate to the `Return book` menu by entering code `4`
+- [x] The `Return book` menu is displayed and provides the following option to search by: `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`.
+- [x] Each option is selected by entering the corresponding code number and the app asks to enter the value of the field to search for.
+- [x] Each value is validated and if the value is invalid, the app asks to enter the value again: all fields - not empty; ISBN - 13 digits; year - digits in range 1 - current year; borrow date - not greater than current date; borrow date and due date - in the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+- [x] When entered value is valid, the book is searched for in the `borrowed` worksheet by the selected field and validated value.
+- [x] If no books matching the search criteria, the app notifies that and returns to the field selection menu.
+- [x] All found books are displayed in tabular format and the app asks to select a book to return.
+- [x] When book is selected, it immediately displayed in tabular format and the app searches for the book in the `stock` worksheet by ISBN and if the book is found, the number of copies is increased by 1 and the book is updated in the `stock` worksheet and removed from the `borrowed` worksheet.
+- [x] If the book is not found in the `stock`, the book is added to the `stock` worksheet with the number of copies equal to 1 and removed from the `borrowed` worksheet.
+- [x] The app notifies that the book is returned and displays the updated book in tabular format with full information including the number of book row in the `stock` worksheet.
+- [x] The app prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+
+
 [Back to top](#contents)
 
 #### Check Overdue borrowers

@@ -29,6 +29,7 @@
 - Title, Author, Genre - not empty
 - Year - digits in range 1 - current year
 - [x] If the value is valid, the book is searched for in the `stock` worksheet by the selected field and validated value.
+- [x] The application does not look for the value in the first row of the `stock` worksheet as it is the header.
 - [x] If the books are found, they are displayed in tabular format and the app asks to select a book to add copies to.
 - [x] If the book is not found, the app asks to enter the rest book details manually (isbn, title, author, genre, year and number of copies) and skip the first entered field as it saved in the Book object.
 - [x] Seleted book displayed in tabular format and the app asks to enter the number of copies to add.
@@ -76,7 +77,7 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 - [x] All found books are displayed in tabular format and the app asks to select a book to check out.
 - [x] Selected book displayed in tabular format and the app asks to enter the borrower name.
 - [x] If the borrower name is empty, the app notifies that and prompts to enter the borrower name again.
-- [x] If the borrower name is not empty, the app asks to enter the due date in the folowing formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+- [x] If the borrower name is not empty, the app asks to enter the due date in the folowing formats: `dd/mm/yyyy`, `dd-mm-yyyy`, `dd.mm.yyyy`.
 - [x] Date is validated using `dateutil.parser.parse` and if the date is invalid, the app notifies that and prompts to enter the due date again.
 - [x] If the date is in the past, the app notifies that and prompts to enter the due date again.
 - [x] If book copies more than 1, a copy is removed from the `stock` worksheet and added to the `borrowed` worksheet with the borrower name current date and due date.
@@ -92,7 +93,7 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 - [x] Navigate to the `Return book` menu by entering code `4`
 - [x] The `Return book` menu is displayed and provides the following option to search by: `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`.
 - [x] Each option is selected by entering the corresponding code number and the app asks to enter the value of the field to search for.
-- [x] Each value is validated and if the value is invalid, the app asks to enter the value again: all fields - not empty; ISBN - 13 digits; year - digits in range 1 - current year; borrow date - not greater than current date; borrow date and due date - in the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'.
+- [x] Each value is validated and if the value is invalid, the app asks to enter the value again: all fields - not empty; ISBN - 13 digits; year - digits in range 1 - current year; borrow date - not greater than current date; borrow date and due date - in the following formats: `dd/mm/yyyy`, `dd-mm-yyyy`, `dd.mm.yyyy`.
 - [x] When entered value is valid, the book is searched for in the `borrowed` worksheet by the selected field and validated value.
 - [x] If no books matching the search criteria, the app notifies that and returns to the field selection menu.
 - [x] All found books are displayed in tabular format and the app asks to select a book to return.
@@ -107,15 +108,28 @@ ISBN - 13 digits, not empty; title, author, genre - not empty; year - digits in 
 
 #### Check Overdue borrowers
 - [x] Navigate to the `Check Overdue borrowers` menu by entering code `5`
-- [x] Check if there are any overdue books in the `borrowed` worksheet correctly.
+- [x] The app checks if there are any overdue books in the `borrowed` worksheet correctly.
 - [x] If there are overdue books, the app notifies that and displays the list of overdue books sorted by due date in <em>ascending order</em> in tabular format.
 - [x] If there are no overdue books, the app notifies that and prompts to enter any key to return to the main menu.
 - [x] The app returns to the main menu.
 
 [Back to top](#contents)
 
+
 #### View Library Stocks
-...
+- [x] Navigate to the `View Library Stocks` menu by entering code `6`
+- [x] The `viewing library` menu is displayed with the 2 options: `Library stock`, `Borrowed books`.
+- [x] Library stock option is presented by entering code `1` and the app displays
+7 sorted methods of viewing the library stock: `Spreadsheet order`, `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Number of copies`.
+- [x] Each method is selected by entering the corresponding code number and the app displays the library stock sorted by the selected field and selected order in tabular format in the corresponding order.
+- [x] If the library stock is empty, the app notifies that and prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+- [x] Borrowed books option is presented by entering code `2` and the app displays
+9 sorted methods of viewing the borrowed books: `Spreadsheet order`, `ISBN`, `Title`, `Author`, `Genre`, `Year`, `Borrower name`, `Borrow date`, `Due date`.
+- [x] Each method is selected by entering the corresponding code number and the app displays the borrowed books sorted by the selected field and selected order in tabular format in the corresponding order.
+- [x] If the borrowed books are empty, the app notifies that and prompts to enter any key to return to the main menu.
+- [x] The app returns to the main menu.
+
 [Back to top](#contents)
 
 

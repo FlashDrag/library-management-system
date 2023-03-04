@@ -140,6 +140,10 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 
 ---
 
+<i>Another example of removing book.</i>
+
+Removing some copies of a book.
+
 ![remove book](docs/images/features/remove-book/remove-book-9.png)
 
 ![remove book](docs/images/features/remove-book/remove-book-10.png)
@@ -147,6 +151,36 @@ The flowchart was designed in [Microsoft Visio](). It shows the main flow of the
 </details>
 
 - #### Check out book
+The check out book option allows the librarian to check out a book to a borrower. Check out system uses the same search system as the `Add book` and `Remove book` options. The librarian can choose the field to search by. The book will be searched for in the `stock` worksheet by the selected field and entered validated value. The validation is used to ensure that the entered value is not empty and is of the correct type.
+
+All found books that matching entered value in the selected column will be displayed and the user will be prompted to select a book to check out.
+Only one copy of the book can be checked out to a borrower at a time.
+
+Once the book is selected, the user will be prompted to enter the borrower's name. Then the entered name will be validated to ensure that the value is not empty. If the value is valid, the user will be asked to enter due date in one of the following formats: 'dd/mm/yyyy', 'dd-mm-yyyy', 'dd.mm.yyyy'. Then the entered date will be validated using 'dateutils' parser to ensure that the value can be converted to a datetime object. If the value successfully converted to a datetime object, the app checks if the due date is in the future. When all checks are passed, the one copy of the book will be checked out from the 'stock' to the borrower and added to the `borrowed` worksheet with full information about the book, borrower name, borrow date and due date. The borrow date set to the current date automatically. Updated book with subtracted one copy will be displayed to the user. If the book has no copies left, the book will be completely removed from the `stock` worksheet and the user will be notified.
+
+<details><summary>Check out book</summary>
+
+![check out book](docs/images/features/check-out-book/check-out-book-1.png)
+
+![check out book](docs/images/features/check-out-book/check-out-book-2.png)
+
+![check out book](docs/images/features/check-out-book/check-out-book-3.png)
+
+![check out book](docs/images/features/check-out-book/check-out-book-4.png)
+
+![check out book](docs/images/features/check-out-book/check-out-book-5.png)
+
+![check out book](docs/images/features/check-out-book/check-out-book-6.png)
+
+----
+
+<i>Another example of checking out a book.</i>
+
+Completely checked out a book from the 'stock' as no copies left
+
+![check out book](docs/images/features/check-out-book/check-out-book-7.png)
+
+</details>
 
 - #### Return book
 
